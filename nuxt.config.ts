@@ -1,6 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   srcDir: 'src',
+  compatibilityDate: '2024-08-15',
 
   modules: [
     '@nuxtjs/i18n',
@@ -32,9 +33,8 @@ export default defineNuxtConfig({
     devtools: true,
   },
 
-  compatibilityDate: '2024-08-15',
-
   i18n: {
+    defaultLocale: 'ru',
     locales: [
       {
         code: 'en',
@@ -47,9 +47,6 @@ export default defineNuxtConfig({
         name: 'Русский',
       },
     ],
-
-    defaultLocale: 'ru',
-    vueI18n: '.i18n',
   },
 
   devtools: {

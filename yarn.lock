@@ -110,11 +110,11 @@ __metadata:
   linkType: hard
 
 "@antfu/install-pkg@npm:^0.3.3":
-  version: 0.3.4
-  resolution: "@antfu/install-pkg@npm:0.3.4"
+  version: 0.3.5
+  resolution: "@antfu/install-pkg@npm:0.3.5"
   dependencies:
-    tinyexec: "npm:^0.1.4"
-  checksum: 10c0/fc2c216f239d3867fd67025a3c1f0effd4f7b8d29ff6980a3c62a57035c4eec80b8c8f0d1d98f6920cfaff494e6c0bdcdb5a021f4dbe7baec99218376ffa27c9
+    "@jsdevtools/ez-spawn": "npm:^3.0.4"
+  checksum: 10c0/ba89e4b1d768310fec150d44e376be3f2dc06ca2fc10678250c3c54ec42eb510bbfe28812a829f39623a8717c70ded588847250a26dc8e4af83591919173de7b
   languageName: node
   linkType: hard
 
@@ -1388,6 +1388,18 @@ __metadata:
     "@jridgewell/resolve-uri": "npm:^3.1.0"
     "@jridgewell/sourcemap-codec": "npm:^1.4.14"
   checksum: 10c0/3d1ce6ebc69df9682a5a8896b414c6537e428a1d68b02fcc8363b04284a8ca0df04d0ee3013132252ab14f2527bc13bea6526a912ecb5658f0e39fd2860b4df4
+  languageName: node
+  linkType: hard
+
+"@jsdevtools/ez-spawn@npm:^3.0.4":
+  version: 3.0.4
+  resolution: "@jsdevtools/ez-spawn@npm:3.0.4"
+  dependencies:
+    call-me-maybe: "npm:^1.0.1"
+    cross-spawn: "npm:^7.0.3"
+    string-argv: "npm:^0.3.1"
+    type-detect: "npm:^4.0.8"
+  checksum: 10c0/fb56f99c4d09ccaeace4ebaecfa31ab1ff90517d5ca51dbd624f4b9ab489eee469504ab33a12a2bc8b5f0a35ee61e139cc087b242ad7947c61674454cb41c75e
   languageName: node
   linkType: hard
 
@@ -3533,6 +3545,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"call-me-maybe@npm:^1.0.1":
+  version: 1.0.2
+  resolution: "call-me-maybe@npm:1.0.2"
+  checksum: 10c0/8eff5dbb61141ebb236ed71b4e9549e488bcb5451c48c11e5667d5c75b0532303788a1101e6978cafa2d0c8c1a727805599c2741e3e0982855c9f1d78cd06c9f
+  languageName: node
+  linkType: hard
+
 "callsites@npm:^3.0.0":
   version: 3.1.0
   resolution: "callsites@npm:3.1.0"
@@ -3917,18 +3936,16 @@ __metadata:
     "@vueuse/nuxt": "npm:^10.11.1"
     class-variance-authority: "npm:^0.7.0"
     clsx: "npm:^2.1.1"
-    edgedb: "npm:^1.5.9"
-    h3: "npm:^1.12.0"
     nuxt: "npm:^3.12.4"
     nuxt-edgedb-module: "npm:^0.0.52"
     radix-vue: "npm:^1.9.4"
     shadcn-nuxt: "npm:^0.10.4"
     tailwind-merge: "npm:^2.5.2"
-    tailwindcss: "npm:^3.4.10"
     tailwindcss-animate: "npm:^1.0.7"
     typescript: "npm:^5.5.4"
-    vue: "npm:^3.4.38"
-    vue-router: "npm:^4.4.3"
+  peerDependencies:
+    h3: "*"
+    vue-router: "*"
   languageName: unknown
   linkType: soft
 
@@ -4460,7 +4477,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"edgedb@npm:^1.5.7, edgedb@npm:^1.5.9":
+"edgedb@npm:^1.5.7":
   version: 1.5.9
   resolution: "edgedb@npm:1.5.9"
   dependencies:
@@ -8675,7 +8692,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.4.23, postcss@npm:^8.4.38, postcss@npm:^8.4.39, postcss@npm:^8.4.40":
+"postcss@npm:^8.4.23, postcss@npm:^8.4.38, postcss@npm:^8.4.39, postcss@npm:^8.4.40, postcss@npm:^8.4.41":
   version: 8.4.41
   resolution: "postcss@npm:8.4.41"
   dependencies:
@@ -9608,6 +9625,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"string-argv@npm:^0.3.1":
+  version: 0.3.2
+  resolution: "string-argv@npm:0.3.2"
+  checksum: 10c0/75c02a83759ad1722e040b86823909d9a2fc75d15dd71ec4b537c3560746e33b5f5a07f7332d1e3f88319909f82190843aa2f0a0d8c8d591ec08e93d5b8dec82
+  languageName: node
+  linkType: hard
+
 "string-width-cjs@npm:string-width@^4.2.0, string-width@npm:^1.0.2 || 2 || 3 || 4, string-width@npm:^4.1.0, string-width@npm:^4.2.0, string-width@npm:^4.2.3":
   version: 4.2.3
   resolution: "string-width@npm:4.2.3"
@@ -9863,7 +9887,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tailwindcss@npm:^3.4.10, tailwindcss@npm:~3.4.4":
+"tailwindcss@npm:~3.4.4":
   version: 3.4.10
   resolution: "tailwindcss@npm:3.4.10"
   dependencies:
@@ -9983,13 +10007,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tinyexec@npm:^0.1.4":
-  version: 0.1.4
-  resolution: "tinyexec@npm:0.1.4"
-  checksum: 10c0/f50080bcc2afa22397ddac0c46a162fd94380d9c430a694ab0acd7802a4a4a716fb463e22884593b1a53787e25ba5f709516987d57dfa4ec8f6fbc9e281b40b0
-  languageName: node
-  linkType: hard
-
 "tinyrainbow@npm:^1.2.0":
   version: 1.2.0
   resolution: "tinyrainbow@npm:1.2.0"
@@ -10086,6 +10103,13 @@ __metadata:
   dependencies:
     prelude-ls: "npm:^1.2.1"
   checksum: 10c0/7b3fd0ed43891e2080bf0c5c504b418fbb3e5c7b9708d3d015037ba2e6323a28152ec163bcb65212741fa5d2022e3075ac3c76440dbd344c9035f818e8ecee58
+  languageName: node
+  linkType: hard
+
+"type-detect@npm:^4.0.8":
+  version: 4.1.0
+  resolution: "type-detect@npm:4.1.0"
+  checksum: 10c0/df8157ca3f5d311edc22885abc134e18ff8ffbc93d6a9848af5b682730ca6a5a44499259750197250479c5331a8a75b5537529df5ec410622041650a7f293e2a
   languageName: node
   linkType: hard
 
@@ -10611,12 +10635,12 @@ __metadata:
   linkType: hard
 
 "vite@npm:^5.0.0, vite@npm:^5.3.4":
-  version: 5.4.0
-  resolution: "vite@npm:5.4.0"
+  version: 5.4.1
+  resolution: "vite@npm:5.4.1"
   dependencies:
     esbuild: "npm:^0.21.3"
     fsevents: "npm:~2.3.3"
-    postcss: "npm:^8.4.40"
+    postcss: "npm:^8.4.41"
     rollup: "npm:^4.13.0"
   peerDependencies:
     "@types/node": ^18.0.0 || >=20.0.0
@@ -10649,7 +10673,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: 10c0/122de7795e1c3c08cd0acc7d77296f908398266b424492be7310400107f37a3cf4c9506f2b4b16619e57299ca2859b8ca187aac5e25f8e66d84f9204a1d72d18
+  checksum: 10c0/b9ea824f1a946aa494f756e6d9dd88869baa62ae5ba3071b32b6a20958fd622cb624c860bdd7daee201c83ca029feaf8bbe2d2a6e172a5d49308772f8899d86d
   languageName: node
   linkType: hard
 
@@ -10775,7 +10799,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vue-router@npm:^4.2.5, vue-router@npm:^4.4.0, vue-router@npm:^4.4.3":
+"vue-router@npm:^4.2.5, vue-router@npm:^4.4.0":
   version: 4.4.3
   resolution: "vue-router@npm:4.4.3"
   dependencies:
@@ -10786,7 +10810,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vue@npm:^3.4.32, vue@npm:^3.4.38":
+"vue@npm:^3.4.32":
   version: 3.4.38
   resolution: "vue@npm:3.4.38"
   dependencies:

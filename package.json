@@ -13,26 +13,25 @@
     "edgedb:migrate": "edgedb migration create",
     "edgedb:generate": "yarn nuxt-edgedb-module"
   },
+  "peerDependencies": {
+    "h3": "*",
+    "vue-router": "*"
+  },
   "dependencies": {
-    "@nuxtjs/i18n": "^8.3.3",
-    "@nuxtjs/tailwindcss": "^6.12.1",
-    "@vueuse/nuxt": "^10.11.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "edgedb": "^1.5.9",
-    "h3": "^1.12.0",
     "nuxt": "^3.12.4",
+    "tailwind-merge": "^2.5.2",
+    "tailwindcss-animate": "^1.0.7"
+  },
+  "devDependencies": {
+    "@nuxtjs/i18n": "^8.3.3",
+    "@nuxtjs/tailwindcss": "^6.12.1",
+    "@pkg/eslint-config": "workspace:*",
+    "@vueuse/nuxt": "^10.11.1",
     "nuxt-edgedb-module": "^0.0.52",
     "radix-vue": "^1.9.4",
     "shadcn-nuxt": "^0.10.4",
-    "tailwindcss": "^3.4.10",
-    "vue": "^3.4.38",
-    "vue-router": "^4.4.3"
-  },
-  "devDependencies": {
-    "@pkg/eslint-config": "workspace:*",
-    "tailwind-merge": "^2.5.2",
-    "tailwindcss-animate": "^1.0.7",
     "typescript": "^5.5.4"
   },
   "workspaces": [
