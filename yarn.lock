@@ -3917,6 +3917,7 @@ __metadata:
     "@vueuse/nuxt": "npm:^10.11.1"
     class-variance-authority: "npm:^0.7.0"
     clsx: "npm:^2.1.1"
+    edgedb: "npm:^1.5.9"
     h3: "npm:^1.12.0"
     nuxt: "npm:^3.12.4"
     nuxt-edgedb-module: "npm:^0.0.52"
@@ -4459,7 +4460,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"edgedb@npm:^1.5.7":
+"edgedb@npm:^1.5.7, edgedb@npm:^1.5.9":
   version: 1.5.9
   resolution: "edgedb@npm:1.5.9"
   dependencies:

@@ -5,13 +5,14 @@
     <EdgeDbOAuthButton
       v-for="provider of providers"
       :key="provider.name"
-      v-slot="{ redirect }"
+      v-slot="{ redirect, error }"
       :provider="provider.name"
     >
       <!-- Call `redirect` from the OAuthButton -->
-      <button @click="() => redirect()">
+      <Button class="w-full" size="lg" type="button" variant="outline" @click="() => redirect()">
         {{ provider.display_name }}
-      </button>
+        {{ error }}
+      </Button>
     </EdgeDbOAuthButton>
   </EdgeDbAuthProviders>
 </template>
