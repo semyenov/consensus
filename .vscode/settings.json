@@ -1,0 +1,21 @@
+{
+  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+
+  "editor.codeActionsOnSave": {
+    "source.fixAll.stylelint": "always",
+    "source.organizeImports": "never",
+    "source.fixAll.eslint": "always"
+  },
+
+  "typescript.tsdk": "node_modules/typescript/lib",
+
+  "eslint.enable": true,
+  "eslint.useFlatConfig": true,
+  "eslint.lintTask.enable": true,
+
+  "i18n-ally.localesPaths": [".i18n"],
+  "i18n-ally.dirStructure": "dir",
+  "i18n-ally.extract.autoDetect": true,
+  "i18n-ally.extract.keyMaxLength": 80,
+  "i18n-ally.keystyle": "flat"
+}

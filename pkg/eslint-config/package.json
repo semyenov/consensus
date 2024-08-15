@@ -1,0 +1,14 @@
+{
+  "name": "@pkg/eslint-config",
+  "type": "module",
+  "version": "0.0.1",
+  "main": "./index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "dependencies": {
+    "@antfu/eslint-config": "^2.25.1",
+    "eslint": "^9.9.0",
+    "typescript": "^5.5.4"
+  }
+}
