@@ -60,7 +60,23 @@ export default defineNuxtConfig({
     ],
   },
 
+  experimental: {
+    appManifest: true,
+    asyncContext: true,
+    asyncEntry: true,
+    crossOriginPrefetch: true,
+    defaults: {
+      nuxtLink: {
+        trailingSlash: 'remove',
+      },
+    },
+  },
+
   devtools: {
     enabled: true,
+
+    timeline: {
+      enabled: true,
+    },
   },
 })

@@ -7,7 +7,6 @@
     "title": "Authorization",
     "username": "Username",
     "password": "Password",
-    "rememberMe": "Remember me",
     "login": "Login",
     "links": {
       "edgedb": "database",
@@ -16,6 +15,8 @@
   },
   "callback": {
     "title": "OAuth callback",
-    "home": "Home"
+    "links": {
+      "home": "Home"
+    }
   }
 }

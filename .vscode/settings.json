@@ -18,7 +18,7 @@
   "i18n-ally.displayLanguage": "ru",
   "i18n-ally.keystyle": "nested",
   "[vue]": {
-    "editor.defaultFormatter": "Vue.volar"
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
   },
   "[typescript]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint"

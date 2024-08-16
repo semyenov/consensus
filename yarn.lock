@@ -4283,6 +4283,7 @@ __metadata:
     nuxt: "npm:^3.12.4"
     nuxt-edgedb-module: "npm:^0.0.52"
     radix-vue: "npm:^1.9.4"
+    remeda: "npm:^2.11.0"
     shadcn-nuxt: "npm:^0.10.4"
     shadcn-vue: "npm:^0.10.5"
     tailwind-merge: "npm:^2.5.2"
@@ -9606,6 +9607,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"remeda@npm:^2.11.0":
+  version: 2.11.0
+  resolution: "remeda@npm:2.11.0"
+  dependencies:
+    type-fest: "npm:^4.23.0"
+  checksum: 10c0/cb2ff3e48fca2a5d341c7243546d432d14b465ddba9fa04898d200836cf12f75caa8bcdcc48774e790f152ff07ae35b2594a152ec849fa428490acf153fa15e7
+  languageName: node
+  linkType: hard
+
 "replace-in-file@npm:^6.1.0":
   version: 6.3.5
   resolution: "replace-in-file@npm:6.3.5"
@@ -10907,6 +10917,13 @@ __metadata:
   version: 3.13.1
   resolution: "type-fest@npm:3.13.1"
   checksum: 10c0/547d22186f73a8c04590b70dcf63baff390078c75ea8acd366bbd510fd0646e348bd1970e47ecf795b7cff0b41d26e9c475c1fedd6ef5c45c82075fbf916b629
+  languageName: node
+  linkType: hard
+
+"type-fest@npm:^4.23.0":
+  version: 4.24.0
+  resolution: "type-fest@npm:4.24.0"
+  checksum: 10c0/9770471a397733b17b5a9ce48ee5a4d6c042c84a4858ff4e15abd126f351c61b5fea8b7b5e55bfa34840098a920b915d5ff878db1b3c007a2512a6a9c7f21579
   languageName: node
   linkType: hard
 
