@@ -4,10 +4,16 @@ const route = useRoute();
 </script>
 
 <template>
-  <NuxtLayout name="default">
-    <NuxtRouteAnnouncer atomic />
-    <!-- <NuxtPage :page-key="`${locale}_${route.fullPath}`" :route="route" keepalive /> -->
-  </NuxtLayout>
+  <NuxtRouteAnnouncer>
+    <template #default="{ message }">
+      <p>{{ message }} was loaded.</p>
+    </template>
+  </NuxtRouteAnnouncer>
+  <Suspense :key="locale + route.path">
+    <NuxtLayout name="default">
+      <NuxtPage :key="locale" :page-key="route.path" />
+    </NuxtLayout>
+  </Suspense>
 </template>
 
 <style lang="postcss">

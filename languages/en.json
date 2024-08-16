@@ -8,6 +8,14 @@
     "username": "Username",
     "password": "Password",
     "rememberMe": "Remember me",
-    "login": "Login"
+    "login": "Login",
+    "links": {
+      "edgedb": "database",
+      "shadcn": "shadcn components"
+    }
+  },
+  "callback": {
+    "title": "OAuth callback",
+    "home": "Home"
   }
 }
