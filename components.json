@@ -3,10 +3,10 @@
   "style": "new-york",
   "framework": "nuxt",
   "typescript": true,
-  "tsConfigPath": ".nuxt/tsconfig.json",
+  "tsConfigPath": "tsconfig.json",
   "tailwind": {
     "config": "tailwind.config.js",
-    "css": "./src/assets/css/tailwind.css",
+    "css": "./app/assets/css/tailwind.css",
     "baseColor": "zinc",
     "cssVariables": true
   },

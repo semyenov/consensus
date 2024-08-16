@@ -1,32 +1,17 @@
+import en from './languages/en.json'
+import ru from './languages/ru.json'
+
 export default defineI18nConfig (() => {
   return {
+    sync: true,
     defaultLocale: 'ru',
     availableLocales: [
-      'ru',
-      'en',
+      'russian',
+      'english',
     ],
-
-    sync: true,
-
     messages: {
-      en: {
-        auth: {
-          title: 'Authorization',
-          username: 'Username',
-          password: 'Password',
-          rememberMe: 'Remember me',
-          login: 'Login',
-        },
-      },
-      ru: {
-        auth: {
-          title: 'Авторизация',
-          username: 'Имя пользователя',
-          password: 'Пароль',
-          rememberMe: 'Запомнить меня',
-          login: 'Вход',
-        },
-      },
+      en,
+      ru,
     },
   }
 })

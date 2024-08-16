@@ -11,21 +11,27 @@ module default {
   type User {
     required name: str;
     required identity: ext::auth::Identity;
+    multi link posts -> Blogpost {
+      on source delete delete target;
+    }
   }
 
   type Blogpost {
     property content: str {
-      default := 'My blog post content.';
+      default := 'My super blog post.';
+    };
+    property description: str {
+      default := 'My blog post description.';
     };
     property title: str {
-      default := 'My blog post';
+      default := 'My blog super blog post title.';
     };
-    required author: User;
-
+    required author: User {
+      default := global current_user;
+    };
     access policy author_has_full_access
       allow all
       using (.author ?= global current_user);
-
     access policy others_read_only
       allow select;
   }

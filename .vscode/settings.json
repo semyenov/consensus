@@ -10,12 +10,11 @@
   "typescript.tsdk": "node_modules/typescript/lib",
 
   "eslint.enable": true,
+  "eslint.format.enable": true,
   "eslint.useFlatConfig": true,
   "eslint.lintTask.enable": true,
 
-  "i18n-ally.localesPaths": [".i18n"],
-  "i18n-ally.dirStructure": "dir",
-  "i18n-ally.extract.autoDetect": true,
-  "i18n-ally.extract.keyMaxLength": 80,
-  "i18n-ally.keystyle": "flat"
+  "i18n-ally.localesPaths": ["i18n"],
+  "i18n-ally.displayLanguage": "ru",
+  "i18n-ally.keystyle": "nested"
 }

@@ -1,0 +1,13 @@
+{
+  "theme": {
+    "dark": "Dark theme",
+    "light": "Light theme"
+  },
+  "auth": {
+    "title": "Authorization",
+    "username": "Username",
+    "password": "Password",
+    "rememberMe": "Remember me",
+    "login": "Login"
+  }
+}
