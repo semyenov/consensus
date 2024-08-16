@@ -1,0 +1,49 @@
+services:
+  dev:
+    image: "mcr.microsoft.com/devcontainers/typescript-node:1-22-bookworm"
+    container_name: dev
+    restart: unless-stopped
+    command: tail -f /dev/null
+    volumes:
+      - ../..:/workspaces:cached
+    networks:
+      - consensus_network
+    environment:
+      - NODE_ENV=development
+      - EDGEDB_DSN=edgedb://edgedb:10701
+      - EDGEDB_BRANCH=main
+      - NITRO_PORT=3000
+
+  # edgedb:
+  #   image: edgedb/edgedb:5.6
+  #   container_name: edgedb
+  #   restart: unless-stopped
+  #   volumes:
+  #     - "../dbschema:/dbschema"
+  #   networks:
+  #     - consensus_network
+  #   ports:
+  #     - "10701:10701"
+  #   environment:
+  #     EDGEDB_SERVER_SECURITY: insecure_dev_mode
+
+  mailpit:
+    image: axllent/mailpit
+    container_name: mailpit
+    restart: unless-stopped
+    volumes:
+      - ../.data/mailpit:/data
+    networks:
+      - consensus_network
+    ports:
+      - 8025:8025
+      - 1025:1025
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_DATABASE: /data/mailpit.db
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+
+networks:
+  consensus_network:
+    driver: bridge
