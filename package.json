@@ -1,18 +1,19 @@
 {
-  "name": "contracts",
+  "name": "consensus",
   "type": "module",
   "private": true,
   "packageManager": "yarn@4.4.0",
   "scripts": {
-    "dev": "nuxt dev",
     "build": "nuxt build",
     "clean": "nuxt cleanup",
-    "preview": "nuxt preview",
-    "generate": "nuxt generate",
-    "postinstall": "nuxt prepare",
+    "dev": "nuxt dev",
     "edgedb:apply": "edgedb migration apply",
+    "edgedb:generate": "yarn nuxt-edgedb-module",
     "edgedb:migrate": "edgedb migration create",
-    "edgedb:generate": "yarn nuxt-edgedb-module"
+    "generate": "nuxt generate",
+    "lint:fix": "eslint --fix",
+    "postinstall": "nuxt prepare",
+    "preview": "nuxt preview"
   },
   "dependencies": {
     "@radix-icons/vue": "^1.0.0",
@@ -24,20 +25,25 @@
     "tailwind-merge": "^2.5.2",
     "tailwindcss": "^3.4.10",
     "tailwindcss-animate": "^1.0.7",
+    "vaul-vue": "^0.2.0",
     "vue": "^3.4.38",
     "vue-router": "^4.4.3",
     "vue-tsc": "^2.0.29"
   },
   "devDependencies": {
+    "@consensus/eslint-config": "workspace:*",
     "@edgedb/generate": "^0.5.4",
+    "@nuxt/fonts": "^0.7.2",
     "@nuxtjs/i18n": "^8.4.0",
     "@nuxtjs/tailwindcss": "^6.12.1",
-    "@pkg/eslint-config": "workspace:*",
+    "@vitest/ui": "^2.0.5",
     "@vueuse/nuxt": "^11.0.0",
     "nuxt-edgedb-module": "^0.0.52",
     "shadcn-nuxt": "^0.10.4",
+    "shadcn-vue": "^0.10.5",
     "typescript": "^5.5.4",
-    "unplugin-vue-router": "^0.10.6"
+    "unplugin-vue-router": "^0.10.6",
+    "vitest": "^2.0.5"
   },
   "workspaces": [
     "packages/*"

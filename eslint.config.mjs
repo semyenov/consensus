@@ -1,3 +1,3 @@
-import config from '@pkg/eslint-config'
+import config from '@consensus/eslint-config'
 
 export default config()

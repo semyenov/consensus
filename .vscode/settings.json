@@ -14,7 +14,13 @@
   "eslint.useFlatConfig": true,
   "eslint.lintTask.enable": true,
 
-  "i18n-ally.localesPaths": ["i18n"],
+  "i18n-ally.localesPaths": ["languages"],
   "i18n-ally.displayLanguage": "ru",
-  "i18n-ally.keystyle": "nested"
+  "i18n-ally.keystyle": "nested",
+  "[vue]": {
+    "editor.defaultFormatter": "Vue.volar"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  }
 }

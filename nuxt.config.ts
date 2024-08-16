@@ -3,15 +3,9 @@ export default defineNuxtConfig({
   srcDir: 'client/',
   serverDir: 'server/',
 
-  // alias: {
-  //   '@/components': './client/components',
-  //   '@/lib/*': './client/lib/*',
-  // },
-
   compatibilityDate: '2024-08-15',
 
   typescript: {
-    shim: false,
     strict: true,
     typeCheck: true,
   },
@@ -22,19 +16,20 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n',
     '@vueuse/nuxt',
     'shadcn-nuxt',
+    '@nuxt/fonts',
   ],
 
   shadcn: {
     prefix: '',
-    componentDir: 'client/components/ui',
+    componentDir: './client/components/ui',
   },
 
   edgeDb: {
     installCli: true,
     projectInit: true,
 
-    // watch: true,
-    // watchPrompt: true,
+    watch: false,
+    watchPrompt: true,
 
     composables: true,
     injectDbCredentials: true,

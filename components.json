@@ -1,15 +1,15 @@
 {
   "$schema": "https://shadcn-vue.com/schema.json",
   "style": "new-york",
-  "framework": "nuxt",
   "typescript": true,
   "tsConfigPath": "tsconfig.json",
   "tailwind": {
     "config": "tailwind.config.js",
-    "css": "./app/assets/css/tailwind.css",
+    "css": "@/assets/css/tailwind.css",
     "baseColor": "zinc",
     "cssVariables": true
   },
+  "framework": "nuxt",
   "aliases": {
     "components": "@/components",
     "utils": "@/lib/utils"
