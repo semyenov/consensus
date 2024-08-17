@@ -1,4 +1,4 @@
-select Blogpost {
+select Issue {
   id,
   title,
   description,

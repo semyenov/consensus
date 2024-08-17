@@ -15,7 +15,7 @@ CREATE MIGRATION m1lba6lrked3zydr3677pzssse2nk4eafl4wnvqizk3fexu3ucbn5q
   FILTER
       (.identity = GLOBAL ext::auth::ClientTokenIdentity)
   )));
-  CREATE TYPE default::BlogPost {
+  CREATE TYPE default::Issue {
       CREATE REQUIRED LINK author: default::User;
       CREATE ACCESS POLICY author_has_full_access
           ALLOW ALL USING ((.author ?= GLOBAL default::current_user));

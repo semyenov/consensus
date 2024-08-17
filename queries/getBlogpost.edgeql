@@ -1,7 +1,7 @@
-select Blogpost {
+select Issue {
   id,
   title,
   description,
   content
 }
-filter .id = <uuid>$blogpost_id;
+filter .id = <uuid>$Issue_id;

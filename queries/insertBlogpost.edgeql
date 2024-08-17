@@ -1,6 +1,6 @@
-insert Blogpost {
-  title := <str>$blogpost_title,
-  description := <str>$blogpost_description,
-  content := <str>$blogpost_content,
+insert Issue {
+  title := <str>$Issue_title,
+  description := <str>$Issue_description,
+  content := <str>$Issue_content,
   author := global current_user
 }

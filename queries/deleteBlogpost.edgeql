@@ -1,2 +1,2 @@
-delete Blogpost
-filter .id = <uuid>$blogpost_id;
+delete Issue
+filter .id = <uuid>$Issue_id;

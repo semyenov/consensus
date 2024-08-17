@@ -1,7 +1,7 @@
 CREATE MIGRATION m1jnisxjcnbjymbi2bgdwwsk5ed6iaqowais2qpcobvxribwzfpm2q
     ONTO m1usy7n5dy4h6pugqaqu76dvxyazpv7gedsrvayqmz52if2ojplgxq
 {
-  ALTER TYPE default::Blogpost {
+  ALTER TYPE default::Issue {
       ALTER LINK author {
           SET default := (GLOBAL default::current_user);
       };
@@ -16,7 +16,7 @@ CREATE MIGRATION m1jnisxjcnbjymbi2bgdwwsk5ed6iaqowais2qpcobvxribwzfpm2q
       };
   };
   ALTER TYPE default::User {
-      CREATE MULTI LINK posts: default::Blogpost {
+      CREATE MULTI LINK posts: default::Issue {
           ON SOURCE DELETE DELETE TARGET;
       };
   };
