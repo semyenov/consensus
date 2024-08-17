@@ -2,8 +2,9 @@
   "editor.defaultFormatter": "dbaeumer.vscode-eslint",
 
   "editor.codeActionsOnSave": {
-    "source.fixAll.stylelint": "always",
     "source.organizeImports": "never",
+    "source.fixAll": "always",
+    "source.fixAll.stylelint": "always",
     "source.fixAll.eslint": "always"
   },
 

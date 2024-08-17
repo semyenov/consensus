@@ -17,6 +17,7 @@ export default defineNuxtConfig({
     '@vueuse/nuxt',
     'shadcn-nuxt',
     '@nuxt/fonts',
+    '@nuxt/content',
   ],
 
   shadcn: {
@@ -65,11 +66,6 @@ export default defineNuxtConfig({
     asyncContext: true,
     asyncEntry: true,
     crossOriginPrefetch: true,
-    defaults: {
-      nuxtLink: {
-        trailingSlash: 'remove',
-      },
-    },
   },
 
   devtools: {

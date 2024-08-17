@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { type HTMLAttributes, computed } from 'vue'
 import {
   SelectContent,
   type SelectContentEmits,
@@ -8,8 +7,11 @@ import {
   SelectViewport,
   useForwardPropsEmits,
 } from 'radix-vue'
-import { SelectScrollDownButton, SelectScrollUpButton } from '.'
+import { type HTMLAttributes, computed } from 'vue'
+
 import { cn } from '@/lib/utils'
+
+import { SelectScrollDownButton, SelectScrollUpButton } from '.'
 
 defineOptions({
   inheritAttrs: false,
@@ -44,7 +46,9 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
       "
     >
       <SelectScrollUpButton />
-      <SelectViewport :class="cn('p-1', position === 'popper' && 'h-[--radix-select-trigger-height] w-full min-w-[--radix-select-trigger-width]')">
+      <SelectViewport
+        :class="cn('p-1', position === 'popper' && 'h-[--radix-select-trigger-height] w-full min-w-[--radix-select-trigger-width]')"
+      >
         <slot />
       </SelectViewport>
       <SelectScrollDownButton />
