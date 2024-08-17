@@ -1,2 +1,2 @@
 // EdgeDB query builder
-{ "target": "ts" }
+{"target":"ts"}

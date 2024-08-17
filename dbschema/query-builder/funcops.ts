@@ -2,31 +2,29 @@
 
 import {
   Cardinality,
-  TypeKind,
   type introspect,
-} from 'edgedb/dist/reflection/index'
-
-import { cardutil } from './cardinality'
-import { cast } from './cast'
-import { isImplicitlyCastableTo, literalToTypeSet } from './castMaps'
-import { makeType } from './hydrate'
-import { literal } from './literal'
-
+  TypeKind,
+} from "edgedb/dist/reflection/index";
+import { cardutil } from "./cardinality";
+import { makeType } from "./hydrate";
 import type {
-  ArrayType,
   BaseType,
   BaseTypeSet,
+  ArrayType,
+  ObjectType,
+  TypeSet,
+  RangeType,
   Expression,
   MultiRangeType,
-  ObjectType,
-  RangeType,
-  TypeSet,
-} from './typesystem'
-import type {
+} from "./typesystem";
+import { cast } from "./cast";
+import { isImplicitlyCastableTo, literalToTypeSet } from "./castMaps";
+import { literal } from "./literal";
 
+import type {
   ExpressionKind,
   OperatorKind,
-} from 'edgedb/dist/reflection/index'
+} from "edgedb/dist/reflection/index";
 
 export type $expr_Function<
   // Name extends string = string,
@@ -38,13 +36,13 @@ export type $expr_Function<
   El extends BaseType = BaseType,
   Card extends Cardinality = Cardinality,
 > = Expression<{
-  __element__: El
-  __cardinality__: Card
-  __kind__: ExpressionKind.Function
-  __name__: string
-  __args__: (BaseTypeSet | undefined)[]
-  __namedargs__: Record<string, BaseTypeSet>
-}>
+  __element__: El;
+  __cardinality__: Card;
+  __kind__: ExpressionKind.Function;
+  __name__: string;
+  __args__: (BaseTypeSet | undefined)[];
+  __namedargs__: { [key: string]: BaseTypeSet };
+}>;
 
 export type $expr_Operator<
   // Name extends string = string,
@@ -54,45 +52,44 @@ export type $expr_Operator<
   El extends BaseType = BaseType,
   Card extends Cardinality = Cardinality,
 > = Expression<{
-  __element__: El
-  __cardinality__: Card
-  __kind__: ExpressionKind.Operator
-  __name__: string
-  __opkind__: OperatorKind
-  __args__: TypeSet[]
-}>
+  __element__: El;
+  __cardinality__: Card;
+  __kind__: ExpressionKind.Operator;
+  __name__: string;
+  __opkind__: OperatorKind;
+  __args__: TypeSet[];
+}>;
 
 interface OverloadFuncArgDef {
-  typeId: string
-  optional?: boolean
-  setoftype?: boolean
-  variadic?: boolean
+  typeId: string;
+  optional?: boolean;
+  setoftype?: boolean;
+  variadic?: boolean;
 }
 
 interface OverloadFuncDef {
-  kind?: string
-  args: OverloadFuncArgDef[]
-  namedArgs?: Record<string, OverloadFuncArgDef>
-  returnTypeId: string
-  returnTypemod?: 'SetOfType' | 'OptionalType'
-  preservesOptionality?: boolean
+  kind?: string;
+  args: OverloadFuncArgDef[];
+  namedArgs?: { [key: string]: OverloadFuncArgDef };
+  returnTypeId: string;
+  returnTypemod?: "SetOfType" | "OptionalType";
+  preservesOptionality?: boolean;
 }
 
-function mapLiteralToTypeSet(literals: any[]): TypeSet[]
-function mapLiteralToTypeSet(literals: Record<string, any>): Record<string, TypeSet>
-function mapLiteralToTypeSet(literals: any[] | Record<string, any>) {
+function mapLiteralToTypeSet(literals: any[]): TypeSet[];
+function mapLiteralToTypeSet(literals: { [key: string]: any }): {
+  [key: string]: TypeSet;
+};
+function mapLiteralToTypeSet(literals: any[] | { [key: string]: any }) {
   if (Array.isArray(literals)) {
-    return literals.map((lit) => {
-      return (lit != null ? literalToTypeSet(lit) : lit)
-    })
+    return literals.map((lit) => (lit != null ? literalToTypeSet(lit) : lit));
   }
-  const obj: Record<string, TypeSet> = {}
+  const obj: { [key: string]: TypeSet } = {};
   for (const key of Object.keys(literals)) {
-    obj[key]
-      = literals[key] != null ? literalToTypeSet(literals[key]) : literals[key]
+    obj[key] =
+      literals[key] != null ? literalToTypeSet(literals[key]) : literals[key];
   }
-
-  return obj
+  return obj;
 }
 
 export function $resolveOverload(
@@ -101,22 +98,20 @@ export function $resolveOverload(
   typeSpec: introspect.Types,
   funcDefs: OverloadFuncDef[],
 ) {
-  const positionalArgs: (TypeSet | undefined)[] = []
-  let namedArgs: Record<string, TypeSet> | undefined
+  const positionalArgs: (TypeSet | undefined)[] = [];
+  let namedArgs: { [key: string]: TypeSet } | undefined;
   if (args.length) {
     if (args[0] !== undefined) {
       try {
-        positionalArgs.push(literalToTypeSet(args[0]))
-      }
-      catch {
+        positionalArgs.push(literalToTypeSet(args[0]));
+      } catch {
         // first arg is not a expr or literal type, so assume named args object
-        namedArgs = mapLiteralToTypeSet(args[0] as object)
+        namedArgs = mapLiteralToTypeSet(args[0] as object);
       }
+    } else {
+      positionalArgs.push(undefined);
     }
-    else {
-      positionalArgs.push(undefined)
-    }
-    positionalArgs.push(...mapLiteralToTypeSet(args.slice(1)))
+    positionalArgs.push(...mapLiteralToTypeSet(args.slice(1)));
   }
 
   for (const def of funcDefs) {
@@ -126,215 +121,198 @@ export function $resolveOverload(
       namedArgs,
       typeSpec,
       def,
-    )
+    );
     if (resolvedOverload !== null) {
-      return resolvedOverload
+      return resolvedOverload;
     }
   }
 
   throw new Error(
     `No function overload found for ${
-      funcName.includes('::')
-        ? `'e.${funcName.split('::')
-.join('.')}()'`
+      funcName.includes("::")
+        ? `'e.${funcName.split("::").join(".")}()'`
         : `operator '${funcName}'`
     } with args: ${[...positionalArgs, ...Object.values(namedArgs ?? {})]
       .filter(Boolean)
       .map(
-        (arg) => {
- return `Element: ${arg!.__element__.__name__} (${arg!.__cardinality__})`
-},
+        (arg) =>
+          `Element: ${arg!.__element__.__name__} (${arg!.__cardinality__})`,
       )
-      .join(', ')}`,
-  )
+      .join(", ")}`,
+  );
 }
 
-const ANYTYPE_ARG = Symbol()
+const ANYTYPE_ARG = Symbol();
 
 function _tryOverload(
   funcName: string,
   args: (BaseTypeSet | undefined)[],
-  namedArgs: Record<string, BaseTypeSet> | undefined,
+  namedArgs: { [key: string]: BaseTypeSet } | undefined,
   typeSpec: introspect.Types,
   funcDef: OverloadFuncDef,
 ): {
-  kind?: string
-  returnType: BaseType
-  cardinality: Cardinality
-  args: BaseTypeSet[]
-  namedArgs: Record<string, BaseTypeSet>
+  kind?: string;
+  returnType: BaseType;
+  cardinality: Cardinality;
+  args: BaseTypeSet[];
+  namedArgs: { [key: string]: BaseTypeSet };
 } | null {
   if (
-    (funcDef.namedArgs === undefined && namedArgs !== undefined)
-    || (namedArgs === undefined
-    && funcDef.namedArgs
-    && Object.values(funcDef.namedArgs)
-      .some((arg) => {
-        return !arg.optional
-      }))
+    (funcDef.namedArgs === undefined && namedArgs !== undefined) ||
+    (namedArgs === undefined &&
+      funcDef.namedArgs &&
+      Object.values(funcDef.namedArgs).some((arg) => !arg.optional))
   ) {
-    return null
+    return null;
   }
 
-  const lastParamVariadic = funcDef.args[funcDef.args.length - 1]?.variadic
+  const lastParamVariadic = funcDef.args[funcDef.args.length - 1]?.variadic;
   if (!lastParamVariadic && args.length > funcDef.args.length) {
-    return null
+    return null;
   }
 
-  const paramCardinalities: [Cardinality, ...Cardinality[]] = [Cardinality.One]
+  const paramCardinalities: [Cardinality, ...Cardinality[]] = [Cardinality.One];
 
   if (namedArgs) {
     for (const [key, value] of Object.entries(namedArgs)) {
-      const argDef = funcDef.namedArgs?.[key]
+      const argDef = funcDef.namedArgs?.[key];
       if (
-        !argDef
-        || !compareType(typeSpec, argDef.typeId, value.__element__).match
+        !argDef ||
+        !compareType(typeSpec, argDef.typeId, value.__element__).match
       ) {
-        return null
+        return null;
       }
 
       paramCardinalities.push(
         argDef.setoftype
-          ? (funcDef.preservesOptionality
-              ? cardutil.overrideUpperBound(value.__cardinality__, 'One')
-              : Cardinality.One)
-          : (argDef.optional
-              ? cardutil.overrideLowerBound(value.__cardinality__, 'One')
-              : value.__cardinality__),
-      )
+          ? funcDef.preservesOptionality
+            ? cardutil.overrideUpperBound(value.__cardinality__, "One")
+            : Cardinality.One
+          : argDef.optional
+            ? cardutil.overrideLowerBound(value.__cardinality__, "One")
+            : value.__cardinality__,
+      );
     }
   }
 
-  let positionalArgs: BaseTypeSet[] = []
+  let positionalArgs: BaseTypeSet[] = [];
 
-  let returnAnytype: BaseType | undefined
-  let needsAnytypeReplacement = false
+  let returnAnytype: BaseType | undefined;
+  let needsAnytypeReplacement = false;
 
   for (let i = 0; i < funcDef.args.length; i++) {
-    const argDef = funcDef.args[i]!
-    const arg = args[i]
+    const argDef = funcDef.args[i]!;
+    const arg = args[i];
 
     if (arg === undefined) {
       if (!argDef.optional) {
-        return null
+        return null;
       }
 
       if (i < args.length) {
         // arg is explicitly undefined, inject empty set
-        const argTypeName = typeSpec.get(argDef.typeId).name
+        const argTypeName = typeSpec.get(argDef.typeId).name;
         if (
-          argTypeName.includes('anytype')
-          || argTypeName.includes('std::anypoint')
+          argTypeName.includes("anytype") ||
+          argTypeName.includes("std::anypoint")
         ) {
           if (!returnAnytype) {
-            positionalArgs.push(ANYTYPE_ARG as any)
-            needsAnytypeReplacement = true
+            positionalArgs.push(ANYTYPE_ARG as any);
+            needsAnytypeReplacement = true;
+          } else {
+            positionalArgs.push(cast(returnAnytype, null));
           }
-          else {
-            positionalArgs.push(cast(returnAnytype, null))
-          }
-        }
-        else {
-          const argType = makeType<any>(typeSpec, argDef.typeId, literal)
-          positionalArgs.push(cast(argType, null))
+        } else {
+          const argType = makeType<any>(typeSpec, argDef.typeId, literal);
+          positionalArgs.push(cast(argType, null));
         }
       }
-    }
-    else {
+    } else {
       const { match, anytype } = compareType(
         typeSpec,
         argDef.typeId,
         arg.__element__,
-      )
+      );
 
       if (!match) {
-        return null
+        return null;
       }
       if (!returnAnytype && anytype) {
-        returnAnytype = anytype
+        returnAnytype = anytype;
       }
 
       positionalArgs.push(
         ...(argDef.variadic ? (args.slice(i) as BaseTypeSet[]) : [arg]),
-      )
+      );
       if (argDef.setoftype) {
         paramCardinalities.push(
           funcDef.preservesOptionality
-            ? cardutil.overrideUpperBound(arg.__cardinality__, 'One')
+            ? cardutil.overrideUpperBound(arg.__cardinality__, "One")
             : Cardinality.One,
-        )
-      }
-      else {
+        );
+      } else {
         const card = argDef.variadic
           ? cardutil.multiplyCardinalitiesVariadic(
-            (args.slice(i) as BaseTypeSet[]).map(
-              (el) => {
-                return el.__cardinality__
-              },
-            ) as [Cardinality, ...Cardinality[]],
-          )
-          : arg.__cardinality__
+              (args.slice(i) as BaseTypeSet[]).map(
+                (el) => el.__cardinality__,
+              ) as [Cardinality, ...Cardinality[]],
+            )
+          : arg.__cardinality__;
 
         paramCardinalities.push(
-          argDef.optional ? cardutil.overrideLowerBound(card, 'One') : card,
-        )
+          argDef.optional ? cardutil.overrideLowerBound(card, "One") : card,
+        );
       }
     }
   }
 
-  let cardinality: Cardinality
-  if (funcName === 'if_else') {
+  let cardinality: Cardinality;
+  if (funcName === "if_else") {
     cardinality = cardutil.multiplyCardinalities(
       cardutil.orCardinalities(
         positionalArgs[0]!.__cardinality__,
         positionalArgs[2]!.__cardinality__,
       ),
       positionalArgs[1]!.__cardinality__,
-    )
-  }
-  else if (funcName === 'std::assert_exists') {
+    );
+  } else if (funcName === "std::assert_exists") {
     cardinality = cardutil.overrideLowerBound(
       positionalArgs[0]!.__cardinality__,
-      'One',
-    )
-  }
-  else if (funcName === 'union') {
+      "One",
+    );
+  } else if (funcName === "union") {
     cardinality = cardutil.mergeCardinalities(
       positionalArgs[0]!.__cardinality__,
       positionalArgs[1]!.__cardinality__,
-    )
-  }
-  else if (funcName === '??') {
+    );
+  } else if (funcName === "??") {
     cardinality = cardutil.coalesceCardinalities(
       positionalArgs[0]!.__cardinality__,
       positionalArgs[1]!.__cardinality__,
-    )
-  }
-  else if (funcName === 'distinct') {
-    cardinality = positionalArgs[0]!.__cardinality__
-  }
-  else {
-    cardinality
-      = funcDef.returnTypemod === 'SetOfType'
+    );
+  } else if (funcName === "distinct") {
+    cardinality = positionalArgs[0]!.__cardinality__;
+  } else {
+    cardinality =
+      funcDef.returnTypemod === "SetOfType"
         ? Cardinality.Many
-        : cardutil.multiplyCardinalitiesVariadic(paramCardinalities)
+        : cardutil.multiplyCardinalitiesVariadic(paramCardinalities);
 
     if (
-      funcDef.returnTypemod === 'OptionalType'
-      && !funcDef.preservesOptionality
+      funcDef.returnTypemod === "OptionalType" &&
+      !funcDef.preservesOptionality
     ) {
-      cardinality = cardutil.overrideLowerBound(cardinality, 'Zero')
+      cardinality = cardutil.overrideLowerBound(cardinality, "Zero");
     }
   }
 
   if (needsAnytypeReplacement) {
     if (!returnAnytype) {
-      throw new Error(`could not resolve anytype for ${funcName}`)
+      throw new Error(`could not resolve anytype for ${funcName}`);
     }
-    positionalArgs = positionalArgs.map((arg) => {
-      return ((arg as any) === ANYTYPE_ARG ? cast(returnAnytype!, null) : arg)
-    },
-    )
+    positionalArgs = positionalArgs.map((arg) =>
+      (arg as any) === ANYTYPE_ARG ? cast(returnAnytype!, null) : arg,
+    );
   }
 
   return {
@@ -348,161 +326,156 @@ function _tryOverload(
     cardinality,
     args: positionalArgs,
     namedArgs: namedArgs ?? {},
-  }
+  };
 }
 
-const nameRemapping: Record<string, string> = {
-  'std::int16': 'std::number',
-  'std::int32': 'std::number',
-  'std::int64': 'std::number',
-  'std::float32': 'std::number',
-  'std::float64': 'std::number',
-}
-const descendantCache = new Map<string, string[]>()
+const nameRemapping: { [key: string]: string } = {
+  "std::int16": "std::number",
+  "std::int32": "std::number",
+  "std::int64": "std::number",
+  "std::float32": "std::number",
+  "std::float64": "std::number",
+};
+const descendantCache = new Map<string, string[]>();
 function getDescendantNames(typeSpec: introspect.Types, typeId: string) {
   if (descendantCache.has(typeId)) {
-    return descendantCache.get(typeId)!
+    return descendantCache.get(typeId)!;
   }
   const descendants: string[] = [
     ...new Set(
       [...typeSpec.values()]
         .filter(
-          (type) => {
-            return type.kind === 'scalar'
-              && type.bases.some(({ id }) => {
-                return id === typeId
-              })
-          },
+          (type) =>
+            type.kind === "scalar" &&
+            type.bases.some(({ id }) => id === typeId),
         )
-        .flatMap((type) => {
-          return (type.is_abstract
+        .flatMap((type) =>
+          type.is_abstract
             ? getDescendantNames(typeSpec, type.id)
-            : [nameRemapping[type.name]!, type.name])
-        },
+            : [nameRemapping[type.name]!, type.name],
         ),
     ),
-  ]
-  descendantCache.set(typeId, descendants)
-
-  return descendants
+  ];
+  descendantCache.set(typeId, descendants);
+  return descendants;
 }
 
 function compareType(
   typeSpec: introspect.Types,
   typeId: string,
   arg: BaseType,
-): { match: boolean, anytype?: BaseType } {
-  const type = typeSpec.get(typeId)
+): { match: boolean; anytype?: BaseType } {
+  const type = typeSpec.get(typeId);
 
-  if (type.name === 'anytype') {
-    return { match: true, anytype: arg }
+  if (type.name === "anytype") {
+    return { match: true, anytype: arg };
   }
 
-  if (type.name === 'anyobject') {
-    return { match: arg.__kind__ === TypeKind.object, anytype: arg }
+  if (type.name === "anyobject") {
+    return { match: arg.__kind__ === TypeKind.object, anytype: arg };
   }
 
-  if (type.name === 'std::anypoint') {
-    const descendants = getDescendantNames(typeSpec, typeId)
+  if (type.name === "std::anypoint") {
+    const descendants = getDescendantNames(typeSpec, typeId);
     if (descendants.includes(arg.__name__)) {
-      return { match: true, anytype: arg }
+      return { match: true, anytype: arg };
     }
   }
 
-  if (type.name === 'std::anyenum') {
-    return { match: arg.__kind__ === TypeKind.enum }
+  if (type.name === "std::anyenum") {
+    return { match: arg.__kind__ === TypeKind.enum };
   }
 
-  if (type.kind === 'scalar') {
-    arg = (arg as any).__casttype__ ?? arg
-
+  if (type.kind === "scalar") {
+    arg = (arg as any).__casttype__ ?? arg;
     return {
       match:
-        (arg.__kind__ === TypeKind.scalar || arg.__kind__ === TypeKind.enum)
-        && (arg.__name__ === type.name
-        || isImplicitlyCastableTo(arg.__name__, type.name)),
+        (arg.__kind__ === TypeKind.scalar || arg.__kind__ === TypeKind.enum) &&
+        (arg.__name__ === type.name ||
+          isImplicitlyCastableTo(arg.__name__, type.name)),
+    };
+  }
+  if (type.kind === "array") {
+    if (arg.__kind__ === TypeKind.array) {
+      return compareType(
+        typeSpec,
+        type.array_element_id,
+        (arg as any as ArrayType).__element__ as BaseType,
+      );
     }
   }
-  if (type.kind === 'array' && arg.__kind__ === TypeKind.array) {
-    return compareType(
-      typeSpec,
-      type.array_element_id,
-      (arg as any as ArrayType).__element__ as BaseType,
-    )
-  }
-  if (type.kind === 'range' && arg.__kind__ === TypeKind.range) {
-    return compareType(
-      typeSpec,
-      type.range_element_id,
-      (arg as any as RangeType).__element__ as BaseType,
-    )
-  }
-  if (type.kind === 'multirange' && arg.__kind__ === TypeKind.multirange) {
-    return compareType(
-      typeSpec,
-      type.multirange_element_id,
-      (arg as any as MultiRangeType).__element__ as BaseType,
-    )
-  }
-  if (type.kind === 'object') {
-    if (arg.__kind__ !== TypeKind.object) {
-      return { match: false }
+  if (type.kind === "range") {
+    if (arg.__kind__ === TypeKind.range) {
+      return compareType(
+        typeSpec,
+        type.range_element_id,
+        (arg as any as RangeType).__element__ as BaseType,
+      );
     }
+  }
+  if (type.kind === "multirange") {
+    if (arg.__kind__ === TypeKind.multirange) {
+      return compareType(
+        typeSpec,
+        type.multirange_element_id,
+        (arg as any as MultiRangeType).__element__ as BaseType,
+      );
+    }
+  }
+  if (type.kind === "object") {
+    if (arg.__kind__ !== TypeKind.object) return { match: false };
 
-    const objectArg = arg as ObjectType
-    let match = true
+    const objectArg = arg as ObjectType;
+    let match = true;
 
     // shape comparison
     for (const ptr of type.pointers) {
       if (objectArg.__pointers__[ptr.name]) {
-        const argPtr = objectArg.__pointers__[ptr.name]!
-        const ptrTarget = typeSpec.get(ptr.target_id)
+        const argPtr = objectArg.__pointers__[ptr.name]!;
+        const ptrTarget = typeSpec.get(ptr.target_id);
         if (
-          ptrTarget.name !== argPtr.target.__name__
-          || ptr.card !== argPtr.cardinality
+          ptrTarget.name !== argPtr.target.__name__ ||
+          ptr.card !== argPtr.cardinality
         ) {
-          match = false
+          match = false;
         }
       }
     }
 
     return {
       match,
-    }
+    };
   }
-  if (type.kind === 'tuple') {
-    const items
-      = arg.__kind__ === TypeKind.tuple
+  if (type.kind === "tuple") {
+    const items =
+      arg.__kind__ === TypeKind.tuple
         ? (arg as any).__items__
-        : (arg.__kind__ === TypeKind.namedtuple
-            ? (arg as any).__shape__
-            : null)
+        : arg.__kind__ === TypeKind.namedtuple
+          ? (arg as any).__shape__
+          : null;
     if (items) {
-      const keys = Object.keys(items)
+      const keys = Object.keys(items);
 
       if (keys.length === type.tuple_elements.length) {
-        let anytype: BaseType | undefined
-        for (const [i, key] of keys.entries()) {
-          if (key !== type.tuple_elements[i]!.name) {
-            return { match: false }
+        let anytype: BaseType | undefined;
+        for (let i = 0; i < keys.length; i++) {
+          if (keys[i] !== type.tuple_elements[i]!.name) {
+            return { match: false };
           }
           const { match: m, anytype: a } = compareType(
             typeSpec,
             type.tuple_elements[i]!.target_id,
-            (items as any)[key!],
-          )
+            (items as any)[keys[i]!],
+          );
           if (!m) {
-            return { match: false }
+            return { match: false };
           }
-          if (a) {
-            anytype = a
-          }
+          if (a) anytype = a;
         }
-
-        return { match: true, anytype }
+        return { match: true, anytype };
       }
     }
   }
 
-  return { match: false }
+  return { match: false };
 }
