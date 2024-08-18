@@ -19,15 +19,6 @@ module user {
     # Indexes
     index on (.identity);
     index on (.email);
-
-    # Access policies
-    access policy user_can_select
-      allow select
-      using (.identity ?= global ext::auth::ClientTokenIdentity);
-
-    access policy project_owner_can_select
-      allow select
-      using (.<owner[is project::Project] ?= global user::current_user);
   }
 
   global current_user := (
