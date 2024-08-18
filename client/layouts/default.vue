@@ -7,16 +7,18 @@ const toggleDark = useToggle(isDark)
 </script>
 
 <template>
-  <ClientOnly>
-    <Button
-      class="top-4 right-4 absolute rounded-full" type="menu" size="icon" variant="secondary"
-      @click="toggleDark()"
-    >
-      <SunIcon v-if="isDark" />
-      <MoonIcon v-else />
-    </Button>
-  </ClientOnly>
-  <slot :key="route.path" name="default" />
+  <div id="__layout">
+    <ClientOnly>
+      <Button
+        class="absolute rounded-full top-4 right-4" type="menu" size="icon" variant="secondary"
+        @click="toggleDark()"
+      >
+        <SunIcon v-if="isDark" />
+        <MoonIcon v-else />
+      </Button>
+    </ClientOnly>
+    <slot :key="route.path" name="default" />
+  </div>
 </template>
 
 <style lang="postcss">

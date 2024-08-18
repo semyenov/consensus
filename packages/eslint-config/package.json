@@ -1,14 +1,49 @@
 {
   "name": "@consensus/eslint-config",
   "type": "module",
-  "version": "0.0.1",
-  "main": "./index.js",
+  "version": "0.0.0",
+  "description": "Eslint-config CLI",
+  "author": "Alexander Semyenov <semyenov@hotmail.com>",
+  "license": "MIT",
+  "keywords": [],
+  "sideEffects": false,
+  "exports": {
+    "import": {
+      "types": "./dist/index.d.mts",
+      "default": "./dist/index.mjs"
+    },
+    "require": {
+      "types": "./dist/index.d.cts",
+      "default": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.cts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/*",
+        "./dist/index.d.ts"
+      ]
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "build": "tsc -p tsconfig.build.json"
+    "dev": "esno src/index.ts",
+    "build": "pkgroll",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@antfu/eslint-config": "^2.25.2",
-    "eslint": "8.57.0",
+    "@antfu/eslint-config": "^2.26.0",
+    "@typescript-eslint/parser": "^8.1.0"
+  },
+  "devDependencies": {
+    "@types/eslint": "^9.6.0",
+    "eslint": "^8.57.0",
+    "pkgroll": "^2.4.2",
     "typescript": "^5.5.4"
   }
 }

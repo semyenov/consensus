@@ -1,9 +1,30 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-export default defineNuxtConfig({
-  srcDir: 'client/',
-  serverDir: 'server/',
+import { join, resolve } from 'pathe'
 
+// src dir
+const rootDir = resolve(__dirname)
+
+const clientDir = join(rootDir, 'client')
+const serverDir = join(rootDir, 'server')
+
+export default defineNuxtConfig({
   compatibilityDate: '2024-08-15',
+
+  rootDir,
+  serverDir,
+  srcDir: clientDir,
+
+  dir: {
+    public: join(rootDir, 'public'),
+
+    app: join(clientDir, 'app'),
+    assets: join(clientDir, 'assets'),
+    layouts: join(clientDir, 'layouts'),
+    modules: join(clientDir, 'modules'),
+    pages: join(clientDir, 'pages'),
+    middleware: join(clientDir, 'middleware'),
+    plugins: join(clientDir, 'plugins'),
+  },
 
   typescript: {
     strict: true,
@@ -34,9 +55,10 @@ export default defineNuxtConfig({
 
     composables: true,
     injectDbCredentials: true,
+    identityModel: 'user::User',
 
-    dbschemaDir: 'dbschema',
-    queriesDir: 'queries',
+    dbschemaDir: join(rootDir, 'dbschema'),
+    queriesDir: join(rootDir, 'queries'),
 
     auth: true,
     oauth: true,

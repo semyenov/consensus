@@ -1,18 +1,23 @@
-import antfu from '@antfu/eslint-config'
+import antfu, { type TypedFlatConfigItem } from '@antfu/eslint-config'
 import tsParser from '@typescript-eslint/parser'
 
-function config(opts, ...overrides) {
+function config(
+  opts: Parameters<typeof antfu>[0] = {},
+  ...configs: TypedFlatConfigItem[]
+) {
   return antfu(
     {
       type: 'app',
       vue: true,
       stylistic: true,
+
       ...opts,
     },
     [
       {
         rules: {
           'no-empty-function': 'off',
+
           'eol-last': ['error', 'always'],
           'no-else-return': 'warn',
           'logical-assignment-operators': 'warn',
@@ -35,6 +40,7 @@ function config(opts, ...overrides) {
           'brace-style': ['error', 'stroustrup'],
           'arrow-body-style': ['error', 'always'],
           'eqeqeq': ['error', 'smart'],
+
           'antfu/if-newline': 'error',
           'style/no-confusing-arrow': 'error',
           'style/newline-per-chained-call': 'error',
@@ -42,11 +48,13 @@ function config(opts, ...overrides) {
           'style/type-named-tuple-spacing': 'error',
           'style/max-statements-per-line': ['error', { max: 80 }],
           'style/array-bracket-newline': ['error', { multiline: true }],
+
           'import/order': [
             'error',
             {
               'newlines-between': 'always',
               'distinctGroup': true,
+
               'groups': [
                 'builtin',
                 'external',
@@ -57,6 +65,7 @@ function config(opts, ...overrides) {
                 'index',
                 'type',
               ],
+
               'pathGroups': [
                 {
                   pattern: '@/**/*',
@@ -69,6 +78,7 @@ function config(opts, ...overrides) {
                   position: 'after',
                 },
               ],
+
               'alphabetize': {
                 order: 'asc',
                 orderImportKind: 'asc',
@@ -78,6 +88,7 @@ function config(opts, ...overrides) {
           ],
         },
       },
+
       // Typescript
       {
         languageOptions: {
@@ -86,6 +97,7 @@ function config(opts, ...overrides) {
         files: ['**/*.ts', '**/*.tsx', '**/*.d.ts'],
         rules: {
           'ts/no-namespace': 'off',
+          'ts/explicit-function-return-type': 'off',
 
           'ts/adjacent-overload-signatures': 'error',
           'ts/array-type': 'error',
@@ -102,9 +114,9 @@ function config(opts, ...overrides) {
           'ts/prefer-for-of': 'error',
           'ts/prefer-function-type': 'error',
           'ts/prefer-namespace-keyword': 'error',
-          'ts/explicit-function-return-type': 'off',
         },
       },
+
       // Unicorn
       {
         rules: {
@@ -128,11 +140,14 @@ function config(opts, ...overrides) {
           'unicorn/expiring-todo-comments': 'error',
           'unicorn/no-unnecessary-await': 'error',
           'unicorn/no-useless-undefined': 'error',
+
           'unicorn/template-indent': ['warn', { indent: 2 }],
         },
       },
-      ...overrides,
+
+      ...configs,
     ],
   )
 }
+
 export default config
