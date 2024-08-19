@@ -1,24 +1,33 @@
 {
-  "theme": {
-    "dark": "Темная тема",
-    "light": "Светлая тема"
-  },
-  "auth": {
-    "title": "Авториза́ция",
-    "username": "Имя пользователя",
-    "password": "Пароль",
-    "login": "Вход",
-    "links": {
-      "edgedb": "база данных",
-      "shadcn": "набор компонентов",
-      "login": "Войти",
-      "logout": "Выйти"
-    }
-  },
-  "callback": {
-    "title": "Перенаправление URL",
-    "links": {
-      "home": "На главную"
+  "pages": {
+    "index": {
+      "title": "Главная",
+      "links": {
+        "login": "Вход",
+        "logout": "Выйти"
+      }
+    },
+
+    "auth/login": {
+      "title": "Вход",
+      "links": {
+        "home": "Главная"
+      }
+    },
+
+    "auth/logout": {
+      "title": "Выход",
+      "links": {
+        "home": "Главная",
+        "logout": "Выйти"
+      }
+    },
+
+    "auth/callback": {
+      "title": "OAuth",
+      "links": {
+        "home": "Главная"
+      }
     }
   }
 }

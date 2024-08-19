@@ -96,5 +96,11 @@ export default defineNuxtConfig({
     sharedPrerenderData: true,
     viewTransition: true,
     crossOriginPrefetch: true,
+    defaults: {
+      useAsyncData: {
+        value: 'null',
+        deep: true,
+      },
+    },
   },
 })

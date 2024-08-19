@@ -39,7 +39,7 @@ module default {
 
   global current_user := (
     assert_single((
-      select User { id, name }
+      select User { id, name, email, identity }
       filter .identity = global ext::auth::ClientTokenIdentity
     ))
   );

@@ -1,24 +1,30 @@
 {
-  "theme": {
-    "dark": "Dark theme",
-    "light": "Light theme"
-  },
-  "auth": {
-    "title": "Authorization",
-    "username": "Username",
-    "password": "Password",
-    "login": "Login",
-    "links": {
-      "edgedb": "database",
-      "shadcn": "shadcn components",
-      "login": "Login",
-      "logout": "Logout"
-    }
-  },
-  "callback": {
-    "title": "OAuth callback",
-    "links": {
-      "home": "Home"
+  "pages": {
+    "auth/callback": {
+      "links": {
+        "home": "Home"
+      },
+      "title": "OAuth"
+    },
+    "auth/login": {
+      "links": {
+        "home": "Home"
+      },
+      "title": "Entrance"
+    },
+    "auth/logout": {
+      "links": {
+        "home": "Home",
+        "logout": "Log out"
+      },
+      "title": "Exit"
+    },
+    "index": {
+      "links": {
+        "login": "Entrance",
+        "logout": "Log out"
+      },
+      "title": "Home"
     }
   }
 }

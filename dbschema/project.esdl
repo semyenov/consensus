@@ -1,7 +1,7 @@
 module project {
   scalar type ProjectStatus extending enum<Active, Archived, Completed>;
 
-  type Project extending default::Auditable, default::BaseObject, tag::Taggable {
+  type Project extending default::BaseObject, default::Auditable, tag::Taggable {
     # Required properties
     required property status: ProjectStatus {
       default := ProjectStatus.Active;
@@ -38,7 +38,7 @@ module project {
 
   scalar type MilestoneStatus extending enum<Planned, InProgress, Completed, Overdue>;
 
-  type Milestone extending default::Auditable, default::BaseObject {
+  type Milestone extending default::BaseObject, default::Auditable {
     # Required properties
     required start_date: datetime;
     required due_date: datetime;

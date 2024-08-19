@@ -1,28 +1,25 @@
-<script setup lang="ts">
-const providers = await $fetch('/api/auth/providers')
-</script>
-
 <template>
-  <!-- <div >
+  <EdgeDbAuthProviders v-slot="{ oAuthProviders: providers }">
+    <h1 class="text-4xl font-extrabold tracking-tight scroll-m-20 lg:text-5xl">
+      {{ $t("pages.auth/login.title") }}
+    </h1>
 
-    <EdgeDbOAuthButton v-for="provider in providers" :key="provider.name" v-slot="{ redirect, loading }" :provider="provider.name">
-      <Button :disabled="loading" type="button" class="mt-6 shadow-lg shadow-black/20" @click="redirect(provider.name)">
-        {{ provider.display_name }}
-      </Button>
-    </EdgeDbOAuthButton> -->
-
-  <EdgeDbAuthProviders>
-    <EdgeDbOAuthButton
-      v-for="provider in providers"
-      :key="provider.name"
-      v-slot="{ redirect, loading }"
-      :provider="provider.name"
-    >
-      <Button :disabled="loading" type="button" class="mt-6 shadow-lg shadow-black/20" @click="redirect()">
-        {{ provider.display_name }}
-        {{ provider.name }}
-      </Button>
-    </EdgeDbOAuthButton>
+    <div class="flex flex-row gap-4 mt-6">
+      <EdgeDbOAuthButton
+        v-for="provider in providers"
+        v-slot="{ redirect, loading }"
+        :key="provider.name"
+        :provider="provider.name"
+      >
+        <Button
+          class="shadow-lg shadow-black/20"
+          type="button"
+          :disabled="loading"
+          @click="redirect(provider.name)"
+        >
+          {{ provider.display_name }}
+        </Button>
+      </EdgeDbOAuthButton>
+    </div>
   </EdgeDbAuthProviders>
-  <!-- </div> -->
 </template>

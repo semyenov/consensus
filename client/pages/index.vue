@@ -1,38 +1,52 @@
 <script setup lang="ts">
-import { clone } from 'remeda'
+const {
+  isLoggedIn,
+  identity: user,
+} = useEdgeDbIdentity()
 
-const config = useRuntimeConfig()
-
-const edgeDb = clone(config.edgeDb)
-const user = useEdgeDbIdentity()
-
-console.log(edgeDb)
-console.log(user)
+const router = useRouter()
 </script>
 
 <template>
-  <Avatar class="w-32 h-32 shadow-lg shadow-black/30" shape="circle">
-    <AvatarImage src="https://avatars.githubusercontent.com/u/5471452?v=4" :alt="$t('auth.username')" />
-  </Avatar>
+  <template v-if="isLoggedIn">
+    <Avatar class="w-32 h-32 shadow-lg shadow-black/30" shape="circle">
+      <AvatarImage
+        :alt="user.identity?.id"
+        :src="user.identity ? `https://avatars.githubusercontent.com/u/${
+          user.identity?.subject}?v=4` : ''"
+      />
+    </Avatar>
 
-  <h1 class="mt-4 text-4xl font-extrabold tracking-tight scroll-m-20 lg:text-5xl">
-    {{ $t("auth.title") }}
-  </h1>
+    <h1 class="mt-4 text-4xl font-extrabold tracking-tight scroll-m-20 lg:text-5xl">
+      {{ user.identity?.subject }}
+    </h1>
 
-  <div class="flex flex-row gap-4">
-    <NuxtLink
-      class="mt-1 font-medium underline text-primary underline-offset-4" href="/auth/login"
-      target="_blank"
-    >
-      {{ $t("auth.links.login") }}
-    </NuxtLink>
+    <div class="flex flex-row gap-4">
+      <Button
+        class="mt-6 shadow-lg shadow-black/10"
+        type="button"
+        variant="outline"
+        @click="router.replace('/auth/logout')"
+      >
+        {{ $t("pages.index.links.logout") }}
+      </Button>
+    </div>
+  </template>
 
-    <NuxtLink
-      class="mt-1 font-medium underline text-primary underline-offset-4"
-      href="/auth/logout"
-      target="_blank"
-    >
-      {{ $t("auth.links.logout") }}
-    </NuxtLink>
-  </div>
+  <template v-else>
+    <h1 class="mt-4 text-4xl font-extrabold tracking-tight scroll-m-20 lg:text-5xl">
+      {{ $t("pages.index.title") }}
+    </h1>
+
+    <div class="flex flex-row gap-4">
+      <Button
+        class="mt-6 shadow-lg shadow-black/10"
+        type="button"
+        variant="outline"
+        @click="router.replace('/auth/login')"
+      >
+        {{ $t("pages.index.links.login") }}
+      </Button>
+    </div>
+  </template>
 </template>
