@@ -19,7 +19,7 @@ module default {
     }
   }
 
-   # User type representing a system user
+  # User type representing a system user
   type User extending BaseObject, Auditable {
     # Required properties
     required email: str {

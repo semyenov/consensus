@@ -8,8 +8,8 @@ function config(
   return antfu(
     {
       type: 'app',
-      vue: true,
       stylistic: true,
+      vue: true,
 
       ...opts,
     },
