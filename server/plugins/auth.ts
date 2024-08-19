@@ -1,6 +1,6 @@
 import { Octokit } from 'octokit'
 
-type AuthCallbackContext = {
+type EdgeDbAuthCallbackContext = {
   verifier: string
   codeExchangeUrl: URL
   codeExchangeResponseData?: {
@@ -17,7 +17,7 @@ export default defineNitroPlugin((app) => {
 
   app.hooks.hook(
     'edgedb:auth:callback' as any,
-    async ({ codeExchangeResponseData: data }: AuthCallbackContext) => {
+    async ({ codeExchangeResponseData: data }: EdgeDbAuthCallbackContext) => {
       if (!data) {
         throw createError({
           statusCode: 400,
@@ -40,12 +40,17 @@ export default defineNitroPlugin((app) => {
         }))
         .run(client)
 
+      const octokit = new Octokit({
+        auth: provider_token,
+      })
+
+      const { data: userData } = await octokit.request('GET /user')
       if (!user) {
         await e
           .insert(e.User, {
-            name: identity_id,
-            description: provider_token,
-            email: 'semyenov@hotmail.com',
+            name: userData.name ?? '',
+            description: userData.bio ?? '',
+            email: userData.email ?? '',
             identity: e.select(e.ext.auth.Identity, () => ({
               filter_single: e.op(
                 e.ext.auth.Identity.id,
@@ -57,32 +62,34 @@ export default defineNitroPlugin((app) => {
           .run(client)
       }
 
-      const octokit = new Octokit({
-        auth: provider_token,
-      })
-
-      const { data: info } = await octokit.request('GET /user/issues', {
+      const { data: issuesData } = await octokit.request('GET /user/issues', {
         filter: 'all',
       })
 
-      await Promise.all(info.map(async (issue) => {
-        await e.insert(e.issue.Issue, {
-          name: issue.title,
-          description: issue.body_text ?? '',
-          content: issue.body_html ?? '',
-          priority: e.issue.IssuePriority.Low,
-          status: issue.state === 'closed' ? 'Closed' : 'Open',
-          created_at: e.datetime(issue.created_at),
-          updated_at: e.datetime(issue.updated_at),
-          author: e.select(e.User, () => ({
-            filter_single: e.op(e.User.id, '=', e.uuid(user!.id)),
-          })),
-          assignee: e.select(e.User, () => ({
-            filter_single: e.op(e.User.id, '=', e.uuid(user!.id)),
-          })),
-        })
-          .run(client.withConfig({ apply_access_policies: false }))
-      }))
+      await Promise.all(
+        issuesData.map(async (issue) => {
+          await e
+            .insert(e.issue.Issue, {
+              name: issue.title,
+              description: issue.body_text ?? '',
+              content: issue.body_html ?? '',
+              priority: e.issue.IssuePriority.Low,
+              status:
+                issue.state === 'open'
+                  ? e.issue.IssueStatus.Open
+                  : e.issue.IssueStatus.Closed,
+              created_at: e.datetime(issue.created_at),
+              updated_at: e.datetime(issue.updated_at),
+              author: e.select(e.User, user => ({
+                filter_single: e.op(user.identity.id, '=', e.uuid(identity_id)),
+              })),
+              assignee: e.select(e.User, user => ({
+                filter_single: e.op(user.identity.id, '=', e.uuid(identity_id)),
+              })),
+            })
+            .run(client.withConfig({ apply_access_policies: false }))
+        }),
+      )
     },
   )
 })

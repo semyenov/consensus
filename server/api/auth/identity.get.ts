@@ -1,6 +1,6 @@
 export default defineEventHandler(async (req) => {
   const token = getCookie(req, 'edgedb-auth-token')
-  if (!token) {
+  if (!token?.length) {
     deleteCookie(req, 'edgedb-auth-token')
 
     return

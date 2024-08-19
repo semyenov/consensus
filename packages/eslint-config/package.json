@@ -32,7 +32,7 @@
     "dist"
   ],
   "scripts": {
-    "dev": "esno src/index.ts",
+    "dev": "tsx src/index.ts",
     "build": "pkgroll",
     "typecheck": "tsc --noEmit"
   },
@@ -44,6 +44,7 @@
     "@types/eslint": "^9.6.0",
     "eslint": "^8.57.0",
     "pkgroll": "^2.4.2",
+    "tsx": "^4.17.0",
     "typescript": "^5.5.4"
   }
 }
