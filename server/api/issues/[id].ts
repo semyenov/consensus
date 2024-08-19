@@ -55,4 +55,6 @@ export default defineEventHandler(async (req) => {
 
     return query.run(client)
   }
+
+  throw ErrBadRequest
 })
