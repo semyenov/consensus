@@ -95,7 +95,7 @@ export default defineNuxtConfig({
     restoreState: true,
     scanPageMeta: true,
     sharedPrerenderData: true,
-    viewTransition: 'always',
+    viewTransition: true,
     crossOriginPrefetch: true,
   },
 })

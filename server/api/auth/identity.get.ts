@@ -7,7 +7,7 @@ export default defineEventHandler(async (req) => {
   }
 
   const client = useEdgeDb(req)
-  const query = 'select global current_user { ** };'
+  const query = 'select global default::current_user { ** };'
   try {
     const identity = await client.querySingle(query)
 
@@ -19,7 +19,7 @@ export default defineEventHandler(async (req) => {
       path: '/',
       secure: true,
       sameSite: true,
-      expires: /* @__PURE__ */ new Date(0),
+      expires: new Date(0),
     })
 
     return null
