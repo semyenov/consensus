@@ -39,11 +39,12 @@ export default defineNuxtConfig({
     '@nuxt/fonts',
     '@nuxt/content',
     'nuxt-edgedb-module',
+    '@nuxt/image',
   ],
 
   shadcn: {
     prefix: '',
-    componentDir: './client/components/ui',
+    componentDir: join(clientDir, 'components', 'ui'),
   },
 
   edgeDb: {

@@ -1,9 +1,5 @@
 <script setup lang="ts">
-const {
-  isLoggedIn,
-  identity: user,
-} = useEdgeDbIdentity()
-
+const { isLoggedIn, identity: user } = useEdgeDbIdentity()
 const router = useRouter()
 </script>
 
@@ -12,16 +8,25 @@ const router = useRouter()
     <Avatar class="w-32 h-32 mb-4 shadow-lg shadow-black/20" shape="square">
       <AvatarImage
         :alt="user.identity?.id"
-        :src="user.identity ? `https://avatars.githubusercontent.com/u/${
-          user.identity?.subject}?v=4` : ''"
+        :src="
+          user.identity
+            ? `https://avatars.githubusercontent.com/u/${
+              user.identity?.subject
+            }?v=4`
+            : ''
+        "
       />
     </Avatar>
 
-    <h1 class="mb-4 text-4xl font-extrabold tracking-tight scroll-m-20 lg:text-5xl">
+    <h1
+      class="mb-4 text-4xl font-extrabold tracking-tight scroll-m-20 lg:text-5xl"
+    >
       {{ user.identity?.subject }}
     </h1>
 
-    <p class="text-sm leading-6 text-center text-gray-800 dark:text-gray-300 max-w-80">
+    <p
+      class="text-sm leading-6 text-center text-gray-800 dark:text-gray-300 max-w-80"
+    >
       {{ $t("pages.index.description") }}
     </p>
 
@@ -36,11 +41,15 @@ const router = useRouter()
   </template>
 
   <template v-else>
-    <h1 class="mb-4 text-4xl font-extrabold tracking-tight scroll-m-20 lg:text-5xl">
+    <h1
+      class="mb-4 text-4xl font-extrabold tracking-tight scroll-m-20 lg:text-5xl"
+    >
       {{ $t("pages.index.title") }}
     </h1>
 
-    <p class="text-sm leading-6 text-center text-gray-800 dark:text-gray-300 max-w-80">
+    <p
+      class="text-sm leading-6 text-center text-gray-800 dark:text-gray-300 max-w-80"
+    >
       {{ $t("pages.index.description") }}
     </p>
 
