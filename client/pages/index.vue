@@ -5,7 +5,11 @@ const router = useRouter()
 
 <template>
   <template v-if="isLoggedIn">
-    <Avatar v-if="user.identity.subject" class="w-32 h-32 mb-6 shadow-lg shadow-black/20" shape="circle">
+    <Avatar
+      v-if="user.identity.subject"
+      class="w-32 h-32 shadow-lg shadow-black/20"
+      shape="circle"
+    >
       <!-- <NuxtImg class="object-cover w-full h-full" :src="user.identity.subject" presrt="avatar" /> -->
       <AvatarImage
         :alt="user.identity.id"
@@ -14,13 +18,19 @@ const router = useRouter()
     </Avatar>
 
     <h1
-      class="mb-4 text-4xl font-extrabold tracking-tight scroll-m-20 lg:text-5xl"
+      class="mt-6 text-4xl font-extrabold tracking-tight scroll-m-20 lg:text-5xl"
     >
-      {{ user.identity.subject }}
+      {{ user.name }}
     </h1>
 
+    <h2
+      class="text-2xl font-light text-zinc-500 tracking-tight scroll-m-20 dark:text-zinc-400"
+    >
+      {{ user.email }}
+    </h2>
+
     <p
-      class="text-sm leading-tight text-center text-gray-800 dark:text-gray-300 max-w-80"
+      class="mt-4 text-sm leading-tight text-center text-gray-800 dark:text-gray-300 max-w-80"
     >
       {{ $t("pages.index.description") }}
     </p>
@@ -35,10 +45,10 @@ const router = useRouter()
         <DrawerContent>
           <DrawerHeader>
             <DrawerTitle>
-              {{ $t('pages.index.drawer.title') }}
+              {{ $t("pages.index.drawer.title") }}
             </DrawerTitle>
             <DrawerDescription>
-              {{ $t('pages.index.drawer.description') }}
+              {{ $t("pages.index.drawer.description") }}
             </DrawerDescription>
           </DrawerHeader>
 
@@ -49,7 +59,7 @@ const router = useRouter()
           <DrawerFooter class="flex items-end">
             <DrawerClose>
               <Button variant="outline">
-                {{ $t('pages.index.drawer.close') }}
+                {{ $t("pages.index.drawer.close") }}
               </Button>
             </DrawerClose>
           </DrawerFooter>
