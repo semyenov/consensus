@@ -17,6 +17,7 @@ function config(
       {
         rules: {
           'no-empty-function': 'off',
+          'arrow-body-style': ['error', 'as-needed'],
 
           'eol-last': ['error', 'always'],
           'no-else-return': 'warn',
@@ -26,7 +27,7 @@ function config(
           'prefer-destructuring': 'warn',
           'prefer-object-has-own': 'warn',
           'no-console': ['warn', { allow: ['debug'] }],
-          'no-unused-vars': ['warn', { args: 'none' }],
+          'no-unused-vars': ['error', { ignoreRestSiblings: true }],
           'no-use-before-define': ['error', { functions: false }],
           'no-param-reassign': ['error', { props: false }],
           'no-underscore-dangle': 'off',
@@ -38,7 +39,6 @@ function config(
           'newline-per-chained-call': ['error', { ignoreChainWithDepth: 1 }],
           'multiline-ternary': ['error', 'always-multiline'],
           'brace-style': ['error', 'stroustrup'],
-          'arrow-body-style': ['error', 'always'],
           'eqeqeq': ['error', 'smart'],
 
           'antfu/if-newline': 'error',

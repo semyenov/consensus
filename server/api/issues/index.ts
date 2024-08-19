@@ -18,11 +18,9 @@ export default defineEventHandler(async (req) => {
   }
 
   if (req.method === 'GET') {
-    const query = e.select(e.issue.Issue, () => {
-      return {
-        ...e.issue.Issue['*'],
-      }
-    })
+    const query = e.select(e.issue.Issue, () => ({
+      ...e.issue.Issue['*'],
+    }))
 
     const issues = await query.run(client)
 

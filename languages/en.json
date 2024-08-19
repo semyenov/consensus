@@ -10,7 +10,9 @@
     "login": "Login",
     "links": {
       "edgedb": "database",
-      "shadcn": "shadcn components"
+      "shadcn": "shadcn components",
+      "login": "Login",
+      "logout": "Logout"
     }
   },
   "callback": {

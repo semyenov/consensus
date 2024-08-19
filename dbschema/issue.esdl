@@ -19,7 +19,7 @@ module issue {
     Critical
   >;
 
-  type Issue extending default::BaseObject, default::Auditable, tag::Taggable, search::VectorSearchable {
+  type Issue extending default::BaseObject, default::Auditable, tag::Taggable {
     # Required properties
     required property content: str;
     required property priority: IssuePriority;
@@ -39,13 +39,13 @@ module issue {
     property time_spent: duration;
 
     # Links
-    required link author -> user::User {
-      default := global user::current_user;
+    required link author -> default::User {
+      default := global default::current_user;
     };
     required link milestone -> project::Milestone {
       on target delete allow;
     }
-    optional link assignee -> user::User;
+    optional link assignee -> default::User;
     optional multi link blocking_issues -> Issue;
     optional multi link comments -> Comment { on source delete delete target; }
     optional multi link labels -> Label { on source delete delete target; }
@@ -59,29 +59,29 @@ module issue {
     # Access policies
     access policy author_has_full_access
       allow all
-      using (.author ?= global user::current_user);
+      using (.author ?= global default::current_user);
     access policy project_members_can_edit
       allow select, update
-      using (.milestone.project.owner ?= global user::current_user);
+      using (.milestone.project.owner ?= global default::current_user);
     access policy issue_assignee_can_edit
       allow update
-      using (.assignee ?= global user::current_user);
+      using (.assignee ?= global default::current_user);
     access policy others_read_only
       allow select;
   }
 
-  type Label extending default::Auditable, default::BaseObject, search::VectorSearchable {
+  type Label extending default::Auditable, default::BaseObject{
     required color: str;
     optional multi link issues -> Issue;
     constraint exclusive on ((.name, .color));
   }
 
-  type Comment extending default::Auditable, search::VectorSearchable {
+  type Comment extending default::Auditable {
     required content: str;
     property is_edited: bool {
       default := false;
     }
-    required link author -> user::User;
+    required link author -> default::User;
     required link issue -> Issue;
   }
 }

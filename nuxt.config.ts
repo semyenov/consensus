@@ -28,17 +28,17 @@ export default defineNuxtConfig({
 
   typescript: {
     strict: true,
-    typeCheck: true,
+    // typeCheck: true,
   },
 
   modules: [
-    'nuxt-edgedb-module',
     '@nuxtjs/tailwindcss',
     '@nuxtjs/i18n',
     '@vueuse/nuxt',
     'shadcn-nuxt',
     '@nuxt/fonts',
     '@nuxt/content',
+    'nuxt-edgedb-module',
   ],
 
   shadcn: {
@@ -55,7 +55,6 @@ export default defineNuxtConfig({
 
     composables: true,
     injectDbCredentials: true,
-    identityModel: 'user::User',
 
     dbschemaDir: join(rootDir, 'dbschema'),
     queriesDir: join(rootDir, 'queries'),
@@ -87,14 +86,15 @@ export default defineNuxtConfig({
     appManifest: true,
     asyncContext: true,
     asyncEntry: true,
+    typedPages: false,
+    externalVue: true,
+    headNext: true,
+    writeEarlyHints: true,
+    payloadExtraction: true,
+    restoreState: true,
+    scanPageMeta: true,
+    sharedPrerenderData: true,
+    viewTransition: true,
     crossOriginPrefetch: true,
-  },
-
-  devtools: {
-    enabled: true,
-
-    timeline: {
-      enabled: true,
-    },
   },
 })

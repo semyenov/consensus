@@ -1,7 +1,7 @@
 module project {
   scalar type ProjectStatus extending enum<Active, Archived, Completed>;
 
-  type Project extending default::Auditable, default::BaseObject, tag::Taggable, search::VectorSearchable {
+  type Project extending default::Auditable, default::BaseObject, tag::Taggable {
     # Required properties
     required property status: ProjectStatus {
       default := ProjectStatus.Active;
@@ -10,8 +10,8 @@ module project {
     property actual_completion_date: datetime;
 
     # Links
-    required link owner -> user::User {
-      default := global user::current_user;
+    required link owner -> default::User {
+      default := global default::current_user;
       constraint exclusive;
     };
     required link budget -> finance::Budget;
@@ -33,12 +33,12 @@ module project {
     # Access policies
     access policy project_owner_has_full_access
       allow all
-      using (.owner ?= global user::current_user);
+      using (.owner ?= global default::current_user);
   }
 
   scalar type MilestoneStatus extending enum<Planned, InProgress, Completed, Overdue>;
 
-  type Milestone extending default::Auditable, default::BaseObject, search::VectorSearchable {
+  type Milestone extending default::Auditable, default::BaseObject {
     # Required properties
     required start_date: datetime;
     required due_date: datetime;
@@ -66,10 +66,10 @@ module project {
     # Access policies
     access policy project_owner_has_full_access
       allow all
-      using (.project.owner ?= global user::current_user);
+      using (.project.owner ?= global default::current_user);
     access policy milestone_budget_owner
       allow all
-      using (.budget.owner ?= global user::current_user);
+      using (.budget.owner ?= global default::current_user);
   }
 
   type Sprint extending default::Auditable, default::BaseObject {
@@ -89,8 +89,8 @@ module project {
 
   type Team extending default::BaseObject {
     # Links
-    required link owner -> user::User;
-    multi link members -> user::User;
+    required link owner -> default::User;
+    multi link members -> default::User;
     multi link projects -> project::Project;
 
     # Computed properties
@@ -99,7 +99,7 @@ module project {
     # Access policies
     access policy project_owner_has_full_access
       allow all
-      using (.owner ?= global user::current_user);
+      using (.owner ?= global default::current_user);
   }
 
   function calculate_project_health(project: project::Project) -> decimal {

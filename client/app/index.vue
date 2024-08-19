@@ -9,9 +9,7 @@ const route = useRoute()
       <p>{{ message }} was loaded.</p>
     </template>
   </NuxtRouteAnnouncer>
-  <Suspense :key="locale + route.path">
-    <NuxtLayout name="default">
-      <NuxtPage :key="locale" :page-key="route.path" />
-    </NuxtLayout>
-  </Suspense>
+  <NuxtLayout>
+    <NuxtPage :key="locale + route.path" :page-key="route.path" />
+  </NuxtLayout>
 </template>

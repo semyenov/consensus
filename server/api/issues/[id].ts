@@ -13,12 +13,10 @@ export default defineEventHandler(async (req) => {
     }
 
     const e = useEdgeDbQueryBuilder()
-    const query = e.select(e.issue.Issue, () => {
-      return {
-        ...e.issue.Issue['*'],
-        filter_single: e.op(e.issue.Issue.id, '=', params.id),
-      }
-    })
+    const query = e.select(e.issue.Issue, () => ({
+      ...e.issue.Issue['*'],
+      filter_single: e.op(e.issue.Issue.id, '=', params.id),
+    }))
 
     const issue = await query.run(client)
     if (!issue) {
@@ -38,12 +36,10 @@ export default defineEventHandler(async (req) => {
       throw ErrBadRequest
     }
 
-    const query = e.update(e.issue.Issue, () => {
-      return {
-        set: body,
-        filter_single: e.op(e.issue.Issue.id, '=', params.id),
-      }
-    })
+    const query = e.update(e.issue.Issue, () => ({
+      set: body,
+      filter_single: e.op(e.issue.Issue.id, '=', params.id),
+    }))
 
     return query.run(client)
   }
@@ -53,11 +49,9 @@ export default defineEventHandler(async (req) => {
       throw ErrNoParamId
     }
 
-    const query = e.delete(e.issue.Issue, () => {
-      return {
-        filter_single: e.op(e.issue.Issue.id, '=', params.id),
-      }
-    })
+    const query = e.delete(e.issue.Issue, () => ({
+      filter_single: e.op(e.issue.Issue.id, '=', params.id),
+    }))
 
     return query.run(client)
   }

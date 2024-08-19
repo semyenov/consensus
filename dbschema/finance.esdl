@@ -13,7 +13,7 @@ module finance {
 
     # Links
     required link project -> project::Project;
-    required link owner -> user::User;
+    required link owner -> default::User;
 
     # Computed properties
     property spent_amount := .total_amount - .remaining_balance;
@@ -25,7 +25,7 @@ module finance {
     # Access policies
     access policy budget_owner_can_select
       allow select
-      using (.owner ?= global user::current_user);
+      using (.owner ?= global default::current_user);
 
     # Constraints
     constraint expression on (.remaining_balance <= .total_amount);
@@ -36,12 +36,12 @@ module finance {
   type Expense extending default::BaseObject, default::Auditable, finance::Monetary {
     # Links
     required link budget -> Budget;
-    required link created_by -> user::User;
+    required link created_by -> default::User;
 
     # Access policies
     access policy expense_creator_can_select
       allow select
-      using (.created_by ?= global user::current_user);
+      using (.created_by ?= global default::current_user);
   }
 
   scalar type PaymentStatus extending enum<Pending, Approved, Rejected, Paid>;
@@ -53,13 +53,13 @@ module finance {
     }
 
     # Links
-    required link recipient -> user::User;
+    required link recipient -> default::User;
     required link associated_issue -> issue::Issue;
-    required link approved_by -> user::User;
+    required link approved_by -> default::User;
 
     # Access policies
     access policy payment_approver_can_select
       allow select
-      using (.approved_by ?= global user::current_user);
+      using (.approved_by ?= global default::current_user);
   }
 }
