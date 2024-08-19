@@ -1,29 +1,29 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-import { join, resolve } from 'pathe'
+import { join, resolve } from "pathe";
 
 // src dir
-const rootDir = resolve(__dirname)
+const rootDir = resolve(__dirname);
 
-const clientDir = join(rootDir, 'client')
-const serverDir = join(rootDir, 'server')
+const clientDir = join(rootDir, "client");
+const serverDir = join(rootDir, "server");
 
 export default defineNuxtConfig({
-  compatibilityDate: '2024-08-15',
+  compatibilityDate: "2024-08-15",
 
   rootDir,
   serverDir,
   srcDir: clientDir,
 
   dir: {
-    public: join(rootDir, 'public'),
+    public: join(rootDir, "public"),
 
-    app: join(clientDir, 'app'),
-    assets: join(clientDir, 'assets'),
-    layouts: join(clientDir, 'layouts'),
-    modules: join(clientDir, 'modules'),
-    pages: join(clientDir, 'pages'),
-    middleware: join(clientDir, 'middleware'),
-    plugins: join(clientDir, 'plugins'),
+    app: join(clientDir, "app"),
+    assets: join(clientDir, "assets"),
+    layouts: join(clientDir, "layouts"),
+    modules: join(clientDir, "modules"),
+    pages: join(clientDir, "pages"),
+    middleware: join(clientDir, "middleware"),
+    plugins: join(clientDir, "plugins"),
   },
 
   typescript: {
@@ -32,19 +32,19 @@ export default defineNuxtConfig({
   },
 
   modules: [
-    '@nuxtjs/tailwindcss',
-    '@nuxtjs/i18n',
-    '@vueuse/nuxt',
-    'shadcn-nuxt',
-    '@nuxt/fonts',
-    '@nuxt/content',
-    'nuxt-edgedb-module',
-    '@nuxt/image',
+    "@nuxtjs/tailwindcss",
+    "@nuxtjs/i18n",
+    "@vueuse/nuxt",
+    "shadcn-nuxt",
+    "@nuxt/fonts",
+    "@nuxt/content",
+    "nuxt-edgedb-module",
+    "@nuxt/image",
   ],
 
   shadcn: {
-    prefix: '',
-    componentDir: join(clientDir, 'components', 'ui'),
+    prefix: "",
+    componentDir: join(clientDir, "components", "ui"),
   },
 
   edgeDb: {
@@ -57,8 +57,8 @@ export default defineNuxtConfig({
     composables: true,
     injectDbCredentials: true,
 
-    dbschemaDir: join(rootDir, 'dbschema'),
-    queriesDir: join(rootDir, 'queries'),
+    dbschemaDir: join(rootDir, "dbschema"),
+    queriesDir: join(rootDir, "queries"),
 
     auth: true,
     oauth: true,
@@ -67,18 +67,18 @@ export default defineNuxtConfig({
   },
 
   i18n: {
-    strategy: 'prefix_except_default',
-    defaultLocale: 'ru',
+    strategy: "prefix_except_default",
+    defaultLocale: "ru",
     locales: [
       {
-        language: 'en-US',
-        name: 'English',
-        code: 'en',
+        language: "en-US",
+        name: "English",
+        code: "en",
       },
       {
-        language: 'ru-RU',
-        name: 'Русский',
-        code: 'ru',
+        language: "ru-RU",
+        name: "Русский",
+        code: "ru",
       },
     ],
   },
@@ -95,13 +95,7 @@ export default defineNuxtConfig({
     restoreState: true,
     scanPageMeta: true,
     sharedPrerenderData: true,
-    viewTransition: true,
+    viewTransition: "always",
     crossOriginPrefetch: true,
-    defaults: {
-      useAsyncData: {
-        value: 'null',
-        deep: true,
-      },
-    },
   },
-})
+});

@@ -4,7 +4,9 @@
       {{ $t("pages.auth/login.title") }}
     </h1>
 
-    <p class="mt-4 text-sm leading-6 text-center text-gray-800 dark:text-gray-300 max-w-80">
+    <p
+      class="mt-4 text-sm leading-6 text-center text-gray-800 dark:text-gray-300 max-w-80"
+    >
       {{ $t("pages.auth/login.description") }}
     </p>
 

@@ -6,10 +6,16 @@ const toggleDark = useToggle(isDark)
 </script>
 
 <template>
-  <div id="__layout" class="flex flex-col items-center justify-center w-full h-full pb-8 text-center grow dark:text-white">
+  <div
+    id="__layout"
+    class="flex flex-col items-center justify-center w-full h-full pb-8 text-center grow dark:text-white"
+  >
     <ClientOnly>
       <Button
-        class="absolute rounded-full top-4 right-4" type="menu" size="icon" variant="secondary"
+        class="absolute rounded-full top-4 right-4"
+        type="menu"
+        size="icon"
+        variant="secondary"
         @click="toggleDark()"
       >
         <SunIcon v-if="isDark" />
@@ -25,7 +31,7 @@ html,
 body,
 #__nuxt,
 #__layout {
-  @apply  h-full bg-white text-zinc-900
+  @apply h-full bg-white text-zinc-900
   dark:bg-zinc-900 dark:text-white;
 }
 </style>

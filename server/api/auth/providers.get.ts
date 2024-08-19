@@ -5,6 +5,7 @@ export default defineEventHandler(async (req) => {
   const e = useEdgeDbQueryBuilder()
 
   const query = e.select(e.ext.auth.ProviderConfig, () => ({
+    filter: e.op('provider', 'like', '%github%'),
     ...e.ext.auth.ProviderConfig['*'],
     ...e.is(e.ext.auth.OAuthProviderConfig, {
       display_name: true,
@@ -15,8 +16,6 @@ export default defineEventHandler(async (req) => {
   if (!providers) {
     throw ErrNotFound
   }
-
-  console.log('providers', providers)
 
   return providers
 })

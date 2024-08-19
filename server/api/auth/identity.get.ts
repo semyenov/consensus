@@ -14,18 +14,13 @@ export default defineEventHandler(async (req) => {
     return identity
   }
   catch {
-    setCookie(
-      req,
-      'edgedb-auth-token',
-      '',
-      {
-        httpOnly: true,
-        path: '/',
-        secure: true,
-        sameSite: true,
-        expires: /* @__PURE__ */ new Date(0),
-      },
-    )
+    setCookie(req, 'edgedb-auth-token', '', {
+      httpOnly: true,
+      path: '/',
+      secure: true,
+      sameSite: true,
+      expires: /* @__PURE__ */ new Date(0),
+    })
 
     return null
   }

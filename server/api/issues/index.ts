@@ -22,9 +22,7 @@ export default defineEventHandler(async (req) => {
       ...e.issue.Issue['*'],
     }))
 
-    const issues = await query.run(client)
-
-    return issues
+    return query.run(client)
   }
 
   throw ErrBadRequest // Handle unsupported methods
