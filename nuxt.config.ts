@@ -1,5 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-import { join, resolve } from 'pathe'
+import { join, relative, resolve } from 'pathe'
 
 // src dir
 const rootDir = resolve(__dirname)
@@ -28,6 +28,7 @@ export default defineNuxtConfig({
 
   typescript: {
     strict: true,
+    shim: true,
     // typeCheck: true,
   },
 
@@ -66,36 +67,96 @@ export default defineNuxtConfig({
     devtools: true,
   },
 
+  image: {
+    provider: 'avatars',
+    avatars: {
+      domains: ['avatars.githubusercontent.com'],
+      alias: { avatars: 'https://avatars.githubusercontent.com/u/' },
+      dir: join(clientDir, 'assets', 'images'),
+    },
+
+    providers: {
+      avatars: {
+        name: 'avatars',
+        provider: 'image/provider',
+        options: {
+          baseURL: 'https://avatars.githubusercontent.com/u/',
+          presets: {
+            avatar: {
+              modifiers: {
+                width: 128,
+                height: 128,
+                fit: 'cover',
+              },
+            },
+            profile: {
+              modifiers: {
+                width: 256,
+                height: 256,
+                fit: 'cover',
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+
   i18n: {
-    strategy: 'prefix_except_default',
+    lazy: true,
     defaultLocale: 'ru',
+    strategy: 'no_prefix',
+    customRoutes: 'config',
+    routesNameSeparator: '___',
+
+    detectBrowserLanguage: {
+      useCookie: true,
+      alwaysRedirect: true,
+      cookieKey: 'consensus-language',
+      cookieCrossOrigin: true,
+    },
+
+    langDir: relative(clientDir, 'languages'),
+
+    bundle: {
+      fullInstall: true,
+      runtimeOnly: false,
+      dropMessageCompiler: false,
+    },
+
     locales: [
       {
-        language: 'en-US',
         name: 'English',
+        language: 'en-US',
+        file: 'en.yml',
         code: 'en',
       },
       {
-        language: 'ru-RU',
         name: 'Русский',
+        language: 'ru-RU',
+        file: 'ru.yml',
         code: 'ru',
       },
     ],
   },
 
   experimental: {
-    appManifest: true,
-    asyncContext: true,
+    headNext: true,
     asyncEntry: true,
     typedPages: false,
+    appManifest: true,
     externalVue: true,
-    headNext: true,
-    writeEarlyHints: true,
-    payloadExtraction: true,
     restoreState: true,
     scanPageMeta: true,
+    asyncContext: true,
+    viewTransition: false,
+    writeEarlyHints: true,
+    payloadExtraction: true,
     sharedPrerenderData: true,
-    viewTransition: true,
     crossOriginPrefetch: true,
+  },
+
+  devtools: {
+    enabled: true,
   },
 })

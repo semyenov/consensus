@@ -4,17 +4,18 @@
   "private": true,
   "packageManager": "yarn@4.4.0",
   "scripts": {
+    "dev": "nuxt dev",
     "build": "nuxt build",
     "clean": "nuxt cleanup",
-    "dev": "nuxt dev",
+    "lint": "eslint . --fix",
+    "generate": "nuxt generate",
+    "prepare": "nuxt prepare",
+    "preview": "nuxt preview",
+    "typecheck": "vue-tsc --noEmit",
     "edgedb:apply": "edgedb migration apply",
     "edgedb:generate": "yarn nuxt-edgedb-module",
     "edgedb:migrate": "edgedb migration create",
-    "edgedb:clean": "rm -rf dbschema/migrations dbschema/query-builder dbschema/interfaces.ts",
-    "generate": "nuxt generate",
-    "lint:fix": "eslint . --fix",
-    "postinstall": "nuxt prepare",
-    "preview": "nuxt preview"
+    "edgedb:clean": "rm -rf dbschema/migrations dbschema/query-builder dbschema/interfaces.ts"
   },
   "dependencies": {
     "@nuxt/image": "^1.7.0",
@@ -23,6 +24,7 @@
     "clsx": "^2.1.1",
     "edgedb": "^1.5.9",
     "nuxt": "^3.12.4",
+    "octokit": "^4.0.2",
     "pathe": "^1.1.2",
     "radix-vue": "^1.9.4",
     "remeda": "^2.11.0",

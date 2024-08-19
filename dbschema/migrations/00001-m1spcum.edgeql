@@ -1,4 +1,4 @@
-CREATE MIGRATION m14catbjp727zeq25rjqvmpbjy63utzdbovzowtw5qj4kwvy7x2toq
+CREATE MIGRATION m1spcum4iyjxinos3y6nwt6ac2h65wur6ewo5nc6caf6vv5jlt4mkq
     ONTO initial
 {
   CREATE EXTENSION pgvector VERSION '0.5';
@@ -35,7 +35,9 @@ CREATE MIGRATION m14catbjp727zeq25rjqvmpbjy63utzdbovzowtw5qj4kwvy7x2toq
   CREATE GLOBAL default::current_user := (std::assert_single((SELECT
       default::User {
           id,
-          name
+          name,
+          email,
+          identity
       }
   FILTER
       (.identity = GLOBAL ext::auth::ClientTokenIdentity)
@@ -98,7 +100,7 @@ CREATE MIGRATION m14catbjp727zeq25rjqvmpbjy63utzdbovzowtw5qj4kwvy7x2toq
       CREATE PROPERTY time_spent: std::duration;
   };
   CREATE SCALAR TYPE project::MilestoneStatus EXTENDING enum<Planned, InProgress, Completed, Overdue>;
-  CREATE TYPE project::Milestone EXTENDING default::Auditable, default::BaseObject {
+  CREATE TYPE project::Milestone EXTENDING default::BaseObject, default::Auditable {
       CREATE REQUIRED LINK budget: finance::Budget;
       CREATE REQUIRED PROPERTY due_date: std::datetime;
       CREATE ACCESS POLICY milestone_budget_owner
@@ -115,12 +117,12 @@ CREATE MIGRATION m14catbjp727zeq25rjqvmpbjy63utzdbovzowtw5qj4kwvy7x2toq
       CREATE INDEX ON (.status);
   };
   ALTER TYPE issue::Issue {
-      CREATE REQUIRED LINK milestone: project::Milestone {
+      CREATE OPTIONAL LINK milestone: project::Milestone {
           ON TARGET DELETE ALLOW;
       };
   };
   CREATE SCALAR TYPE project::ProjectStatus EXTENDING enum<Active, Archived, Completed>;
-  CREATE TYPE project::Project EXTENDING default::Auditable, default::BaseObject, tag::Taggable {
+  CREATE TYPE project::Project EXTENDING default::BaseObject, default::Auditable, tag::Taggable {
       CREATE REQUIRED LINK budget: finance::Budget;
       CREATE MULTI LINK issues: issue::Issue {
           ON SOURCE DELETE DELETE TARGET;
@@ -149,24 +151,24 @@ CREATE MIGRATION m14catbjp727zeq25rjqvmpbjy63utzdbovzowtw5qj4kwvy7x2toq
       )) / std::count(.issues)) * 100));
   };
   CREATE FUNCTION project::calculate_project_health(project: project::Project) ->  std::decimal USING (WITH
-      total_issues :=
+      total_issues := 
           <std::decimal>std::count(project.issues)
       ,
-      completed_issues :=
+      completed_issues := 
           <std::decimal>std::count((SELECT
               project.issues
           FILTER
               (.status = issue::IssueStatus.Closed)
           ))
       ,
-      overdue_issues :=
+      overdue_issues := 
           <std::decimal>std::count((SELECT
               project.issues
           FILTER
               ((.milestone.due_date < std::datetime_of_statement()) AND (.status != issue::IssueStatus.Closed))
           ))
       ,
-      budget_details :=
+      budget_details := 
           (SELECT
               project.budget {
                   spent_amount,
@@ -174,7 +176,7 @@ CREATE MIGRATION m14catbjp727zeq25rjqvmpbjy63utzdbovzowtw5qj4kwvy7x2toq
               }
           )
       ,
-      budget_usage :=
+      budget_usage := 
           <std::decimal>((budget_details.spent_amount / budget_details.total_amount) * 100)
   SELECT
       (((((completed_issues / total_issues) * <std::decimal>0.4) + ((1 - (overdue_issues / total_issues)) * <std::decimal>0.3)) + ((1 - (budget_usage / 100)) * <std::decimal>0.3)) * <std::decimal>100)
@@ -185,7 +187,7 @@ CREATE MIGRATION m14catbjp727zeq25rjqvmpbjy63utzdbovzowtw5qj4kwvy7x2toq
       CREATE INDEX ext::pgvector::ivfflat_cosine(lists := 100) ON (.embedding);
   };
   CREATE FUNCTION search::vector_search(search_vector: search::EmbeddingVector, search_limit: std::int64) -> SET OF tuple<item: search::VectorSearchable, similarity: std::float64> USING (WITH
-      matches :=
+      matches := 
           (SELECT
               search::VectorSearchable {
                   similarity := ext::pgvector::cosine_distance(.embedding, search_vector)

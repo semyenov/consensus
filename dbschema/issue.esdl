@@ -42,7 +42,7 @@ module issue {
     required link author -> default::User {
       default := global default::current_user;
     };
-    required link milestone -> project::Milestone {
+    optional link milestone -> project::Milestone {
       on target delete allow;
     }
     optional link assignee -> default::User;

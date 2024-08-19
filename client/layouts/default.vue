@@ -8,11 +8,11 @@ const toggleDark = useToggle(isDark)
 <template>
   <div
     id="__layout"
-    class="flex flex-col items-center justify-center w-full h-full pb-8 text-center grow dark:text-white"
+    class="flex flex-col items-center justify-center w-full h-full text-center grow dark:text-white"
   >
     <ClientOnly>
       <Button
-        class="absolute rounded-full top-4 right-4"
+        class="absolute border border-gray-300 border-dashed rounded-full dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-600 top-4 right-4"
         type="menu"
         size="icon"
         variant="outline"
@@ -31,6 +31,6 @@ html,
 body,
 #__nuxt,
 #__layout {
-  @apply h-full;
+  @apply !h-screen;
 }
 </style>

@@ -1,3 +1,7 @@
+using extension ai;
+using extension auth;
+using extension pgvector;
+
 module default {
   abstract type BaseObject extending std::Object {
     required name: str;

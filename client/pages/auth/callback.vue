@@ -1,9 +1,5 @@
-<script setup lang="ts">
-const router = useRouter()
-</script>
-
 <template>
-  <EdgeDbOAuthCallback v-slot="{ loading, error }" redirect-to="/">
+  <EdgeDbOAuthCallback v-slot="{ loading, error, code, check }" redirect-to="/" :check-on-setup="false">
     <h1
       class="mt-4 text-4xl font-extrabold tracking-tight scroll-m-20 lg:text-5xl"
     >
@@ -11,16 +7,17 @@ const router = useRouter()
     </h1>
 
     <p
-      class="mt-4 text-sm leading-6 text-center text-gray-800 dark:text-gray-300 max-w-80"
+      class="mt-4 text-sm leading-tight text-center text-gray-800 dark:text-gray-300 max-w-80"
     >
       {{ $t("pages.auth/callback.description") }}
+      {{ $t("pages.auth/callback.code", { code }) }}
     </p>
 
     <Button
       class="mt-6 shadow-lg shadow-black/10"
       variant="outline"
       :disabled="loading || error"
-      @click="router.push('/')"
+      @click="check()"
     >
       <span>{{ $t("pages.auth/callback.links.home") }}</span>
     </Button>

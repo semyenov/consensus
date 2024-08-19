@@ -3,8 +3,8 @@
 <template>
   <EdgeDbAuthLogout
     v-slot="{ logout }"
-    redirect-to="/"
     :logout-on-setup="false"
+    redirect-to="/"
   >
     <h1
       class="mt-4 text-4xl font-extrabold tracking-tight scroll-m-20 lg:text-5xl"
@@ -13,7 +13,7 @@
     </h1>
 
     <p
-      class="mt-4 text-sm leading-6 text-center text-gray-800 dark:text-gray-300 max-w-80"
+      class="mt-4 text-sm leading-tight text-center text-gray-800 dark:text-gray-300 max-w-80"
     >
       {{ $t("pages.auth/logout.description") }}
     </p>

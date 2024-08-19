@@ -21,7 +21,7 @@ const delegatedProps = computed(() => {
   <DrawerTitle
     v-bind="delegatedProps"
     :class="
-      cn('text-lg font-semibold leading-none tracking-tight', props.class)
+      cn('text-xl font-semibold leading-relaxed tracking-tight', props.class)
     "
   >
     <slot />
