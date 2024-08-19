@@ -1,5 +1,4 @@
-import { Octokit, createNodeMiddleware } from 'octokit'
-import { map, pipe } from 'remeda'
+import { Octokit } from 'octokit'
 
 type AuthCallbackContext = {
   verifier: string
@@ -19,8 +18,6 @@ export default defineNitroPlugin((app) => {
   app.hooks.hook(
     'edgedb:auth:callback' as any,
     async ({ codeExchangeResponseData: data }: AuthCallbackContext) => {
-      console.log(data)
-
       if (!data) {
         throw createError({
           statusCode: 400,
@@ -68,18 +65,13 @@ export default defineNitroPlugin((app) => {
         filter: 'all',
       })
 
-      console.log(info)
-
-      const issues = await Promise.all(info.map(async (issue) => {
+      await Promise.all(info.map(async (issue) => {
         await e.insert(e.issue.Issue, {
           name: issue.title,
           description: issue.body_text ?? '',
           content: issue.body_html ?? '',
           priority: e.issue.IssuePriority.Low,
           status: issue.state === 'closed' ? 'Closed' : 'Open',
-          // assignee: issue.assignee && e.select(e.User, () => ({
-          //   filter_single: e.op(e.User.identity.subject, '=', issue.assignee!.id),
-          // })),
           created_at: e.datetime(issue.created_at),
           updated_at: e.datetime(issue.updated_at),
           author: e.select(e.User, () => ({
@@ -91,8 +83,6 @@ export default defineNitroPlugin((app) => {
         })
           .run(client.withConfig({ apply_access_policies: false }))
       }))
-
-      console.log(issues)
     },
   )
 })
