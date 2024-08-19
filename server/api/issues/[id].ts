@@ -1,58 +1,58 @@
-import { defineEventHandler, getRouterParams, readBody } from 'h3'
+import { defineEventHandler, getRouterParams, readBody } from "h3";
 
-import { ErrBadRequest, ErrNoParamId, ErrNotFound } from '../../errors'
+import { ErrBadRequest, ErrNoParamId, ErrNotFound } from "../../errors";
 
 export default defineEventHandler(async (req) => {
-  const client = useEdgeDb(req)
-  const params = getRouterParams(req)
-  const e = useEdgeDbQueryBuilder()
+  const client = useEdgeDb(req);
+  const params = getRouterParams(req);
+  const e = useEdgeDbQueryBuilder();
 
-  if (req.method === 'GET') {
+  if (req.method === "GET") {
     if (!params.id) {
-      throw ErrNoParamId
+      throw ErrNoParamId;
     }
 
-    const e = useEdgeDbQueryBuilder()
+    const e = useEdgeDbQueryBuilder();
     const query = e.select(e.issue.Issue, () => ({
-      ...e.issue.Issue['*'],
-      filter_single: e.op(e.issue.Issue.id, '=', params.id),
-    }))
+      ...e.issue.Issue["*"],
+      filter_single: e.op(e.issue.Issue.id, "=", params.id),
+    }));
 
-    const issue = await query.run(client)
+    const issue = await query.run(client);
     if (!issue) {
-      throw ErrNotFound
+      throw ErrNotFound;
     }
 
-    return issue
+    return issue;
   }
 
-  if (req.method === 'PUT') {
+  if (req.method === "PUT") {
     if (!params.id) {
-      throw ErrNoParamId
+      throw ErrNoParamId;
     }
 
-    const body = await readBody(req)
+    const body = await readBody(req);
     if (!body) {
-      throw ErrBadRequest
+      throw ErrBadRequest;
     }
 
     const query = e.update(e.issue.Issue, () => ({
       set: body,
-      filter_single: e.op(e.issue.Issue.id, '=', params.id),
-    }))
+      filter_single: e.op(e.issue.Issue.id, "=", params.id),
+    }));
 
-    return query.run(client)
+    return query.run(client);
   }
 
-  if (req.method === 'DELETE') {
+  if (req.method === "DELETE") {
     if (!params.id) {
-      throw ErrNoParamId
+      throw ErrNoParamId;
     }
 
     const query = e.delete(e.issue.Issue, () => ({
-      filter_single: e.op(e.issue.Issue.id, '=', params.id),
-    }))
+      filter_single: e.op(e.issue.Issue.id, "=", params.id),
+    }));
 
-    return query.run(client)
+    return query.run(client);
   }
-})
+});

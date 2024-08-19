@@ -5,7 +5,7 @@ const router = useRouter()
 
 <template>
   <template v-if="isLoggedIn">
-    <Avatar class="w-32 h-32 mb-4 shadow-lg shadow-black/20" shape="square">
+    <Avatar class="w-32 h-32 mb-6 shadow-lg shadow-black/20" shape="circle">
       <AvatarImage
         :alt="user.identity?.id"
         :src="
@@ -31,7 +31,7 @@ const router = useRouter()
     </p>
 
     <Button
-      class="mt-4 shadow-lg shadow-black/10"
+      class="mt-6 shadow-lg shadow-black/10"
       type="button"
       variant="outline"
       @click="router.push('/auth/logout')"
@@ -54,7 +54,7 @@ const router = useRouter()
     </p>
 
     <Button
-      class="mt-4 shadow-lg shadow-black/10"
+      class="mt-6 shadow-lg shadow-black/10"
       type="button"
       variant="outline"
       @click="router.push('/auth/login')"

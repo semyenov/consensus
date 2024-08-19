@@ -19,7 +19,7 @@
     </p>
 
     <Button
-      class="mt-4 shadow-lg shadow-black/10"
+      class="mt-6 shadow-lg shadow-black/10"
       type="button"
       variant="outline"
       @click="logout()"

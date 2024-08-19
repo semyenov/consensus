@@ -15,7 +15,7 @@ const toggleDark = useToggle(isDark)
         class="absolute rounded-full top-4 right-4"
         type="menu"
         size="icon"
-        variant="secondary"
+        variant="outline"
         @click="toggleDark()"
       >
         <SunIcon v-if="isDark" />
@@ -31,7 +31,6 @@ html,
 body,
 #__nuxt,
 #__layout {
-  @apply h-full bg-white text-zinc-900
-  dark:bg-zinc-900 dark:text-white;
+  @apply h-full;
 }
 </style>

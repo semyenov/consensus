@@ -17,7 +17,7 @@ const router = useRouter()
     </p>
 
     <Button
-      class="mt-4 shadow-lg shadow-black/10"
+      class="mt-6 shadow-lg shadow-black/10"
       variant="outline"
       :disabled="loading || error"
       @click="router.push('/')"

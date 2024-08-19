@@ -10,7 +10,7 @@
       {{ $t("pages.auth/login.description") }}
     </p>
 
-    <div class="flex flex-row gap-4 mt-4">
+    <div class="flex flex-row gap-4 mt-6">
       <EdgeDbOAuthButton
         v-for="provider in providers"
         v-slot="{ redirect, loading }"
