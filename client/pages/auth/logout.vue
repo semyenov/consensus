@@ -10,8 +10,12 @@
       {{ $t("pages.auth/logout.title") }}
     </h1>
 
+    <p class="mt-4 text-sm leading-6 text-center text-gray-800 dark:text-gray-300 max-w-80">
+      {{ $t("pages.auth/logout.description") }}
+    </p>
+
     <Button
-      class="mt-6 shadow-lg shadow-black/10"
+      class="mt-4 shadow-lg shadow-black/10"
       type="button"
       variant="outline"
       @click="logout()"

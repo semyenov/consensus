@@ -8,8 +8,12 @@ const router = useRouter()
       {{ $t("pages.auth/callback.title") }}
     </h1>
 
+    <p class="mt-4 text-sm leading-6 text-center text-gray-800 dark:text-gray-300 max-w-80">
+      {{ $t("pages.auth/callback.description") }}
+    </p>
+
     <Button
-      class="mt-6 shadow-lg shadow-black/10"
+      class="mt-4 shadow-lg shadow-black/10"
       variant="outline"
       :disabled="loading || error"
       @click="router.push('/')"
