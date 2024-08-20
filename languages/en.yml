@@ -66,3 +66,6 @@ modules:
     priority: Task Priority Level
     status: Current Task Status
     updated_at: Last Update Date
+    plurals:
+      issue: >-
+        {n} issue selected | {n} issues selected | {n} issues selected

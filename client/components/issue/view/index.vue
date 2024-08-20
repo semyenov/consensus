@@ -58,22 +58,32 @@ const columnHelper = createColumnHelper<issue.Issue>()
 const columns = [
   columnHelper.display({
     id: 'select',
+    maxSize: 1,
     header: ({ table }) =>
-      h(Checkbox, {
-        'checked':
-          table.getIsAllPageRowsSelected()
-          || (table.getIsSomePageRowsSelected() && 'indeterminate'),
-        'onUpdate:checked': value =>
-          table.toggleAllPageRowsSelected(Boolean(value)),
-        'ariaLabel': 'Select all',
-      }),
+      h(
+        'div',
+        { class: 'capitalize px-2 h-full w-full justify-center text-nowrap bg-accent dark:bg-secondary flex items-center justify-center h-full w-full' },
+        h(Checkbox, {
+          'role': 'checkbox',
+          'class': 'p-0 !pr-0',
+          'checked': table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate'),
+          'onUpdate:checked': value =>
+            table.toggleAllPageRowsSelected(Boolean(value)),
+        }),
+      ),
     enablePinning: true,
     cell: ({ row }) =>
-      h(Checkbox, {
-        'checked': row.getIsSelected(),
-        'onUpdate:checked': value => row.toggleSelected(Boolean(value)),
-        'ariaLabel': 'Select row',
-      }),
+      h(
+        'div',
+        { class: 'capitalize px-2 h-full w-full justify-center text-nowrap flex items-center justify-center h-full w-full' },
+        h(Checkbox, {
+          'role': 'checkbox',
+          'class': 'p-0 !pr-0',
+          'checked': row.getIsSelected(),
+          'onUpdate:checked': value => row.toggleSelected(Boolean(value)),
+          'ariaLabel': 'Select row',
+        }),
+      ),
     enableSorting: false,
     enableHiding: false,
   }),
@@ -85,21 +95,21 @@ const columns = [
         Button,
         {
           onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-          variant: 'link',
-          class: 'capitalize px-2',
+          variant: 'secondary',
+          class: 'capitalize w-full h-full border-none flex-1 px-4 rounded-none justify-start text-nowrap',
         },
-        () => [h(CaretSortIcon, { class: 'mr-1' }), t('modules.issue.status')],
+        () => [t('modules.issue.status'), h(CaretSortIcon, { class: 'ml-1' })],
       ),
     cell: ({ row }) =>
-      h('div', { class: 'capitalize pl-4 text-left' }, [h(Badge, { variant: 'secondary' }, () => row.getValue('status'))]),
+      h('div', { class: 'capitalize px-2 flex h-full w-full items-center justify-center text-nowrap' }, [h(Badge, { variant: 'secondary' }, () => row.getValue('status'))]),
   }),
   columnHelper.accessor('name', {
     header: ({ column }) =>
       h(
         Button,
         {
-          variant: 'link',
-          class: 'w-full pl-0 flex-1 justify-start text-nowrap',
+          variant: 'secondary',
+          class: 'capitalize w-full h-full border-none flex-1 px-4 rounded-none justify-start text-nowrap',
           onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
         },
         () => [t('modules.issue.name'), h(CaretSortIcon, { class: 'ml-1' } as any)],
@@ -107,7 +117,10 @@ const columns = [
     cell: ({ row }) =>
       h(
         'div',
-        { class: 'lowercase pr-4 text-nowrap w-full' },
+        {
+          class: 'lowercase px-2 text-nowrap w-full',
+          onClick: () => row.toggleExpanded(),
+        },
         row.getValue('name'),
       ),
   }),
@@ -116,8 +129,8 @@ const columns = [
     header: ({ column }) => h(
       Button,
       {
-        variant: 'link',
-        class: ' text-nowrap text-right',
+        variant: 'secondary',
+        class: 'capitalize w-full h-full border-none flex-1 px-4 rounded-none justify-start text-nowrap',
         onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
       },
       () => [t('modules.issue.updated_at'), h(CaretSortIcon, { class: 'ml-1' } as any)],
@@ -139,16 +152,20 @@ const columns = [
     id: 'actions',
     enableHiding: false,
     maxSize: 1,
-
+    header: () => h(
+      'div',
+      { class: 'capitalize h-full w-full justify-center text-nowrap bg-accent dark:bg-secondary flex items-center justify-center h-full w-full' },
+    ),
     cell: ({ row }) => {
       const issue = row.original
 
       return h(
         'div',
-        { class: 'relative text-right pr-2' },
+        { class: 'relative text-right px-2' },
         h(DropdownAction, {
           issue,
           onExpand: row.toggleExpanded,
+          expanded: row.getIsExpanded(),
         }),
       )
     },
@@ -165,10 +182,11 @@ const table = useVueTable({
   data,
   columns,
   debugHeaders: true,
-  columnResizeMode: 'onChange',
   enableMultiRemove: true,
   enableColumnResizing: true,
   enableMultiRowSelection: true,
+  rowCount: data.value.length,
+  columnResizeMode: 'onChange',
   getCoreRowModel: getCoreRowModel(),
   getPaginationRowModel: getPaginationRowModel(),
   getSortedRowModel: getSortedRowModel(),
@@ -206,7 +224,7 @@ const table = useVueTable({
 </script>
 
 <template>
-  <div class="flex items-center gap-2 px-4 pb-4 mt-2 space-x-2 border-b">
+  <div class="flex items-center gap-2 px-4 pb-4 mt-2 space-x-2">
     <Input
       class="w-full"
       :placeholder="t('pages.index.links.placeholder.filter_titles')"
@@ -216,7 +234,8 @@ const table = useVueTable({
     <DropdownMenu>
       <DropdownMenuTrigger as-child>
         <Button variant="outline" class="ml-auto">
-          {{ t('pages.index.links.columns') }} <ChevronDownIcon class="w-2 h-2 ml-2" />
+          {{ t('pages.index.links.columns') }}
+          <ChevronDownIcon class="ml-1" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
@@ -251,7 +270,7 @@ const table = useVueTable({
           :data-pinned="header.column.getIsPinned()"
           :class="
             cn(
-              { 'sticky bg-background/95': header.column.getIsPinned() },
+              { 'sticky bg-background/95 z-20': header.column.getIsPinned() },
               header.column.getIsPinned() === 'left' ? 'left-0' : 'right-0',
             )
           "
@@ -286,15 +305,27 @@ const table = useVueTable({
             </TableCell>
           </TableRow>
           <TableRow v-if="row.getIsExpanded()">
-            <TableCell class="px-4" :colspan="row.getAllCells().length">
-              {{ JSON.stringify(row.original) }}
+            <TableCell :colspan="row.getAllCells().length">
+              <div class="flex flex-col flex-grow px-4 py-4 bg-secondary/50 dark:bg-accent/75">
+                <div class="flex flex-row items-center justify-between gap-2">
+                  <H2 class="text-2xl">
+                    {{ row.original.name }}
+                  </H2>
+                  <Badge v-if="row.original.priority" variant="outline">
+                    {{ row.original.priority }}
+                  </Badge>
+                </div>
+                <p class="text-sm text-muted-foreground">
+                  {{ row.original.id }}
+                </p>
+              </div>
             </TableCell>
           </TableRow>
         </template>
       </template>
 
       <TableRow v-else>
-        <TableCell :colspan="columns.length" class="h-24 text-center">
+        <TableCell :colspan="columns.length" class="h-40 text-center ">
           {{ t('pages.index.links.no_results') }}
         </TableCell>
       </TableRow>
@@ -302,10 +333,10 @@ const table = useVueTable({
   </Table>
 
   <div
-    class="flex flex-row justify-between items-center p-4 space-x-2 border-t"
+    class="flex flex-row items-center justify-between p-4 space-x-2 border-t"
   >
     <div class="text-sm text-muted-foreground">
-      {{ table.getFilteredSelectedRowModel().rows.length }} {{ t('pages.index.links') }} / {{ t('pages.index.selected_rows') }} {{ table.getFilteredRowModel().rows.length }} {{ t('pages.index.total_rows') }}
+      {{ t('modules.issue.plurals.issue', table.getFilteredSelectedRowModel().rows.length) }}
     </div>
     <div class="flex flex-row gap-2">
       <Button

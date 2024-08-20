@@ -22,7 +22,7 @@ const toggleDark = useToggle(isDark)
         <MoonIcon v-else />
       </Button>
     </ClientOnly>
-    <slot name="default" />
+    <slot />
   </div>
 </template>
 

@@ -18,23 +18,19 @@ defineProps<{
   }
 }>()
 
-defineEmits<{
-  (e: 'expand'): void
-}>()
+const { t } = useI18n() // Initialize i18n
 
 function copy(id: string) {
   navigator.clipboard.writeText(id)
 }
-
-const { t } = useI18n() // Initialize i18n
 </script>
 
 <template>
   <DropdownMenu>
     <DropdownMenuTrigger as-child>
-      <Button variant="ghost" class="w-8 h-8 p-0">
+      <Button variant="link" size="icon">
         <span class="sr-only">{{ t('pages.index.links.open_menu') }}</span>
-        <MoreHorizontal class="w-4 h-4" />
+        <MoreHorizontal class="w-4" />
       </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end">

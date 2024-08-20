@@ -7,7 +7,7 @@
         {{ $t("pages.auth/callback.title") }}
       </h1>
       <p
-        class="mt-4 text-sm leading-tight text-center text-gray-800 dark:text-gray-300 max-w-80"
+        class="mt-4 text-sm leading-tight text-center text-gray-800 dark:text-gray-300 w-80 max-w-screen"
       >
         {{ $t("pages.auth/callback.description") }}
         {{ $t("pages.auth/callback.code", { code }) }}

@@ -30,7 +30,7 @@ const router = useRouter()
     </h2>
 
     <p
-      class="mt-4 text-sm leading-tight text-center text-gray-800 dark:text-gray-300 max-w-80"
+      class="mt-4 text-sm leading-tight text-center text-gray-800 dark:text-gray-300 w-80 max-w-screen"
     >
       {{ $t("pages.index.description") }}
     </p>
@@ -38,11 +38,11 @@ const router = useRouter()
     <div class="flex flex-row space-x-2">
       <Drawer v-if="user.assigned_issues.length">
         <DrawerTrigger>
-          <Button class="shadow-lg shadow-black/10 mt-6">
+          <Button class="mt-6 shadow-lg shadow-black/10">
             {{ $t("pages.index.drawer.trigger") }}
           </Button>
         </DrawerTrigger>
-        <DrawerContent class="w-full overflow-hidden mx-auto">
+        <DrawerContent class="w-full mx-auto overflow-hidden">
           <DrawerHeader class="flex flex-col flex-shrink">
             <DrawerTitle>
               {{ $t("pages.index.drawer.title") }}
@@ -54,7 +54,7 @@ const router = useRouter()
 
           <!-- <ScrollArea class="w-full px-2 border-y h-[calc(100vh-220px)]"> -->
           <IssueView
-            class="w-full overflow-auto relative flex flex-grow"
+            class="relative flex flex-grow w-full overflow-auto"
             :issues="user.assigned_issues"
           />
 
@@ -62,17 +62,17 @@ const router = useRouter()
           <!-- </ScrollArea> -->
 
           <!-- <DrawerFooter class="flex items-end"> -->
-          <!--   <DrawerClose> -->
-          <!--     <Button variant="outline"> -->
-          <!--       {{ $t("pages.index.drawer.close") }} -->
-          <!--     </Button> -->
-          <!--   </DrawerClose> -->
+          <!-- <DrawerClose>  -->
+          <Button variant="outline">
+            {{ $t("pages.index.drawer.close") }}
+          </Button>
+        <!--    </DrawerClose> -->
           <!-- </DrawerFooter> -->
         </DrawerContent>
       </Drawer>
 
       <Button
-        class="shadow-lg shadow-black/10 mt-6"
+        class="mt-6 shadow-lg shadow-black/10"
         type="button"
         variant="outline"
         @click="router.push('/auth/logout')"
@@ -90,7 +90,7 @@ const router = useRouter()
     </h1>
 
     <p
-      class="text-sm leading-tight text-center text-gray-800 dark:text-gray-300 max-w-80"
+      class="text-sm leading-tight text-center text-gray-800 dark:text-gray-300 w-80 max-w-screen"
     >
       {{ $t("pages.index.description") }}
     </p>

@@ -6,7 +6,7 @@ pages:
       logout: Выйти из системы
       columns: Столбцы
       placeholder:
-        filter_titles: Фильтровать названия...
+        filter_titles: Поиск но названию
       no_results: Нет результатов.
       selected_rows: из
       total_rows: строк(и)
@@ -24,7 +24,7 @@ pages:
       просматривать свои задачи, созданные и привязанные к ним OAuth
       провайдерами.
     drawer:
-      title: Полный список задач
+      title: Список задач
       trigger: Показать мои задачи
       close: Закрыть список задач
       description: >-
@@ -65,3 +65,6 @@ modules:
     priority: Приоритет
     created_at: Создана
     updated_at: Изменено
+    plurals:
+      issue: >-
+        {n} задача | {n} задачи | {n} задач
