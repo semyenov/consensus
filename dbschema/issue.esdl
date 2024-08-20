@@ -45,7 +45,7 @@ module issue {
     optional link milestone -> project::Milestone {
       on target delete allow;
     }
-    optional link assignee -> default::User;
+    optional multi link assignees -> default::User;
     optional multi link blocking_issues -> Issue;
     optional multi link comments -> Comment { on source delete delete target; }
     optional multi link labels -> Label { on source delete delete target; }
@@ -63,9 +63,9 @@ module issue {
     access policy project_members_can_edit
       allow select, update
       using (.milestone.project.owner ?= global default::current_user);
-    access policy issue_assignee_can_edit
+    access policy issue_assignees_can_edit
       allow update
-      using (.assignee ?= global default::current_user);
+      using (select (select .assignees { id } filter .id = global default::current_user.id).id ?= global default::current_user.id); ;
     access policy others_read_only
       allow select;
   }

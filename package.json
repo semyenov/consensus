@@ -20,9 +20,12 @@
   "dependencies": {
     "@nuxt/image": "^1.7.0",
     "@radix-icons/vue": "^1.0.0",
+    "@tanstack/vue-table": "^8.20.4",
+    "@vueuse/core": "^11.0.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "edgedb": "^1.5.9",
+    "lucide-vue-next": "^0.428.0",
     "nuxt": "^3.12.4",
     "octokit": "^4.0.2",
     "pathe": "^1.1.2",

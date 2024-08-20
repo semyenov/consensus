@@ -19,6 +19,14 @@ module default {
     }
   }
 
+  # Define a Role type for managing access control
+  type Role extending default::BaseObject, default::Auditable {
+    required property permissions: str;
+
+    required link owner -> default::User;
+    required link project -> project::Project;
+  }
+
   # User type representing a system user
   type User extending BaseObject, Auditable {
     # Required properties
@@ -29,7 +37,7 @@ module default {
 
     # Links
     multi link projects := .<owner[is project::Project];
-    multi link assigned_issues := .<assignee[is issue::Issue];
+    multi link assigned_issues := .<assignees[is issue::Issue];
     multi link teams := .<members[is project::Team];
 
     # Computed properties

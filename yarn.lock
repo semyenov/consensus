@@ -3148,10 +3148,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/table-core@npm:8.20.1":
+  version: 8.20.1
+  resolution: "@tanstack/table-core@npm:8.20.1"
+  checksum: 10c0/540a4df688cad9261f77ca454aab62720615569805b5396bd012b411bb65dbb3fdf38f2a0b91a60b2e0def139d1517ad9a3f28f2cede5317d70ad1ad0dd1c5a3
+  languageName: node
+  linkType: hard
+
 "@tanstack/virtual-core@npm:3.9.0":
   version: 3.9.0
   resolution: "@tanstack/virtual-core@npm:3.9.0"
   checksum: 10c0/2c8ce40204e377808a0f5dc53b95a04710eac7832b97f61a743ee234aba894c1efdf56e55be44d57e559d71b8d47f4e18f9535091fbe0fea68cc1dc12c3b577e
+  languageName: node
+  linkType: hard
+
+"@tanstack/vue-table@npm:^8.20.4":
+  version: 8.20.4
+  resolution: "@tanstack/vue-table@npm:8.20.4"
+  dependencies:
+    "@tanstack/table-core": "npm:8.20.1"
+  peerDependencies:
+    vue: ">=3.2"
+  checksum: 10c0/b069a15cb3400ad82c5f83ce7cb9599c732d33795a4077fcb78c74c44f1aa7e86c6d0113bad05c0b8c66432dbf4c680682306e67c67b8ec3701dbba3ba83e069
   languageName: node
   linkType: hard
 
@@ -4019,6 +4037,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@vueuse/core@npm:^11.0.1":
+  version: 11.0.1
+  resolution: "@vueuse/core@npm:11.0.1"
+  dependencies:
+    "@types/web-bluetooth": "npm:^0.0.20"
+    "@vueuse/metadata": "npm:11.0.1"
+    "@vueuse/shared": "npm:11.0.1"
+    vue-demi: "npm:>=0.14.10"
+  checksum: 10c0/8bfc02a240a9b11fe63253f54d4d78869280fdf1d2d6562aa56d4b39c7faf374eebc2b766232f1cfac085c0a5d0b2367bfd085ccebfb804a88c622c709368421
+  languageName: node
+  linkType: hard
+
 "@vueuse/head@npm:^2.0.0":
   version: 2.0.0
   resolution: "@vueuse/head@npm:2.0.0"
@@ -4044,6 +4074,13 @@ __metadata:
   version: 11.0.0
   resolution: "@vueuse/metadata@npm:11.0.0"
   checksum: 10c0/e729d729e1bbf2366e8571299aa3780585c5d7bd02bbdf55a245f282893b847743fab4d121cddfb62ee1df1a5220fb41266c6ce26d0fa9db741be51b5bfe0543
+  languageName: node
+  linkType: hard
+
+"@vueuse/metadata@npm:11.0.1":
+  version: 11.0.1
+  resolution: "@vueuse/metadata@npm:11.0.1"
+  checksum: 10c0/85ca84dc8d7687925e49161dac14edefb7361816aec48525d0d31e5ec9c9fce74a3e50e383ec39f3d093eb508aa6e2d7bfcd03c71c3cef3d8e30e696292258e3
   languageName: node
   linkType: hard
 
@@ -4092,6 +4129,15 @@ __metadata:
   dependencies:
     vue-demi: "npm:>=0.14.10"
   checksum: 10c0/a13af53c17bd98c2700e3849e7f9c2aad0ff3639e30416a427cdc34e1d21d0d59bb1e486f08b90060b73ab555d24139b563f6c15fa7a272df159e98b561b5b6c
+  languageName: node
+  linkType: hard
+
+"@vueuse/shared@npm:11.0.1":
+  version: 11.0.1
+  resolution: "@vueuse/shared@npm:11.0.1"
+  dependencies:
+    vue-demi: "npm:>=0.14.10"
+  checksum: 10c0/9255432a7d1581f4cfcc5c5fa1eb2320a0ced084933c2068a9162abf3fd8b581192d532727632f52e88a730f3def24fec1bf87f19e08bb65039573af770a6a78
   languageName: node
   linkType: hard
 
@@ -5225,14 +5271,17 @@ __metadata:
     "@nuxtjs/i18n": "npm:^8.4.0"
     "@nuxtjs/tailwindcss": "npm:^6.12.1"
     "@radix-icons/vue": "npm:^1.0.0"
+    "@tanstack/vue-table": "npm:^8.20.4"
     "@types/eslint": "npm:^9.6.0"
     "@vitest/ui": "npm:^2.0.5"
+    "@vueuse/core": "npm:^11.0.1"
     "@vueuse/nuxt": "npm:^11.0.0"
     class-variance-authority: "npm:^0.7.0"
     clsx: "npm:^2.1.1"
     edgedb: "npm:^1.5.9"
     esbuild: "npm:^0.23.1"
     eslint: "npm:^8.57.0"
+    lucide-vue-next: "npm:^0.428.0"
     nuxt: "npm:^3.12.4"
     nuxt-edgedb-module: "npm:^0.0.52"
     octokit: "npm:^4.0.2"
@@ -8934,6 +8983,15 @@ __metadata:
   dependencies:
     yallist: "npm:^3.0.2"
   checksum: 10c0/89b2ef2ef45f543011e38737b8a8622a2f8998cddf0e5437174ef8f1f70a8b9d14a918ab3e232cb3ba343b7abddffa667f0b59075b2b80e6b4d63c3de6127482
+  languageName: node
+  linkType: hard
+
+"lucide-vue-next@npm:^0.428.0":
+  version: 0.428.0
+  resolution: "lucide-vue-next@npm:0.428.0"
+  peerDependencies:
+    vue: ">=3.0.1"
+  checksum: 10c0/9336fd26a513ee8ca70aa0f1a767f5af5fad55dbd9e626d18163ef546af54360d65aaa614e2fa1e5a39abbcf24353ec55646f04859d5aa8a59a46b66a73d9af2
   languageName: node
   linkType: hard
 

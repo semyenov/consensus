@@ -30,6 +30,20 @@ pages:
     links:
       login: Login
       logout: Logout
+      columns: Columns
+      placeholder:
+        filter_titles: Filter titles...
+      no_results: No results.
+      selected_rows: of
+      total_rows: row(s)
+      previous: Previous
+      next: Next
+      open_menu: Open menu
+      actions: Actions
+      copy_issue_id: Copy issue ID
+      expand: Expand
+      view_customer: View customer
+      view_issue_details: View issue details
     title: Home
     description: >-
       The main application page, showing user information if authenticated,
