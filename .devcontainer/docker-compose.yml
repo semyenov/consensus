@@ -13,6 +13,7 @@ services:
       - EDGEDB_DSN=edgedb://edgedb:10701
       - EDGEDB_BRANCH=main
       - NITRO_PORT=3000
+    user: node
 
   # edgedb:
   #   image: edgedb/edgedb:5.6
