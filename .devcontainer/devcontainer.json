@@ -6,6 +6,5 @@
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 
   "forwardPorts": [3000],
-  "remoteUser": "node",
-  "postCreateCommand": "sudo corepack enable && yarn install --frozen-lockfile"
+  "remoteUser": "node"
 }
