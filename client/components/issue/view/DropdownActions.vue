@@ -18,7 +18,9 @@ defineProps<{
   }
 }>()
 
-const { t } = useI18n() // Initialize i18n
+// Initialize i18n
+const emit = defineEmits(['expand'])
+const { t } = useI18n()
 
 function copy(id: string) {
   navigator.clipboard.writeText(id)
@@ -38,7 +40,7 @@ function copy(id: string) {
       <DropdownMenuItem @click="copy(issue.id)">
         {{ t('pages.index.links.copy_issue_id') }}
       </DropdownMenuItem>
-      <DropdownMenuItem @click="$emit('expand')">
+      <DropdownMenuItem @click="emit('expand')">
         {{ t('pages.index.links.expand') }}
       </DropdownMenuItem>
       <DropdownMenuSeparator />

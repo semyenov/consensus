@@ -7,12 +7,5 @@
 
   "forwardPorts": [3000],
   "remoteUser": "node",
-  "postCreateCommand": "sudo corepack enable && yarn install --frozen-lockfile",
-  "customizations": {
-    "vscode": {
-      "extensions": [
-        "heybourn.headwind"
-      ]
-    }
-  }
+  "postCreateCommand": "sudo corepack enable && yarn install --frozen-lockfile"
 }

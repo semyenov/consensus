@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { MinusIcon } from '@radix-icons/vue'
+
 const { isLoggedIn, identity: user } = useEdgeDbIdentity()
 const router = useRouter()
 </script>
@@ -30,51 +32,47 @@ const router = useRouter()
     </h2>
 
     <p
-      class="mt-4 text-sm leading-tight text-center text-gray-800 dark:text-gray-300 w-80 max-w-screen"
+      class="mt-4 text-sm leading-tight text-center text-gray-800  dark:text-gray-300 w-80 max-w-screen"
     >
       {{ $t("pages.index.description") }}
     </p>
 
+    <Drawer v-if="user.assigned_issues.length">
+      <DrawerTrigger>
+        <Button class="mt-6 shadow-lg shadow-black/30">
+          {{ $t("pages.index.drawer.trigger") }}
+        </Button>
+      </DrawerTrigger>
+      <DrawerContent class="w-3/4 mx-auto max-w-screen">
+        <DrawerHeader>
+          <DrawerTitle>
+            <span>{{ $t("pages.index.drawer.title") }}</span>
+          </DrawerTitle>
+          <DrawerDescription>
+            {{ $t("pages.index.drawer.description") }}
+          </DrawerDescription>
+        </DrawerHeader>
+
+        <IssueView
+          class="relative flex flex-grow w-full overflow-auto"
+          :issues="user.assigned_issues"
+        />
+
+        <DrawerFooter class="p-0">
+          <DrawerClose class="absolute right-4 top-4">
+            <Button size="icon" variant="ghost">
+              <MinusIcon />
+            </Button>
+          </DrawerClose>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
+
     <div class="flex flex-row space-x-2">
-      <Drawer v-if="user.assigned_issues.length">
-        <DrawerTrigger>
-          <Button class="mt-6 shadow-lg shadow-black/10">
-            {{ $t("pages.index.drawer.trigger") }}
-          </Button>
-        </DrawerTrigger>
-        <DrawerContent class="w-full mx-auto overflow-hidden">
-          <DrawerHeader class="flex flex-col flex-shrink">
-            <DrawerTitle>
-              {{ $t("pages.index.drawer.title") }}
-            </DrawerTitle>
-            <DrawerDescription>
-              {{ $t("pages.index.drawer.description") }}
-            </DrawerDescription>
-          </DrawerHeader>
-
-          <!-- <ScrollArea class="w-full px-2 border-y h-[calc(100vh-220px)]"> -->
-          <IssueView
-            class="relative flex flex-grow w-full overflow-auto"
-            :issues="user.assigned_issues"
-          />
-
-          <!-- <IssueTable :issues="user.assigned_issues" /> -->
-          <!-- </ScrollArea> -->
-
-          <!-- <DrawerFooter class="flex items-end"> -->
-          <!-- <DrawerClose>  -->
-          <Button variant="outline">
-            {{ $t("pages.index.drawer.close") }}
-          </Button>
-        <!--    </DrawerClose> -->
-          <!-- </DrawerFooter> -->
-        </DrawerContent>
-      </Drawer>
-
       <Button
-        class="mt-6 shadow-lg shadow-black/10"
+        class="mt-2"
         type="button"
-        variant="outline"
+        variant="link"
         @click="router.push('/auth/logout')"
       >
         {{ $t("pages.index.links.logout") }}

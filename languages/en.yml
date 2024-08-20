@@ -61,11 +61,11 @@ pages:
 modules:
   issue:
     created_at: Creation Date
-    description: Detailed Task Description
-    name: Task Name
-    priority: Task Priority Level
-    status: Current Task Status
-    updated_at: Last Update Date
+    description: Description
+    name: Name
+    priority: Priority
+    status: Status
+    updated_at: Date
     plurals:
       issue: >-
         {n} issue selected | {n} issues selected | {n} issues selected

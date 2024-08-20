@@ -1,5 +1,6 @@
 {
   "recommendations": [
+    "ietxaniz.fold-ninja",
     "aaron-bond.better-comments",
     "alefragnani.bookmarks",
     "aliariff.auto-add-brackets",
@@ -27,6 +28,7 @@
     "formulahendry.auto-rename-tag",
     "helixquar.randomeverything",
     "heybourn.headwind",
+    "heybourn.headwind",
     "howardzuo.vscode-npm-dependency",
     "IBM.output-colorizer",
     "idered.npm",
@@ -49,9 +51,9 @@
     "phind.phind",
     "piotrpalarz.vscode-gitignore-generator",
     "quicktype.quicktype",
+    "Selemondev.shadcn-vue",
     "solomonkinard.git-search",
     "stackbreak.comment-divider",
-    "stivo.tailwind-fold",
     "stylelint.vscode-stylelint",
     "tombonnike.vscode-status-bar-format-toggle",
     "Tyriar.sort-lines",
@@ -64,7 +66,6 @@
     "yatki.vscode-surround",
     "yoavbls.pretty-ts-errors",
     "Yseop.vscode-yseopml",
-    "zardoy.ts-essential-plugins",
-    "Selemondev.shadcn-vue"
+    "zardoy.ts-essential-plugins"
   ]
 }

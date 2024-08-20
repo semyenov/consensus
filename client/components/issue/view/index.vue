@@ -10,7 +10,7 @@ import {
   getSortedRowModel,
   useVueTable,
 } from '@tanstack/vue-table'
-import { h, ref } from 'vue'
+// import { h, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { Badge } from '@/components/ui/badge'
@@ -38,10 +38,13 @@ import DropdownAction from './DropdownActions.vue'
 import type { issue } from '#edgedb/interfaces'
 import type {
   ColumnFiltersState,
+  ColumnSizingState,
   ExpandedState,
   SortingState,
   VisibilityState,
 } from '@tanstack/vue-table'
+
+import Id from '~~/server/api/issues/[id]'
 
 const props = withDefaults(
   defineProps<{
@@ -53,63 +56,72 @@ const props = withDefaults(
 )
 const { d, t } = useI18n()
 const data = toRef(props, 'issues')
-const columnHelper = createColumnHelper<issue.Issue>()
 
+const columnHelper = createColumnHelper<issue.Issue>()
 const columns = [
   columnHelper.display({
     id: 'select',
-    maxSize: 1,
+    enableHiding: false,
+    enablePinning: true,
+    enableSorting: false,
+    enableGrouping: true,
+    minSize: 0,
+    maxSize: 2,
+    size: 1,
     header: ({ table }) =>
       h(
         'div',
-        { class: 'capitalize px-2 h-full w-full justify-center text-nowrap bg-accent dark:bg-secondary flex items-center justify-center h-full w-full' },
+        { class: 'flex capitalize px-2 h-full w-full justify-center text-nowrap bg-accent dark:bg-secondary flex items-center justify-center h-full w-full pl-4' },
         h(Checkbox, {
           'role': 'checkbox',
-          'class': 'p-0 !pr-0',
           'checked': table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate'),
           'onUpdate:checked': value =>
             table.toggleAllPageRowsSelected(Boolean(value)),
         }),
       ),
-    enablePinning: true,
     cell: ({ row }) =>
       h(
         'div',
-        { class: 'capitalize px-2 h-full w-full justify-center text-nowrap flex items-center justify-center h-full w-full' },
+        { class: 'flex capitalize px-2 h-full w-full justify-center text-nowrap flex items-center justify-center h-full w-full pl-4' },
         h(Checkbox, {
           'role': 'checkbox',
-          'class': 'p-0 !pr-0',
           'checked': row.getIsSelected(),
           'onUpdate:checked': value => row.toggleSelected(Boolean(value)),
           'ariaLabel': 'Select row',
         }),
       ),
-    enableSorting: false,
-    enableHiding: false,
   }),
   columnHelper.accessor('status', {
+    enableHiding: false,
     enablePinning: true,
-    maxSize: 1,
+    minSize: 0,
+    maxSize: 2,
+    size: 1,
     header: ({ column }) =>
       h(
         Button,
         {
           onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
           variant: 'secondary',
-          class: 'capitalize w-full h-full border-none flex-1 px-4 rounded-none justify-start text-nowrap',
+          class: 'flex capitalize p-2 w-full h-full rounded-none text-nowrap justify-start',
         },
         () => [t('modules.issue.status'), h(CaretSortIcon, { class: 'ml-1' })],
       ),
     cell: ({ row }) =>
-      h('div', { class: 'capitalize px-2 flex h-full w-full items-center justify-center text-nowrap' }, [h(Badge, { variant: 'secondary' }, () => row.getValue('status'))]),
+      h('div', { class: 'flex capitalize p-2 w-full h-full rounded-none text-nowrap' }, [h(Badge, { variant: 'secondary' }, () => row.getValue('status'))]),
   }),
   columnHelper.accessor('name', {
+    enableHiding: false,
+    enableSorting: true,
+    minSize: 60,
+    size: 80,
+    maxSize: 100,
     header: ({ column }) =>
       h(
         Button,
         {
           variant: 'secondary',
-          class: 'capitalize w-full h-full border-none flex-1 px-4 rounded-none justify-start text-nowrap',
+          class: 'flex capitalize p-2 w-full h-full  rounded-none text-nowrap justify-start',
           onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
         },
         () => [t('modules.issue.name'), h(CaretSortIcon, { class: 'ml-1' } as any)],
@@ -118,19 +130,23 @@ const columns = [
       h(
         'div',
         {
-          class: 'lowercase px-2 text-nowrap w-full',
+          class: 'flex capitalize p-2 w-full h-full rounded-none text-nowrap',
           onClick: () => row.toggleExpanded(),
         },
         row.getValue('name'),
       ),
   }),
   columnHelper.accessor('updated_at', {
+    enableHiding: true,
     enableSorting: true,
+    minSize: 0,
+    maxSize: 2,
+    size: 1,
     header: ({ column }) => h(
       Button,
       {
         variant: 'secondary',
-        class: 'capitalize w-full h-full border-none flex-1 px-4 rounded-none justify-start text-nowrap',
+        class: 'flex capitalize p-2 w-full h-full rounded-none text-nowrap justify-end',
         onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
       },
       () => [t('modules.issue.updated_at'), h(CaretSortIcon, { class: 'ml-1' } as any)],
@@ -143,18 +159,19 @@ const columns = [
 
       return h(
         'div',
-        { class: 'w-20 font-light text-right text-nowrap' },
+        { class: 'flex capitalize p-2 w-full h-full rounded-none text-nowrap justify-end' },
         formatted,
       )
     },
   }),
   columnHelper.display({
     id: 'actions',
-    enableHiding: false,
-    maxSize: 1,
+    minSize: 0,
+    maxSize: 2,
+    size: 1,
     header: () => h(
       'div',
-      { class: 'capitalize h-full w-full justify-center text-nowrap bg-accent dark:bg-secondary flex items-center justify-center h-full w-full' },
+      { class: 'flex capitalize p-2 w-full h-full rounded-none text-nowrap bg-accent dark:bg-secondary' },
     ),
     cell: ({ row }) => {
       const issue = row.original
@@ -173,6 +190,7 @@ const columns = [
 ]
 
 const sorting = ref<SortingState>([])
+const columnSizing = ref<ColumnSizingState>({})
 const columnFilters = ref<ColumnFiltersState>([])
 const columnVisibility = ref<VisibilityState>({})
 const rowSelection = ref({})
@@ -181,26 +199,32 @@ const expanded = ref<ExpandedState>({})
 const table = useVueTable({
   data,
   columns,
-  debugHeaders: true,
+  keepPinnedRows: true,
   enableMultiRemove: true,
-  enableColumnResizing: true,
   enableMultiRowSelection: true,
-  rowCount: data.value.length,
-  columnResizeMode: 'onChange',
   getCoreRowModel: getCoreRowModel(),
   getPaginationRowModel: getPaginationRowModel(),
   getSortedRowModel: getSortedRowModel(),
   getFilteredRowModel: getFilteredRowModel(),
   getExpandedRowModel: getExpandedRowModel(),
-  onSortingChange: updaterOrValue => valueUpdater(updaterOrValue, sorting),
+  onSortingChange: updaterOrValue =>
+    valueUpdater(updaterOrValue, sorting),
   onColumnFiltersChange: updaterOrValue =>
     valueUpdater(updaterOrValue, columnFilters),
   onColumnVisibilityChange: updaterOrValue =>
     valueUpdater(updaterOrValue, columnVisibility),
   onRowSelectionChange: updaterOrValue =>
     valueUpdater(updaterOrValue, rowSelection),
-  onExpandedChange: updaterOrValue => valueUpdater(updaterOrValue, expanded),
+  onColumnSizingChange: updaterOrValue =>
+    valueUpdater(updaterOrValue, columnSizing),
+  onColumnSizingInfoChange: updaterOrValue =>
+    valueUpdater(updaterOrValue, columnSizing),
+  onExpandedChange: updaterOrValue =>
+    valueUpdater(updaterOrValue, expanded),
   state: {
+    get columnSizing() {
+      return columnSizing.value
+    },
     get sorting() {
       return sorting.value
     },
@@ -217,7 +241,8 @@ const table = useVueTable({
       return expanded.value
     },
     columnPinning: {
-      left: ['status'],
+      left: ['select', 'status'],
+      right: ['actions'],
     },
   },
 })
@@ -262,11 +287,11 @@ const table = useVueTable({
       <TableRow
         v-for="headerGroup in table.getHeaderGroups()"
         :key="headerGroup.id"
-        class="sticky top-0 z-30 bg-background/95"
       >
         <TableHead
           v-for="header in headerGroup.headers"
           :key="header.id"
+          :style="{ width: `${header.getSize()}%` } "
           :data-pinned="header.column.getIsPinned()"
           :class="
             cn(
@@ -286,7 +311,10 @@ const table = useVueTable({
     <TableBody>
       <template v-if="table.getRowModel().rows?.length">
         <template v-for="row in table.getRowModel().rows" :key="row.id">
-          <TableRow :data-state="row.getIsSelected() && 'selected'">
+          <TableRow
+            :data-state="row.getIsSelected() && 'selected'"
+            :data-pinned="row.getIsPinned()"
+          >
             <TableCell
               v-for="cell in row.getVisibleCells()"
               :key="cell.id"
@@ -325,7 +353,7 @@ const table = useVueTable({
       </template>
 
       <TableRow v-else>
-        <TableCell :colspan="columns.length" class="h-40 text-center ">
+        <TableCell :colspan="columns.length" class="p-4 text-center">
           {{ t('pages.index.links.no_results') }}
         </TableCell>
       </TableRow>
