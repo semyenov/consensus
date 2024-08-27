@@ -31,21 +31,27 @@ function copy(id: string) {
   <DropdownMenu>
     <DropdownMenuTrigger as-child>
       <Button variant="link" size="icon">
-        <span class="sr-only">{{ t('pages.index.links.open_menu') }}</span>
+        <span class="sr-only">{{ t("pages.index.links.open_menu") }}</span>
         <MoreHorizontal class="w-4" />
       </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end">
-      <DropdownMenuLabel>{{ t('pages.index.links.actions') }}</DropdownMenuLabel>
+      <DropdownMenuLabel>
+        {{ t("pages.index.links.actions") }}
+      </DropdownMenuLabel>
       <DropdownMenuItem @click="copy(issue.id)">
-        {{ t('pages.index.links.copy_issue_id') }}
+        {{ t("pages.index.links.copy_issue_id") }}
       </DropdownMenuItem>
       <DropdownMenuItem @click="emit('expand')">
-        {{ t('pages.index.links.expand') }}
+        {{ t("pages.index.links.expand") }}
       </DropdownMenuItem>
       <DropdownMenuSeparator />
-      <DropdownMenuItem>{{ t('pages.index.links.view_customer') }}</DropdownMenuItem>
-      <DropdownMenuItem>{{ t('pages.index.links.view_issue_details') }}</DropdownMenuItem>
+      <DropdownMenuItem>
+        {{ t("pages.index.links.view_customer") }}
+      </DropdownMenuItem>
+      <DropdownMenuItem>
+        {{ t("pages.index.links.view_issue_details") }}
+      </DropdownMenuItem>
     </DropdownMenuContent>
   </DropdownMenu>
 </template>

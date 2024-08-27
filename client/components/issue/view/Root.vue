@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CaretSortIcon, ChevronDownIcon } from '@radix-icons/vue'
+import { CaretSortIcon, CheckIcon, ChevronDownIcon } from '@radix-icons/vue'
 import {
   FlexRender,
   createColumnHelper,
@@ -10,19 +10,19 @@ import {
   getSortedRowModel,
   useVueTable,
 } from '@tanstack/vue-table'
-// import { h, ref } from 'vue'
+import { h, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Input } from '@/components/ui/input'
+// import {
+//   DropdownMenu,
+//   DropdownMenuCheckboxItem,
+//   DropdownMenuContent,
+//   DropdownMenuTrigger,
+// } from '@/components/ui/dropdown-menu'
+// import { Input } from '@/components/ui/input'
 import {
   Table,
   TableBody,
@@ -33,18 +33,18 @@ import {
 } from '@/components/ui/table'
 import { cn, valueUpdater } from '@/lib/utils'
 
-import DropdownAction from './DropdownActions.vue'
+import Action from './Actions.vue'
 
 import type { issue } from '#edgedb/interfaces'
 import type {
   ColumnFiltersState,
   ColumnSizingState,
   ExpandedState,
+  PaginationState,
+  RowSelectionState,
   SortingState,
   VisibilityState,
 } from '@tanstack/vue-table'
-
-import Id from '~~/server/api/issues/[id]'
 
 const props = withDefaults(
   defineProps<{
@@ -54,9 +54,11 @@ const props = withDefaults(
     issues: () => [] as issue.Issue[],
   },
 )
-const { d, t } = useI18n()
-const data = toRef(props, 'issues')
 
+// const id = useId()
+const { d, t } = useI18n()
+
+const data = toRef(props, 'issues')
 const columnHelper = createColumnHelper<issue.Issue>()
 const columns = [
   columnHelper.display({
@@ -67,14 +69,19 @@ const columns = [
     enableGrouping: true,
     minSize: 0,
     maxSize: 2,
-    size: 1,
+    size: 0,
     header: ({ table }) =>
       h(
         'div',
-        { class: 'flex capitalize px-2 h-full w-full justify-center text-nowrap bg-accent dark:bg-secondary flex items-center justify-center h-full w-full pl-4' },
+        {
+          class:
+            'flex capitalize h-full w-full justify-center text-nowrap bg-accent dark:bg-secondary flex items-center justify-center h-full w-full px-4',
+        },
         h(Checkbox, {
           'role': 'checkbox',
-          'checked': table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate'),
+          'checked':
+            table.getIsAllPageRowsSelected()
+            || (table.getIsSomePageRowsSelected() && 'indeterminate'),
           'onUpdate:checked': value =>
             table.toggleAllPageRowsSelected(Boolean(value)),
         }),
@@ -82,7 +89,10 @@ const columns = [
     cell: ({ row }) =>
       h(
         'div',
-        { class: 'flex capitalize px-2 h-full w-full justify-center text-nowrap flex items-center justify-center h-full w-full pl-4' },
+        {
+          class:
+            'flex capitalize h-full w-full justify-center text-nowrap flex items-center justify-center h-full w-full px-4',
+        },
         h(Checkbox, {
           'role': 'checkbox',
           'checked': row.getIsSelected(),
@@ -96,19 +106,24 @@ const columns = [
     enablePinning: true,
     minSize: 0,
     maxSize: 2,
-    size: 1,
+    size: 0,
     header: ({ column }) =>
       h(
         Button,
         {
           onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
           variant: 'secondary',
-          class: 'flex capitalize p-2 w-full h-full rounded-none text-nowrap justify-start',
+          class:
+            'flex capitalize px-4 py-2 w-full h-full rounded-none text-nowrap justify-start',
         },
         () => [t('modules.issue.status'), h(CaretSortIcon, { class: 'ml-1' })],
       ),
     cell: ({ row }) =>
-      h('div', { class: 'flex capitalize p-2 w-full h-full rounded-none text-nowrap' }, [h(Badge, { variant: 'secondary' }, () => row.getValue('status'))]),
+      h(
+        'div',
+        { class: 'flex capitalize p-2 w-full h-full rounded-none text-nowrap' },
+        [h(Badge, { variant: 'secondary' }, () => row.getValue('status'))],
+      ),
   }),
   columnHelper.accessor('name', {
     enableHiding: false,
@@ -121,10 +136,14 @@ const columns = [
         Button,
         {
           variant: 'secondary',
-          class: 'flex capitalize p-2 w-full h-full  rounded-none text-nowrap justify-start',
+          class:
+            'flex capitalize p-2 w-full h-full  rounded-none text-nowrap justify-start',
           onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
         },
-        () => [t('modules.issue.name'), h(CaretSortIcon, { class: 'ml-1' } as any)],
+        () => [
+          t('modules.issue.name'),
+          h(CaretSortIcon, { class: 'ml-1' } as any),
+        ],
       ),
     cell: ({ row }) =>
       h(
@@ -141,16 +160,21 @@ const columns = [
     enableSorting: true,
     minSize: 0,
     maxSize: 2,
-    size: 1,
-    header: ({ column }) => h(
-      Button,
-      {
-        variant: 'secondary',
-        class: 'flex capitalize p-2 w-full h-full rounded-none text-nowrap justify-end',
-        onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-      },
-      () => [t('modules.issue.updated_at'), h(CaretSortIcon, { class: 'ml-1' } as any)],
-    ),
+    size: 0,
+    header: ({ column }) =>
+      h(
+        Button,
+        {
+          variant: 'secondary',
+          class:
+            'flex capitalize px-4 py-2 w-full h-full rounded-none text-nowrap justify-end',
+          onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+        },
+        () => [
+          t('modules.issue.updated_at'),
+          h(CaretSortIcon, { class: 'ml-1' } as any),
+        ],
+      ),
     cell: ({ row }) => {
       const updatedAt = Number.parseFloat(row.getValue('updated_at'))
 
@@ -159,7 +183,10 @@ const columns = [
 
       return h(
         'div',
-        { class: 'flex capitalize p-2 w-full h-full rounded-none text-nowrap justify-end' },
+        {
+          class:
+            'flex capitalize px-4 py-2 w-full h-full rounded-none text-nowrap justify-end',
+        },
         formatted,
       )
     },
@@ -168,18 +195,19 @@ const columns = [
     id: 'actions',
     minSize: 0,
     maxSize: 2,
-    size: 1,
-    header: () => h(
-      'div',
-      { class: 'flex capitalize p-2 w-full h-full rounded-none text-nowrap bg-accent dark:bg-secondary' },
-    ),
+    size: 0,
+    header: () =>
+      h('div', {
+        class:
+          'flex capitalize px-4 py-2 w-full h-full rounded-none text-nowrap bg-accent dark:bg-secondary',
+      }),
     cell: ({ row }) => {
       const issue = row.original
 
       return h(
         'div',
         { class: 'relative text-right px-2' },
-        h(DropdownAction, {
+        h(Action, {
           issue,
           onExpand: row.toggleExpanded,
           expanded: row.getIsExpanded(),
@@ -193,22 +221,37 @@ const sorting = ref<SortingState>([])
 const columnSizing = ref<ColumnSizingState>({})
 const columnFilters = ref<ColumnFiltersState>([])
 const columnVisibility = ref<VisibilityState>({})
-const rowSelection = ref({})
 const expanded = ref<ExpandedState>({})
+const rowSelection = ref<RowSelectionState>({})
+const pagination = ref<PaginationState>({
+  pageIndex: 1,
+  pageSize: 30,
+})
+
+// New state for total row count
+const totalRowCount = ref(0)
 
 const table = useVueTable({
-  data,
   columns,
   keepPinnedRows: true,
+  manualPagination: false,
   enableMultiRemove: true,
+  enableRowPinning: true,
+  enableRowSelection: true,
   enableMultiRowSelection: true,
+
   getCoreRowModel: getCoreRowModel(),
   getPaginationRowModel: getPaginationRowModel(),
   getSortedRowModel: getSortedRowModel(),
   getFilteredRowModel: getFilteredRowModel(),
   getExpandedRowModel: getExpandedRowModel(),
-  onSortingChange: updaterOrValue =>
-    valueUpdater(updaterOrValue, sorting),
+
+  onPaginationChange: (updaterOrValue) => {
+    valueUpdater(updaterOrValue, pagination)
+    // Update total row count when pagination changes
+    totalRowCount.value = table.getRowModel().rows.length
+  },
+  onSortingChange: updaterOrValue => valueUpdater(updaterOrValue, sorting),
   onColumnFiltersChange: updaterOrValue =>
     valueUpdater(updaterOrValue, columnFilters),
   onColumnVisibilityChange: updaterOrValue =>
@@ -219,9 +262,15 @@ const table = useVueTable({
     valueUpdater(updaterOrValue, columnSizing),
   onColumnSizingInfoChange: updaterOrValue =>
     valueUpdater(updaterOrValue, columnSizing),
-  onExpandedChange: updaterOrValue =>
-    valueUpdater(updaterOrValue, expanded),
+  onExpandedChange: updaterOrValue => valueUpdater(updaterOrValue, expanded),
+
+  get data() {
+    return data.value
+  },
   state: {
+    get pagination() {
+      return pagination.value
+    },
     get columnSizing() {
       return columnSizing.value
     },
@@ -240,65 +289,41 @@ const table = useVueTable({
     get expanded() {
       return expanded.value
     },
-    columnPinning: {
-      left: ['select', 'status'],
-      right: ['actions'],
+    get rowPinning() {
+      return {
+        top: ['header-1'],
+      }
+    },
+    get columnPinning() {
+      return {
+        left: ['select', 'status'],
+        right: ['actions'],
+      }
     },
   },
 })
+
+// const tableHeaderRef = ref<HTMLElement | null>(null)
+// const tableBodyRef = ref<HTMLElement | null>(null)
+//
+// onMounted(() => {
+//   autoAnimate(tableHeaderRef!.value)
+//   autoAnimate(tableBodyRef!.value)
+// })
 </script>
 
 <template>
-  <div class="flex items-center gap-2 px-4 pb-4 mt-2 space-x-2">
-    <Input
-      class="w-full"
-      :placeholder="t('pages.index.links.placeholder.filter_titles')"
-      :model-value="table.getColumn('name')?.getFilterValue() as string"
-      @update:model-value="table.getColumn('name')?.setFilterValue($event)"
-    />
-    <DropdownMenu>
-      <DropdownMenuTrigger as-child>
-        <Button variant="outline" class="ml-auto">
-          {{ t('pages.index.links.columns') }}
-          <ChevronDownIcon class="ml-1" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuCheckboxItem
-          v-for="column in table
-            .getAllColumns()
-            .filter((column) => column.getCanHide())"
-          :key="column.id"
-          class="capitalize"
-          :checked="column.getIsVisible()"
-          @update:checked="
-            (value) => {
-              column.toggleVisibility(!!value);
-            }
-          "
-        >
-          {{ column.id }}
-        </DropdownMenuCheckboxItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  </div>
   <Table>
-    <TableHeader>
+    <TableHeader class="sticky top-0 z-30">
       <TableRow
         v-for="headerGroup in table.getHeaderGroups()"
         :key="headerGroup.id"
+        class="sticky top-0 z-30"
       >
         <TableHead
           v-for="header in headerGroup.headers"
           :key="header.id"
-          :style="{ width: `${header.getSize()}%` } "
-          :data-pinned="header.column.getIsPinned()"
-          :class="
-            cn(
-              { 'sticky bg-background/95 z-20': header.column.getIsPinned() },
-              header.column.getIsPinned() === 'left' ? 'left-0' : 'right-0',
-            )
-          "
+          class="sticky top-0 z-30"
         >
           <FlexRender
             v-if="!header.isPlaceholder"
@@ -308,8 +333,8 @@ const table = useVueTable({
         </TableHead>
       </TableRow>
     </TableHeader>
-    <TableBody>
-      <template v-if="table.getRowModel().rows?.length">
+    <template v-if="table.getRowModel().rows?.length">
+      <TableBody>
         <template v-for="row in table.getRowModel().rows" :key="row.id">
           <TableRow
             :data-state="row.getIsSelected() && 'selected'"
@@ -334,11 +359,13 @@ const table = useVueTable({
           </TableRow>
           <TableRow v-if="row.getIsExpanded()">
             <TableCell :colspan="row.getAllCells().length">
-              <div class="flex flex-col flex-grow px-4 py-4 bg-secondary/50 dark:bg-accent/75">
+              <div
+                class="flex flex-col flex-grow px-4 py-4 bg-secondary/50 dark:bg-accent/75"
+              >
                 <div class="flex flex-row items-center justify-between gap-2">
-                  <H2 class="text-2xl">
+                  <h2 class="text-2xl">
                     {{ row.original.name }}
-                  </H2>
+                  </h2>
                   <Badge v-if="row.original.priority" variant="outline">
                     {{ row.original.priority }}
                   </Badge>
@@ -350,39 +377,15 @@ const table = useVueTable({
             </TableCell>
           </TableRow>
         </template>
-      </template>
+      </TableBody>
+    </template>
 
-      <TableRow v-else>
+    <TableBody v-else>
+      <TableRow>
         <TableCell :colspan="columns.length" class="p-4 text-center">
-          {{ t('pages.index.links.no_results') }}
+          {{ t("pages.index.links.no_results") }}
         </TableCell>
       </TableRow>
     </TableBody>
   </Table>
-
-  <div
-    class="flex flex-row items-center justify-between p-4 space-x-2 border-t"
-  >
-    <div class="text-sm text-muted-foreground">
-      {{ t('modules.issue.plurals.issue', table.getFilteredSelectedRowModel().rows.length) }}
-    </div>
-    <div class="flex flex-row gap-2">
-      <Button
-        variant="outline"
-        size="sm"
-        :disabled="!table.getCanPreviousPage()"
-        @click="table.previousPage()"
-      >
-        {{ t('pages.index.links.previous') }}
-      </Button>
-      <Button
-        variant="outline"
-        size="sm"
-        :disabled="!table.getCanNextPage()"
-        @click="table.nextPage()"
-      >
-        {{ t('pages.index.links.next') }}
-      </Button>
-    </div>
-  </div>
 </template>

@@ -1,16 +1,20 @@
 <script setup lang="ts">
-import type { issue } from '#edgedb/interfaces'
+import type { issue } from "#edgedb/interfaces";
 
-const props = withDefaults(defineProps<{
-  issues: issue.Issue[]
-}>(), {
-  issues: () => [],
-})
+const props = withDefaults(
+  defineProps<{
+    issues: issue.Issue[];
+  }>(),
+  {
+    issues: () => [],
+  },
+);
 </script>
 
 <template>
   <Table>
-    <TableBody>
+    <TableBody
+      >:cc
       <TableRow v-for="item in props.issues" :key="item.id">
         <TableCell class="font-medium">
           {{ item.name }}
@@ -21,7 +25,9 @@ const props = withDefaults(defineProps<{
             {{ item.status }}
           </Badge>
         </TableCell>
-        <TableCell><Badge>{{ item.priority }}</Badge></TableCell>
+        <TableCell
+          ><Badge>{{ item.priority }}</Badge></TableCell
+        >
         <TableCell class="text-right">
           {{ $d(item.created_at) }}
         </TableCell>

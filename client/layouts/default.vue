@@ -31,6 +31,6 @@ html,
 body,
 #__nuxt,
 #__layout {
-  @apply !h-screen;
+  @apply !h-screen !w-screen;
 }
 </style>
