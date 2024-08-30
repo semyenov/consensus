@@ -73,9 +73,7 @@ implements SyncInstance<T, E> {
 
     if (options.start !== false) {
       this.start()
-        .catch((error) => {
-          return this.events.dispatchEvent(new ErrorEvent('error', { error }))
-        },
+        .catch(error => this.events.dispatchEvent(new ErrorEvent('error', { error })),
         )
     }
   }
@@ -95,9 +93,7 @@ implements SyncInstance<T, E> {
   }
 
   private sendHeads(): () => Source<Uint8Array> {
-    return () => {
-      return this.headsIterator()
-    }
+    return () => this.headsIterator()
   }
 
   private receiveHeads(
@@ -139,9 +135,7 @@ implements SyncInstance<T, E> {
         const { peerId: remotePeer, subscriptions } = event.detail
         const peerId = remotePeer
         const subscription = subscriptions.find(
-          (e: any) => {
-            return e.topic === this.address
-          },
+          (e: any) => e.topic === this.address,
         )
         if (!subscription) {
           return

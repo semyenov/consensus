@@ -2,7 +2,6 @@ import { deepStrictEqual, strictEqual } from 'node:assert'
 
 import { copy } from 'fs-extra'
 import { rimraf } from 'rimraf'
-import { toString as uint8ArrayToString } from 'uint8arrays'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, it } from 'vitest'
 
 import {
@@ -15,9 +14,6 @@ import connectPeers from '../../utils/connect-nodes.js'
 import createHelia from '../../utils/create-helia.js'
 import waitFor from '../../utils/wait-for.js'
 
-import type {
-  Database,
-} from '../../../src'
 import type { Identity } from '../../../src/identities/identity'
 import type { HeliaInstance } from '../../../src/vendor'
 
@@ -138,16 +134,8 @@ describe('documents Database Replication', () => {
     await db1.put({ _id: 3, msg: 'record 3 on db 1' })
     await db2.put({ _id: 4, msg: 'record 4 on db 2' })
 
-    await waitFor(() => {
-      return connected1
-    }, () => {
-      return true
-    })
-    await waitFor(() => {
-      return connected2
-    }, () => {
-      return true
-    })
+    await waitFor(() => connected1, () => true)
+    await waitFor(() => connected2, () => true)
 
     const all1: DocumentsDoc[] = []
     for await (const item of db1.iterator()) {

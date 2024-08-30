@@ -16,7 +16,7 @@ function config(
     [
       {
         rules: {
-          
+
           'no-empty-function': 'off',
           'arrow-body-style': ['error', 'as-needed'],
 

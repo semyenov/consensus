@@ -1,5 +1,5 @@
 import { deepEqual, strictEqual } from 'node:assert'
-import { existsSync, readdir } from 'node:fs'
+import { existsSync } from 'node:fs'
 import path from 'node:path'
 
 import { copy } from 'fs-extra'

@@ -253,10 +253,8 @@ export class OrbitDB implements OrbitDBInstance {
     return database
   }
 
-  private onDatabaseClosed = (address: string) => {
-    return (): void => {
-      delete this.databases[address!]
-    }
+  private onDatabaseClosed = (address: string) => (): void => {
+    delete this.databases[address!]
   }
 
   async stop(): Promise<void> {

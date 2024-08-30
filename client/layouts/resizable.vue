@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { MoonIcon, SunIcon } from "@radix-icons/vue";
+import { MoonIcon, SunIcon } from '@radix-icons/vue'
 
-const { isLoggedIn } = useEdgeDbIdentity();
+const { isLoggedIn } = useEdgeDbIdentity()
 
-const isDark = useDark();
-const toggleDark = useToggle(isDark);
-const { identity: user } = useEdgeDbIdentity();
+const isDark = useDark()
+const toggleDark = useToggle(isDark)
+const { identity: user } = useEdgeDbIdentity()
 </script>
 
 <template>

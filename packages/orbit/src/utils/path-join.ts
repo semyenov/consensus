@@ -1,6 +1,7 @@
 export function posixJoin(...paths: string[]) {
   return (
-    paths.join('/').replaceAll(/((?<=\/)\/+)|(^\.\/)|((?<=\/)\.\/)/g, '') || '.'
+    paths.join('/')
+      .replaceAll(/((?<=\/)\/+)|(^\.\/)|((?<=\/)\.\/)/g, '') || '.'
   )
 }
 

@@ -114,25 +114,17 @@ describe('events Database', () => {
 
     const all = await db.all()
 
-    deepStrictEqual(all.map((e) => {
-      return e.value
-    }), events)
+    deepStrictEqual(all.map(e => e.value), events)
   })
 
   describe('iterator Options', () => {
     let hashes: string[] = []
-    const last = (arr) => {
-      return arr[arr.length - 1]
-    }
-    const first = (arr) => {
-      return arr[0]
-    }
+    const last = arr => arr[arr.length - 1]
+    const first = arr => arr[0]
 
     beforeEach(async () => {
       hashes = await Promise.all(
-        [0, 1, 2, 3, 4].map((i) => {
-          return db.add(`hello${i}`)
-        }),
+        [0, 1, 2, 3, 4].map(i => db.add(`hello${i}`)),
       )
     })
 
@@ -146,9 +138,7 @@ describe('events Database', () => {
         }
 
         strictEqual(all.length, 1)
-        deepStrictEqual(all.map((e) => {
-          return e.value
-        }), expected)
+        deepStrictEqual(all.map(e => e.value), expected)
       })
 
       it('returns two items', async () => {
@@ -160,9 +150,7 @@ describe('events Database', () => {
         }
 
         strictEqual(all.length, 2)
-        deepStrictEqual(all.map((e) => {
-          return e.value
-        }), expected)
+        deepStrictEqual(all.map(e => e.value), expected)
       })
 
       it('returns three items', async () => {
@@ -174,9 +162,7 @@ describe('events Database', () => {
         }
 
         strictEqual(all.length, 3)
-        deepStrictEqual(all.map((e) => {
-          return e.value
-        }), expected)
+        deepStrictEqual(all.map(e => e.value), expected)
       })
 
       it('sets \'amount\' greater than items available', async () => {
@@ -188,9 +174,7 @@ describe('events Database', () => {
         }
 
         strictEqual(all.length, 5)
-        deepStrictEqual(all.map((e) => {
-          return e.value
-        }), expected)
+        deepStrictEqual(all.map(e => e.value), expected)
       })
 
       it('sets \'amount\' to 0', async () => {
@@ -202,9 +186,7 @@ describe('events Database', () => {
         }
 
         strictEqual(all.length, 0)
-        deepStrictEqual(all.map((e) => {
-          return e.value
-        }), expected)
+        deepStrictEqual(all.map(e => e.value), expected)
       })
     })
 
@@ -218,9 +200,7 @@ describe('events Database', () => {
         }
 
         strictEqual(all.length, 4)
-        deepStrictEqual(all.map((e) => {
-          return e.value
-        }), expected)
+        deepStrictEqual(all.map(e => e.value), expected)
       })
 
       it('returns one item less than head', async () => {
@@ -234,9 +214,7 @@ describe('events Database', () => {
         }
 
         strictEqual(all.length, 1)
-        deepStrictEqual(all.map((e) => {
-          return e.value
-        }), expected)
+        deepStrictEqual(all.map(e => e.value), expected)
       })
 
       it('returns two items less than head', async () => {
@@ -250,9 +228,7 @@ describe('events Database', () => {
         }
 
         strictEqual(all.length, 2)
-        deepStrictEqual(all.map((e) => {
-          return e.value
-        }), expected)
+        deepStrictEqual(all.map(e => e.value), expected)
       })
     })
 
@@ -266,9 +242,7 @@ describe('events Database', () => {
         }
 
         strictEqual(all.length, 5)
-        deepStrictEqual(all.map((e) => {
-          return e.value
-        }), expected)
+        deepStrictEqual(all.map(e => e.value), expected)
       })
 
       it('returns one item less than or equal to head', async () => {
@@ -282,9 +256,7 @@ describe('events Database', () => {
         }
 
         strictEqual(all.length, 1)
-        deepStrictEqual(all.map((e) => {
-          return e.value
-        }), expected)
+        deepStrictEqual(all.map(e => e.value), expected)
       })
 
       it('returns two items less than or equal to head', async () => {
@@ -298,9 +270,7 @@ describe('events Database', () => {
         }
 
         strictEqual(all.length, 2)
-        deepStrictEqual(all.map((e) => {
-          return e.value
-        }), expected)
+        deepStrictEqual(all.map(e => e.value), expected)
       })
     })
 
@@ -314,9 +284,7 @@ describe('events Database', () => {
         }
 
         strictEqual(all.length, 4)
-        deepStrictEqual(all.map((e) => {
-          return e.value
-        }), expected)
+        deepStrictEqual(all.map(e => e.value), expected)
       })
 
       it('returns one item greater than root', async () => {
@@ -330,9 +298,7 @@ describe('events Database', () => {
         }
 
         strictEqual(all.length, 1)
-        deepStrictEqual(all.map((e) => {
-          return e.value
-        }), expected)
+        deepStrictEqual(all.map(e => e.value), expected)
       })
 
       it('returns two items greater than root', async () => {
@@ -346,9 +312,7 @@ describe('events Database', () => {
         }
 
         strictEqual(all.length, 2)
-        deepStrictEqual(all.map((e) => {
-          return e.value
-        }), expected)
+        deepStrictEqual(all.map(e => e.value), expected)
       })
     })
 
@@ -362,9 +326,7 @@ describe('events Database', () => {
         }
 
         strictEqual(all.length, 5)
-        deepStrictEqual(all.map((e) => {
-          return e.value
-        }), expected)
+        deepStrictEqual(all.map(e => e.value), expected)
       })
 
       it('returns one item greater than or equal to root', async () => {
@@ -378,9 +340,7 @@ describe('events Database', () => {
         }
 
         strictEqual(all.length, 1)
-        deepStrictEqual(all.map((e) => {
-          return e.value
-        }), expected)
+        deepStrictEqual(all.map(e => e.value), expected)
       })
 
       it('returns two items greater than or equal to root', async () => {
@@ -394,9 +354,7 @@ describe('events Database', () => {
         }
 
         strictEqual(all.length, 2)
-        deepStrictEqual(all.map((e) => {
-          return e.value
-        }), expected)
+        deepStrictEqual(all.map(e => e.value), expected)
       })
     })
 
@@ -412,9 +370,7 @@ describe('events Database', () => {
         }
 
         strictEqual(all.length, 3)
-        deepStrictEqual(all.map((e) => {
-          return e.value
-        }), expected)
+        deepStrictEqual(all.map(e => e.value), expected)
       })
     })
   })

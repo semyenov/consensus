@@ -1,4 +1,4 @@
-import type { IdentityProviderInstance, IdentityProviderOptions } from 'packages/orbit/src/identities'
+import type { IdentityProviderInstance } from 'packages/orbit/src/identities'
 
 const type = 'fake'
 
@@ -34,9 +34,7 @@ class FakeIdentityProvider implements IdentityProviderInstance {
     return 'pubKey'
   }
 
-  signIdentity = (data: string) => {
-    return `false signature '${data}'`
-  }
+  signIdentity = (data: string) => `false signature '${data}'`
 
   verifyIdentity = verifyIdentity
 }

@@ -125,9 +125,7 @@ export class Log<T> implements LogInstance<T> {
     return {
       write: [],
       type: 'allow-all',
-      canAppend: async (entry: EntryInstance<any>) => {
-        return true
-      },
+      canAppend: async (entry: EntryInstance<any>) => true,
     }
   }
 
@@ -183,9 +181,7 @@ export class Log<T> implements LogInstance<T> {
   ): Promise<EntryInstance<T>> {
     return this.appendQueue.add(async () => {
       const headsEntries = await this.heads()
-      const next_ = headsEntries.map((entry) => {
-        return entry
-      })
+      const next_ = headsEntries.map(entry => entry)
       const refs_ = await this.getReferences(
         headsEntries,
         options.referencesCount + headsEntries.length,
@@ -195,9 +191,7 @@ export class Log<T> implements LogInstance<T> {
         this.id,
         data,
         (await this.clock()).tick(),
-        next_.map((n) => {
-          return n.hash!
-        }),
+        next_.map(n => n.hash!),
         refs_,
       )
 
@@ -240,12 +234,8 @@ export class Log<T> implements LogInstance<T> {
       await this.verifyEntry(entry)
 
       const headsHashes = (await this.heads())
-        .map((e) => {
-          return e.hash
-        })
-        .filter((e) => {
-          return e !== undefined
-        })
+        .map(e => e.hash)
+        .filter(e => e !== undefined)
       const hashesToAdd = new Set([entry.hash!])
       const hashesToGet = new Set([
         ...(entry.next ?? []),
@@ -287,9 +277,7 @@ export class Log<T> implements LogInstance<T> {
     let stack = rootEntries_.sort(this.sortFn)
     const fetched: Record<string, boolean> = {}
     const traversed: Record<string, boolean> = {}
-    const notIndexed = (hash: string) => {
-      return !(traversed[hash!] || fetched[hash!])
-    }
+    const notIndexed = (hash: string) => !(traversed[hash!] || fetched[hash!])
 
     while (stack.length > 0) {
       stack = stack.sort(this.sortFn)
@@ -315,16 +303,12 @@ export class Log<T> implements LogInstance<T> {
               return await this.get(hash)
             }
           }))
-        ).filter((e): e is EntryInstance<T> => {
-          return e !== null && e !== undefined
-        })
+        ).filter((e): e is EntryInstance<T> => e !== null && e !== undefined)
         toFetch = nexts
           .reduce(
-            (acc, cur) => {
-              return Array.from(
-                new Set([...acc, ...cur.next!, ...(useRefs ? cur.refs! : []).values()]),
-              )
-            },
+            (acc, cur) => Array.from(
+              new Set([...acc, ...cur.next!, ...(useRefs ? cur.refs! : []).values()]),
+            ),
             [] as string[],
           )
           .filter(notIndexed)
@@ -410,9 +394,7 @@ export class Log<T> implements LogInstance<T> {
   private defaultStopFn = async (
     entry: EntryInstance<T>,
     useRefs: boolean,
-  ): Promise<boolean> => {
-    return false
-  }
+  ): Promise<boolean> => false
 
   private async getStartEntries(
     lt?: string,
@@ -428,14 +410,10 @@ export class Log<T> implements LogInstance<T> {
       const entry = await this.get(lt)
       if (entry) {
         const nexts = await Promise.all(
-          (entry.next ?? []).map((n) => {
-            return this.get(n)
-          }),
+          (entry.next ?? []).map(n => this.get(n)),
         )
 
-        return nexts.filter((e): e is EntryInstance<T> => {
-          return e !== null
-        })
+        return nexts.filter((e): e is EntryInstance<T> => e !== null)
       }
     }
 
@@ -468,12 +446,8 @@ export class Log<T> implements LogInstance<T> {
     connectedHeads: Set<string>,
   ): Promise<void> {
     const getEntries = Array.from(hashesToGet.values())
-      .filter((hash) => {
-        return this.has(hash)
-      })
-      .map((hash) => {
-        return this.get(hash)
-      })
+      .filter(hash => this.has(hash))
+      .map(hash => this.get(hash))
     const entries = await Promise.all(getEntries)
 
     for (const e of entries) {
@@ -511,9 +485,7 @@ export class Log<T> implements LogInstance<T> {
     amount: number,
   ): Promise<string[]> {
     let refs: string[] = []
-    const shouldStopTraversal = async () => {
-      return refs.length >= amount && amount !== -1
-    }
+    const shouldStopTraversal = async () => refs.length >= amount && amount !== -1
     for await (const { hash } of this.traverse(
       heads,
       shouldStopTraversal,

@@ -111,9 +111,7 @@ describe('database - Replication', () => {
         const { peerId, heads } = customEvent.detail
         console.log('onConnected', peerId)
         replicated = expectedEntryHash !== null
-        && heads.map((e) => {
-          return e.hash
-        })
+        && heads.map(e => e.hash)
           .includes(expectedEntryHash)
       }
 
@@ -147,12 +145,8 @@ describe('database - Replication', () => {
       })
 
       await waitFor(
-        () => {
-          return replicated
-        },
-        () => {
-          return true
-        },
+        () => replicated,
+        () => true,
       )
 
       console.log('added record 1 on db 1')
@@ -177,9 +171,7 @@ describe('database - Replication', () => {
         const { peerId, heads } = event.detail
         console.log('peerId', peerId)
         replicated = expectedEntryHash
-        && heads.map((e) => {
-          return e.hash
-        })
+        && heads.map(e => e.hash)
           .includes(expectedEntryHash)
       }
 
@@ -202,18 +194,14 @@ describe('database - Replication', () => {
       await db1.addOperation({ op: 'PUT', key: 1, value: 'record 1 on db 1' })
 
       await new Promise<void>((resolve) => {
-        setTimeout(() => {
-          return resolve()
-        }, 1000)
+        setTimeout(() => resolve(), 1000)
       })
 
       await db1.addOperation({ op: 'PUT', key: 2, value: 'record 2 on db 1' })
       await db1.addOperation({ op: 'PUT', key: 3, value: 'record 3 on db 1' })
 
       await new Promise<void>((resolve) => {
-        setTimeout(() => {
-          return resolve()
-        }, 1000)
+        setTimeout(() => resolve(), 1000)
       })
 
       expectedEntryHash = await db1.addOperation({
@@ -223,12 +211,8 @@ describe('database - Replication', () => {
       })
 
       await waitFor(
-        () => {
-          return replicated
-        },
-        () => {
-          return true
-        },
+        () => replicated,
+        () => true,
       )
 
       const all1: EntryInstance[] = []
@@ -264,12 +248,8 @@ describe('database - Replication', () => {
       db2.sync.events.addEventListener('join', onConnected)
 
       await waitFor(
-        () => {
-          return connected
-        },
-        () => {
-          return true
-        },
+        () => connected,
+        () => true,
       )
 
       const all1: EntryInstance[] = []
@@ -334,20 +314,12 @@ describe('database - Replication', () => {
       await db1.addOperation({ op: 'PUT', key: String(4), value: 'record 4 on db 1' })
 
       await waitFor(
-        () => {
-          return connected1
-        },
-        () => {
-          return true
-        },
+        () => connected1,
+        () => true,
       )
       await waitFor(
-        () => {
-          return connected2
-        },
-        () => {
-          return true
-        },
+        () => connected2,
+        () => true,
       )
 
       const all1: EntryInstance[] = []
@@ -409,39 +381,23 @@ describe('database - Replication', () => {
       db2.events.addEventListener('update', onUpdate2)
 
       await waitFor(
-        () => {
-          return connected1
-        },
-        () => {
-          return true
-        },
+        () => connected1,
+        () => true,
       )
       await waitFor(
-        () => {
-          return connected2
-        },
-        () => {
-          return true
-        },
+        () => connected2,
+        () => true,
       )
 
       await db1.addOperation({ op: 'PUT', key: 1, value: 'record 1 on db 1' })
 
       await waitFor(
-        () => {
-          return updateCount1 >= expected
-        },
-        () => {
-          return true
-        },
+        () => updateCount1 >= expected,
+        () => true,
       )
       await waitFor(
-        () => {
-          return updateCount2 >= expected
-        },
-        () => {
-          return true
-        },
+        () => updateCount2 >= expected,
+        () => true,
       )
 
       strictEqual(updateCount1, expected)
@@ -477,20 +433,12 @@ describe('database - Replication', () => {
       db2.events.addEventListener('update', onUpdate2)
 
       await waitFor(
-        () => {
-          return connected1
-        },
-        () => {
-          return true
-        },
+        () => connected1,
+        () => true,
       )
       await waitFor(
-        () => {
-          return connected2
-        },
-        () => {
-          return true
-        },
+        () => connected2,
+        () => true,
       )
 
       await db1.addOperation({ op: 'PUT', key: String(1), value: '11' })
@@ -499,20 +447,12 @@ describe('database - Replication', () => {
       await db1.addOperation({ op: 'PUT', key: String(4), value: '44' })
 
       await waitFor(
-        () => {
-          return updateCount1 >= expected
-        },
-        () => {
-          return true
-        },
+        () => updateCount1 >= expected,
+        () => true,
       )
       await waitFor(
-        () => {
-          return updateCount2 >= expected
-        },
-        () => {
-          return true
-        },
+        () => updateCount2 >= expected,
+        () => true,
       )
 
       strictEqual(updateCount1, expected)

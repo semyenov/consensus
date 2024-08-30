@@ -28,6 +28,11 @@ import type { LogInstance } from './oplog/log.js'
 import type { HeliaInstance, PeerId } from './vendor.js'
 import type { PeerSet } from '@libp2p/peer-collections'
 
+export type DatabaseOptionsOnUpdate<T> = (
+  log: LogInstance<DatabaseOperation<T>>,
+  entry: EntryInstance<T> | EntryInstance<DatabaseOperation<T>>,
+) => Promise<void>
+
 export interface DatabaseOptions<T> {
   meta: any
   name?: string
@@ -42,10 +47,7 @@ export interface DatabaseOptions<T> {
   entryStorage?: StorageInstance<Uint8Array>
   indexStorage?: StorageInstance<boolean>
   accessController?: AccessControllerInstance
-  onUpdate?: (
-    log: LogInstance<DatabaseOperation<T>>,
-    entry: EntryInstance<T> | EntryInstance<DatabaseOperation<T>>,
-  ) => Promise<void>
+  onUpdate?: DatabaseOptionsOnUpdate<T>
 }
 
 export interface DatabaseEvents<T = unknown> {
@@ -96,10 +98,7 @@ export class Database<
   public accessController: AccessControllerInstance
 
   private queue: PQueue
-  private onUpdate?: (
-    log: LogInstance<DatabaseOperation<T>>,
-    entry: EntryInstance<T> | EntryInstance<DatabaseOperation<T>>,
-  ) => Promise<void>
+  private onUpdate?: DatabaseOptionsOnUpdate<T>
 
   private constructor(
     ipfs: HeliaInstance,
@@ -112,10 +111,7 @@ export class Database<
     name?: string,
     address?: string,
     meta?: any,
-    onUpdate?: (
-      log: LogInstance<DatabaseOperation<T>>,
-      entry: EntryInstance<T> | EntryInstance<DatabaseOperation<T>>,
-    ) => Promise<void>,
+    onUpdate?: DatabaseOptionsOnUpdate<T>,
   ) {
     this.meta = meta
     this.name = name

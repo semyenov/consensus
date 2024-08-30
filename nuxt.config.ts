@@ -106,11 +106,11 @@ export default defineNuxtConfig({
   },
 
   modules: [
+    'nuxt-content-twoslash',
     '@nuxtjs/partytown',
     '@nuxtjs/tailwindcss',
     'nuxt-content-assets',
     '@nuxtjs/mdc',
-    'nuxt-content-twoslash',
     '@nuxtjs/i18n',
     '@vueuse/nuxt',
     'shadcn-nuxt',

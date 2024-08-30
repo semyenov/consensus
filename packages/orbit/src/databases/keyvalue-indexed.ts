@@ -50,12 +50,8 @@ class Index<T> {
     const toBeIndexed = new Set()
     const latest = entry.hash
 
-    const isIndexed = async (hash: string) => {
-      return (await this.indexedEntries.get(hash)) === true
-    }
-    const isNotIndexed = async (hash: string) => {
-      return !(await isIndexed(hash))
-    }
+    const isIndexed = async (hash: string) => (await this.indexedEntries.get(hash)) === true
+    const isNotIndexed = async (hash: string) => !(await isIndexed(hash))
 
     const shoudStopTraverse = async (
       entry: EntryInstance<DatabaseOperation<T>>,

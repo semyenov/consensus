@@ -17,7 +17,8 @@ export class OrbitDBAddress implements OrbitDBAddressInstance {
 
   constructor(address: string) {
     this.address = address
-    this.hash = address.replace('/orbitdb/', '').replace('\\orbitdb\\', '')
+    this.hash = address.replace('/orbitdb/', '')
+      .replace('\\orbitdb\\', '')
   }
 
   static create(
@@ -26,6 +27,7 @@ export class OrbitDBAddress implements OrbitDBAddressInstance {
     if (typeof address !== 'string') {
       return address
     }
+
     return new OrbitDBAddress(address)
   }
 
@@ -37,8 +39,8 @@ export class OrbitDBAddress implements OrbitDBAddressInstance {
     let address_ = address.toString()
 
     if (
-      !address_.startsWith('/orbitdb') &&
-      !address_.startsWith(String.raw`\orbitdb`)
+      !address_.startsWith('/orbitdb')
+      && !address_.startsWith(String.raw`\orbitdb`)
     ) {
       return false
     }
@@ -51,7 +53,8 @@ export class OrbitDBAddress implements OrbitDBAddressInstance {
     let cid
     try {
       cid = CID.parse(address_, base58btc)
-    } catch {
+    }
+    catch {
       return false
     }
 

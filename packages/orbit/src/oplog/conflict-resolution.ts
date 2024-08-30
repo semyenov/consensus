@@ -13,9 +13,7 @@ export class ConflictResolution {
   }
 
   static LastWriteWins<T>(a: EntryInstance<T>, b: EntryInstance<T>): number {
-    const sortByEntryClocks = (a: EntryInstance<T>, b: EntryInstance<T>) => {
-      return ConflictResolution.SortByClocks(a, b, ConflictResolution.sortById)
-    }
+    const sortByEntryClocks = (a: EntryInstance<T>, b: EntryInstance<T>) => ConflictResolution.SortByClocks(a, b, ConflictResolution.sortById)
 
     return sortByEntryClocks(a, b)
   }

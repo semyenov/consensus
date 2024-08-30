@@ -124,9 +124,7 @@ describe('events Database Replication', () => {
 
     db2.sync.events.addEventListener('join', (event: CustomEvent) => {
       const { heads } = event.detail
-      replicated = expectedEntryHash !== null && heads.map((e) => {
-        return e.hash
-      })
+      replicated = expectedEntryHash !== null && heads.map(e => e.hash)
         .includes(expectedEntryHash)
     })
     db2.events.addEventListener('update', (event: CustomEvent) => {
@@ -146,24 +144,16 @@ describe('events Database Replication', () => {
     await db1.add(expected[6])
     expectedEntryHash = await db1.add(expected[7])
 
-    await waitFor(() => {
-      return replicated
-    }, () => {
-      return true
-    })
+    await waitFor(() => replicated, () => true)
 
     const all2: EventsDoc[] = []
     for await (const event of db2.iterator()) {
       all2.unshift(event)
     }
-    deepStrictEqual(all2.map((e) => {
-      return e.value
-    }), expected)
+    deepStrictEqual(all2.map(e => e.value), expected)
 
     const all1 = await db2.all()
-    deepStrictEqual(all1.map((e) => {
-      return e.value
-    }), expected)
+    deepStrictEqual(all1.map(e => e.value), expected)
   })
 
   it('loads the database after replication', async () => {
@@ -187,9 +177,7 @@ describe('events Database Replication', () => {
 
     db2.sync.events.addEventListener('join', (event: CustomEvent) => {
       const { heads } = event.detail
-      replicated = expectedEntryHash !== null && heads.map((e) => {
-        return e.hash
-      })
+      replicated = expectedEntryHash !== null && heads.map(e => e.hash)
         .includes(expectedEntryHash)
     })
     db2.events.addEventListener('update', (event: CustomEvent) => {
@@ -213,11 +201,7 @@ describe('events Database Replication', () => {
     await db1.add(expected[6])
     expectedEntryHash = await db1.add(expected[7])
 
-    await waitFor(() => {
-      return replicated
-    }, () => {
-      return true
-    })
+    await waitFor(() => replicated, () => true)
 
     await db1.drop()
     await db1.close()
@@ -237,13 +221,9 @@ describe('events Database Replication', () => {
     for await (const event of db2.iterator()) {
       all2.unshift(event)
     }
-    deepStrictEqual(all2.map((e) => {
-      return e.value
-    }), expected)
+    deepStrictEqual(all2.map(e => e.value), expected)
 
     const all1 = await db2.all()
-    deepStrictEqual(all1.map((e) => {
-      return e.value
-    }), expected)
+    deepStrictEqual(all1.map(e => e.value), expected)
   })
 })

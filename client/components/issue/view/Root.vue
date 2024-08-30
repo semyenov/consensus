@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CaretSortIcon, CheckIcon, ChevronDownIcon } from '@radix-icons/vue'
+import { CaretSortIcon } from '@radix-icons/vue'
 import {
   FlexRender,
   createColumnHelper,

@@ -1,10 +1,9 @@
-import { deepEqual, deepStrictEqual, strictEqual } from 'node:assert'
+import { deepEqual, strictEqual } from 'node:assert'
 
 import * as crypto from '@libp2p/crypto'
 import { copy } from 'fs-extra'
 import { rimraf } from 'rimraf'
 import { fromString as uint8ArrayFromString } from 'uint8arrays/from-string'
-import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 import { afterEach, beforeAll, beforeEach, describe, it } from 'vitest'
 
 import {

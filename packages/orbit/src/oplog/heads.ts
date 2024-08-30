@@ -32,9 +32,7 @@ export class Heads<T> {
 
   async add(head: EntryInstance<T>): Promise<EntryInstance<T>[] | undefined> {
     const currentHeads = await this.all()
-    if (currentHeads.some((e) => {
-      return Entry.isEqual(e, head)
-    })) {
+    if (currentHeads.some(e => Entry.isEqual(e, head))) {
       return
     }
     const newHeads = Heads.findHeads([...currentHeads, head])
@@ -45,9 +43,7 @@ export class Heads<T> {
 
   async remove(hash: string): Promise<void> {
     const currentHeads = await this.all()
-    const newHeads = currentHeads.filter((e) => {
-      return e.hash !== hash
-    })
+    const newHeads = currentHeads.filter(e => e.hash !== hash)
     await this.set(newHeads)
   }
 

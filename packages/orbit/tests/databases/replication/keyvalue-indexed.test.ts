@@ -14,9 +14,6 @@ import connectPeers from '../../utils/connect-nodes.js'
 import createHelia from '../../utils/create-helia.js'
 import waitFor from '../../utils/wait-for.js'
 
-import type {
-  Database,
-} from '../../../src'
 import type { KeyValueIndexedDatabase } from '../../../src/databases/keyvalue-indexed'
 import type { IdentityInstance } from '../../../src/identities/identity'
 import type { HeliaInstance } from '../../../src/vendor'
@@ -115,9 +112,7 @@ describe('keyValueIndexed Database Replication', () => {
     kv2.sync.events.addEventListener('join', (event: CustomEvent) => {
       const { heads } = event.detail
       replicated = expectedEntryHash !== null
-      && heads.map((e) => {
-        return e.hash
-      })
+      && heads.map(e => e.hash)
         .includes(expectedEntryHash)
     })
     kv2.events.addEventListener('update', (event: CustomEvent) => {
@@ -138,11 +133,7 @@ describe('keyValueIndexed Database Replication', () => {
     await kv1.del('empty')
     expectedEntryHash = await kv1.put('hello', 'friend3')
 
-    await waitFor(() => {
-      return replicated
-    }, () => {
-      return true
-    })
+    await waitFor(() => replicated, () => true)
 
     const value0 = await kv2.get('init')
     deepStrictEqual(value0, true)
@@ -161,9 +152,7 @@ describe('keyValueIndexed Database Replication', () => {
       all2.push(keyValue)
     }
     deepStrictEqual(
-      all2.map((e) => {
-        return { key: e.key, value: e.value }
-      }),
+      all2.map(e => ({ key: e.key, value: e.value })),
       [
         { key: 'init', value: true },
         { key: 'hello', value: 'friend3' },
@@ -175,9 +164,7 @@ describe('keyValueIndexed Database Replication', () => {
       all1.push(keyValue)
     }
     deepStrictEqual(
-      all1.map((e) => {
-        return { key: e.key, value: e.value }
-      }),
+      all1.map(e => ({ key: e.key, value: e.value })),
       [
         { key: 'init', value: true },
         { key: 'hello', value: 'friend3' },
@@ -207,9 +194,7 @@ describe('keyValueIndexed Database Replication', () => {
     kv2.sync.events.addEventListener('join', (event: CustomEvent) => {
       const { heads } = event.detail
       replicated = expectedEntryHash !== null
-      && heads.map((e) => {
-        return e.hash
-      })
+      && heads.map(e => e.hash)
         .includes(expectedEntryHash)
     })
     kv2.events.addEventListener('update', (event: CustomEvent) => {
@@ -234,11 +219,7 @@ describe('keyValueIndexed Database Replication', () => {
     await kv1.del('empty')
     expectedEntryHash = await kv1.put('hello', 'friend3')
 
-    await waitFor(() => {
-      return replicated
-    }, () => {
-      return true
-    })
+    await waitFor(() => replicated, () => true)
 
     await kv1.close()
     await kv2.close()
@@ -275,9 +256,7 @@ describe('keyValueIndexed Database Replication', () => {
       all2.push(keyValue)
     }
     deepStrictEqual(
-      all2.map((e) => {
-        return { key: e.key, value: e.value }
-      }),
+      all2.map(e => ({ key: e.key, value: e.value })),
       [
         { key: 'init', value: true },
         { key: 'hello', value: 'friend3' },
@@ -289,9 +268,7 @@ describe('keyValueIndexed Database Replication', () => {
       all1.push(keyValue)
     }
     deepStrictEqual(
-      all1.map((e) => {
-        return { key: e.key, value: e.value }
-      }),
+      all1.map(e => ({ key: e.key, value: e.value })),
       [
         { key: 'init', value: true },
         { key: 'hello', value: 'friend3' },
@@ -344,11 +321,7 @@ describe('keyValueIndexed Database Replication', () => {
     await kv1.del('empty')
     expectedEntryHash1 = await kv1.put('hello', 'friend3')
 
-    await waitFor(() => {
-      return replicated1
-    }, () => {
-      return true
-    })
+    await waitFor(() => replicated1, () => true)
 
     await kv1.close()
 
@@ -394,11 +367,7 @@ describe('keyValueIndexed Database Replication', () => {
     })
     kv2.events.addEventListener('error', onError)
 
-    await waitFor(() => {
-      return replicated2 && replicated3
-    }, () => {
-      return true
-    })
+    await waitFor(() => replicated2 && replicated3, () => true)
 
     const all1: KeyValueDoc[] = []
     for await (const keyValue of kv1.iterator()) {
@@ -411,9 +380,7 @@ describe('keyValueIndexed Database Replication', () => {
     }
 
     deepStrictEqual(
-      all2.map((e) => {
-        return { key: e.key, value: e.value }
-      }),
+      all2.map(e => ({ key: e.key, value: e.value })),
       [
         { key: 'two', value: 2 },
         { key: 'one', value: 1 },
@@ -427,9 +394,7 @@ describe('keyValueIndexed Database Replication', () => {
     )
 
     deepStrictEqual(
-      all1.map((e) => {
-        return { key: e.key, value: e.value }
-      }),
+      all1.map(e => ({ key: e.key, value: e.value })),
       [
         { key: 'two', value: 2 },
         { key: 'one', value: 1 },
@@ -481,11 +446,7 @@ describe('keyValueIndexed Database Replication', () => {
       deepStrictEqual(err)
     })
 
-    await waitFor(() => {
-      return replicated
-    }, () => {
-      return true
-    })
+    await waitFor(() => replicated, () => true)
 
     const all1: KeyValueDoc[] = []
     for await (const keyValue of kv1.iterator()) {
@@ -498,9 +459,7 @@ describe('keyValueIndexed Database Replication', () => {
     }
 
     deepStrictEqual(
-      all2.map((e) => {
-        return { key: e.key, value: e.value }
-      }),
+      all2.map(e => ({ key: e.key, value: e.value })),
       [
         { key: 'init', value: true },
         { key: 'hello', value: 'friend' },
@@ -508,9 +467,7 @@ describe('keyValueIndexed Database Replication', () => {
     )
 
     deepStrictEqual(
-      all1.map((e) => {
-        return { key: e.key, value: e.value }
-      }),
+      all1.map(e => ({ key: e.key, value: e.value })),
       [
         { key: 'init', value: true },
         { key: 'hello', value: 'friend' },

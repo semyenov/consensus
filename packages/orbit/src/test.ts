@@ -13,17 +13,17 @@ import { tcp } from '@libp2p/tcp'
 import { webRTC } from '@libp2p/webrtc'
 import { webSockets } from '@libp2p/websockets'
 import { all } from '@libp2p/websockets/filters'
-import { createLogger } from '@regioni/lib-logger'
 import { LevelBlockstore } from 'blockstore-level'
+import { createConsola } from 'consola'
 import { createHelia } from 'helia'
 import { type Libp2pOptions, createLibp2p } from 'libp2p'
 
 import { OrbitDB } from './index.js'
 
-const logger = createLogger({
-  defaultMeta: {
-    service: 'orbitdb',
-    label: 'test',
+const logger = createConsola({
+  defaults: {
+    tag: 'orbitdb',
+    level: 5,
   },
 })
 
@@ -69,9 +69,7 @@ const options: Libp2pOptions<{
     maxPeerAddrsToDial: 1000,
   },
   connectionGater: {
-    denyDialMultiaddr: () => {
-      return false
-    },
+    denyDialMultiaddr: () => false,
   },
   services: {
     identify: identify(),
@@ -100,14 +98,13 @@ async function main() {
   )
 
   db.events.addEventListener('update', (entry) => {
-    console.log(entry)
+    logger.log(entry)
   })
 
-  console.log(db)
+  logger.log(db)
   // db.put({ _id: 'test', test: 'test' })
 
   // const result = await db.get('test')
-  // console.log(result)
+  // logger.log(result)
 }
-
 main()

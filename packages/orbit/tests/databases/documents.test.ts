@@ -3,7 +3,6 @@
 import { deepStrictEqual, notStrictEqual, strictEqual } from 'node:assert'
 
 import { copy } from 'fs-extra'
-import { indexBy } from 'remeda'
 import { rimraf } from 'rimraf'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, it } from 'vitest'
 
@@ -167,9 +166,7 @@ describe('documents Database', () => {
       await db.del('hello world 3')
       await db.put(expected)
 
-      const findFn = (doc) => {
-        return doc.views > 5
-      }
+      const findFn = doc => doc.views > 5
 
       deepStrictEqual(await db.query(findFn), [expected])
     })
@@ -178,9 +175,7 @@ describe('documents Database', () => {
       await db.put({ _id: 'hello world 1', msg: 'writing 1 to db', views: 10 })
       await db.del('hello world 1')
 
-      const findFn = (doc) => {
-        return doc.views > 5
-      }
+      const findFn = doc => doc.views > 5
 
       deepStrictEqual(await db.query(findFn), [])
     })
@@ -293,9 +288,7 @@ describe('documents Database', () => {
       await db.del('hello world 3')
       await db.put(expected)
 
-      const findFn = (doc) => {
-        return doc.views > 5
-      }
+      const findFn = doc => doc.views > 5
 
       deepStrictEqual(await db.query(findFn), [expected])
     })
@@ -304,9 +297,7 @@ describe('documents Database', () => {
       await db.put({ doc: 'hello world 1', msg: 'writing 1 to db', views: 10 })
       await db.del('hello world 1')
 
-      const findFn = (doc) => {
-        return doc.views > 5
-      }
+      const findFn = doc => doc.views > 5
 
       deepStrictEqual(await db.query(findFn), [])
     })

@@ -35,13 +35,9 @@ class CustomIdentityProvider implements IdentityProviderInstance {
     return 'false signature'
   }
 
-  getId = () => {
-    return 'pubKey'
-  }
+  getId = () => 'pubKey'
 
-  static signIdentity = (data) => {
-    return `false signature '${data}'`
-  }
+  static signIdentity = data => `false signature '${data}'`
 
   static verifyIdentity = verifyIdentity
 }
