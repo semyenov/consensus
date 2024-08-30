@@ -1,0 +1,6 @@
+{
+  "userstore": {
+    "base": "./out/keystore",
+    "password": "password"
+  }
+}
