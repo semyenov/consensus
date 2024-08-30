@@ -13,7 +13,7 @@
     "preview": "nuxt preview",
     "typecheck": "vue-tsc --noEmit",
     "edgedb:apply": "edgedb migration apply",
-    "edgedb:generate": "yarn nuxt-edgedb-module",
+    "edgedb:generate": "nuxt-edgedb-module",
     "edgedb:migrate": "edgedb migration create",
     "edgedb:clean": "rm -rf dbschema/migrations dbschema/query-builder dbschema/interfaces.ts"
   },

@@ -96,7 +96,6 @@
     "@trpc/server": "^10.45.2",
     "@types/elliptic": "^6.4.18",
     "@types/events": "^3.0.3",
-    "@types/orbitdb__core": "workspace:^",
     "@typeschema/typebox": "^0.13.4",
     "blockcodec-to-ipld-format": "^2.0.0",
     "blockstore-core": "^4.4.1",
