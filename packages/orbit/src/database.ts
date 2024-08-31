@@ -56,7 +56,7 @@ export interface DatabaseEvents<T = unknown> {
   close: CustomEvent
   drop: CustomEvent
   error: ErrorEvent
-  update: CustomEvent<{ entry: EntryInstance<T> }>
+  update: CustomEvent<{ entry: EntryInstance<DatabaseOperation<T>> }>
 }
 
 export interface DatabaseInstance<

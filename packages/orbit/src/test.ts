@@ -112,8 +112,8 @@ async function main() {
     }),
   })
 
-  db.events.addEventListener('update', (entry) => {
-    logger.log(entry.detail.entry.payload)
+  db.events.addEventListener('update', (event) => {
+    logger.log(JSON.stringify(event.detail.entry, null, 2))
   })
 
   while (true) {
@@ -137,7 +137,7 @@ async function main() {
 
     switch (command) {
       case 'put':
-        await db.put({
+        await db.put<Entry>({
           _id: id,
           payload: await logger.prompt('Enter a payload: ', {
             type: 'text',
@@ -149,10 +149,11 @@ async function main() {
         logger.log('Deleted', id)
         break
       case 'get':
-        await db.get(id)
+        await db
+          .get(id)
           .then((result) => {
             if (result) {
-              logger.log(result.value)
+              logger.log(JSON.stringify(result.value, null, 2))
             }
             else {
               logger.log('Not found')
