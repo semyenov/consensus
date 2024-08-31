@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { CaretSortIcon } from '@radix-icons/vue'
 import {
   FlexRender,
   createColumnHelper,
@@ -13,16 +12,6 @@ import {
 import { h, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
-// import {
-//   DropdownMenu,
-//   DropdownMenuCheckboxItem,
-//   DropdownMenuContent,
-//   DropdownMenuTrigger,
-// } from '@/components/ui/dropdown-menu'
-// import { Input } from '@/components/ui/input'
 import {
   Table,
   TableBody,
@@ -32,6 +21,17 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { cn, valueUpdater } from '@/lib/utils'
+
+import ActionsHeader from '~/components/issue/view/ActionsHeader.vue'
+import ExpandedRowContent from '~/components/issue/view/ExpandedRowContent.vue'
+import NameCell from '~/components/issue/view/NameCell.vue'
+import NameHeader from '~/components/issue/view/NameHeader.vue'
+import SelectCell from '~/components/issue/view/SelectCell.vue'
+import SelectHeader from '~/components/issue/view/SelectHeader.vue'
+import StatusCell from '~/components/issue/view/StatusCell.vue'
+import StatusHeader from '~/components/issue/view/StatusHeader.vue'
+import UpdatedAtCell from '~/components/issue/view/UpdatedAtCell.vue'
+import UpdatedAtHeader from '~/components/issue/view/UpdatedAtHeader.vue'
 
 import Action from './Actions.vue'
 
@@ -55,8 +55,7 @@ const props = withDefaults(
   },
 )
 
-// const id = useId()
-const { d, t } = useI18n()
+const { t } = useI18n()
 
 const data = toRef(props, 'issues')
 const columnHelper = createColumnHelper<issue.Issue>()
@@ -71,35 +70,15 @@ const columns = [
     maxSize: 2,
     size: 0,
     header: ({ table }) =>
-      h(
-        'div',
-        {
-          class:
-            'flex capitalize h-full w-full justify-center text-nowrap bg-accent dark:bg-secondary flex items-center justify-center h-full w-full px-4',
-        },
-        h(Checkbox, {
-          'role': 'checkbox',
-          'checked':
-            table.getIsAllPageRowsSelected()
-            || (table.getIsSomePageRowsSelected() && 'indeterminate'),
-          'onUpdate:checked': value =>
-            table.toggleAllPageRowsSelected(Boolean(value)),
-        }),
-      ),
+      h(SelectHeader, {
+        'checked': table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate'),
+        'onUpdate:checked': (value: boolean) => table.toggleAllPageRowsSelected(value),
+      }),
     cell: ({ row }) =>
-      h(
-        'div',
-        {
-          class:
-            'flex capitalize h-full w-full justify-center text-nowrap flex items-center justify-center h-full w-full px-4',
-        },
-        h(Checkbox, {
-          'role': 'checkbox',
-          'checked': row.getIsSelected(),
-          'onUpdate:checked': value => row.toggleSelected(Boolean(value)),
-          'ariaLabel': 'Select row',
-        }),
-      ),
+      h(SelectCell, {
+        'checked': row.getIsSelected(),
+        'onUpdate:checked': (value: boolean) => row.toggleSelected(Boolean(value)),
+      }),
   }),
   columnHelper.accessor('status', {
     enableHiding: false,
@@ -108,22 +87,13 @@ const columns = [
     maxSize: 2,
     size: 0,
     header: ({ column }) =>
-      h(
-        Button,
-        {
-          onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-          variant: 'secondary',
-          class:
-            'flex capitalize px-4 py-2 w-full h-full rounded-none text-nowrap justify-start',
-        },
-        () => [t('modules.issue.status'), h(CaretSortIcon, { class: 'ml-1' })],
-      ),
+      h(StatusHeader, {
+        onToggleSort: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+      }),
     cell: ({ row }) =>
-      h(
-        'div',
-        { class: 'flex capitalize p-2 w-full h-full rounded-none text-nowrap' },
-        [h(Badge, { variant: 'secondary' }, () => row.getValue('status'))],
-      ),
+      h(StatusCell, {
+        status: row.getValue('status'),
+      }),
   }),
   columnHelper.accessor('name', {
     enableHiding: false,
@@ -132,28 +102,14 @@ const columns = [
     size: 80,
     maxSize: 100,
     header: ({ column }) =>
-      h(
-        Button,
-        {
-          variant: 'secondary',
-          class:
-            'flex capitalize p-2 w-full h-full  rounded-none text-nowrap justify-start',
-          onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-        },
-        () => [
-          t('modules.issue.name'),
-          h(CaretSortIcon, { class: 'ml-1' } as any),
-        ],
-      ),
+      h(NameHeader, {
+        onToggleSort: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+      }),
     cell: ({ row }) =>
-      h(
-        'div',
-        {
-          class: 'flex capitalize p-2 w-full h-full rounded-none text-nowrap',
-          onClick: () => row.toggleExpanded(),
-        },
-        row.getValue('name'),
-      ),
+      h(NameCell, {
+        name: row.getValue('name'),
+        onToggleExpanded: () => row.toggleExpanded(),
+      }),
   }),
   columnHelper.accessor('updated_at', {
     enableHiding: true,
@@ -162,45 +118,20 @@ const columns = [
     maxSize: 2,
     size: 0,
     header: ({ column }) =>
-      h(
-        Button,
-        {
-          variant: 'secondary',
-          class:
-            'flex capitalize px-4 py-2 w-full h-full rounded-none text-nowrap justify-end',
-          onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-        },
-        () => [
-          t('modules.issue.updated_at'),
-          h(CaretSortIcon, { class: 'ml-1' } as any),
-        ],
-      ),
-    cell: ({ row }) => {
-      const updatedAt = Number.parseFloat(row.getValue('updated_at'))
-
-      // Format the amount as a dollar amount
-      const formatted = d(updatedAt)
-
-      return h(
-        'div',
-        {
-          class:
-            'flex capitalize px-4 py-2 w-full h-full rounded-none text-nowrap justify-end',
-        },
-        formatted,
-      )
-    },
+      h(UpdatedAtHeader, {
+        onToggleSort: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+      }),
+    cell: ({ row }) =>
+      h(UpdatedAtCell, {
+        updatedAt: Number.parseFloat(row.getValue('updated_at')),
+      }),
   }),
   columnHelper.display({
     id: 'actions',
     minSize: 0,
     maxSize: 2,
     size: 0,
-    header: () =>
-      h('div', {
-        class:
-          'flex capitalize px-4 py-2 w-full h-full rounded-none text-nowrap bg-accent dark:bg-secondary',
-      }),
+    header: () => h(ActionsHeader),
     cell: ({ row }) => {
       const issue = row.original
 
@@ -228,7 +159,6 @@ const pagination = ref<PaginationState>({
   pageSize: 30,
 })
 
-// New state for total row count
 const totalRowCount = ref(0)
 
 const table = useVueTable({
@@ -248,7 +178,6 @@ const table = useVueTable({
 
   onPaginationChange: (updaterOrValue) => {
     valueUpdater(updaterOrValue, pagination)
-    // Update total row count when pagination changes
     totalRowCount.value = table.getRowModel().rows.length
   },
   onSortingChange: updaterOrValue => valueUpdater(updaterOrValue, sorting),
@@ -302,14 +231,6 @@ const table = useVueTable({
     },
   },
 })
-
-// const tableHeaderRef = ref<HTMLElement | null>(null)
-// const tableBodyRef = ref<HTMLElement | null>(null)
-//
-// onMounted(() => {
-//   autoAnimate(tableHeaderRef!.value)
-//   autoAnimate(tableBodyRef!.value)
-// })
 </script>
 
 <template>
@@ -323,6 +244,7 @@ const table = useVueTable({
         <TableHead
           v-for="header in headerGroup.headers"
           :key="header.id"
+          :pinned="header.column.getIsPinned()"
           class="sticky top-0 z-30"
         >
           <FlexRender
@@ -343,13 +265,7 @@ const table = useVueTable({
             <TableCell
               v-for="cell in row.getVisibleCells()"
               :key="cell.id"
-              :data-pinned="cell.column.getIsPinned()"
-              :class="
-                cn(
-                  { 'sticky bg-background/95 z-20': cell.column.getIsPinned() },
-                  cell.column.getIsPinned() === 'left' ? 'left-0' : 'right-0',
-                )
-              "
+              :pinned="cell.column.getIsPinned()"
             >
               <FlexRender
                 :render="cell.column.columnDef.cell"
@@ -359,21 +275,7 @@ const table = useVueTable({
           </TableRow>
           <TableRow v-if="row.getIsExpanded()">
             <TableCell :colspan="row.getAllCells().length">
-              <div
-                class="flex flex-col flex-grow px-4 py-4 bg-secondary/50 dark:bg-accent/75"
-              >
-                <div class="flex flex-row items-center justify-between gap-2">
-                  <h2 class="text-2xl">
-                    {{ row.original.name }}
-                  </h2>
-                  <Badge v-if="row.original.priority" variant="outline">
-                    {{ row.original.priority }}
-                  </Badge>
-                </div>
-                <p class="text-sm text-muted-foreground">
-                  {{ row.original.id }}
-                </p>
-              </div>
+              <ExpandedRowContent :issue="row.original" />
             </TableCell>
           </TableRow>
         </template>
