@@ -1,8 +1,10 @@
+import process from 'node:process'
+import rl from 'node:readline'
+
 import { gossipsub } from '@chainsafe/libp2p-gossipsub'
 import { noise } from '@chainsafe/libp2p-noise'
 import { yamux } from '@chainsafe/libp2p-yamux'
 import { bitswap } from '@helia/block-brokers'
-import { bootstrap } from '@libp2p/bootstrap'
 import {
   circuitRelayServer,
   circuitRelayTransport,
@@ -77,11 +79,18 @@ const options: Libp2pOptions = {
   services: {
     identify: identify(),
     circuitRelay: circuitRelayServer(),
-    pubsub: gossipsub({ allowPublishToZeroTopicPeers: true }),
+    pubsub: gossipsub({
+      allowPublishToZeroTopicPeers: true,
+      globalSignaturePolicy: 'StrictNoSign',
+    }),
   },
 }
 
 async function main() {
+  const r = rl.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  })
   const ipfs = await createHelia({
     libp2p: await createLibp2p({ ...options }),
     blockstore: new LevelBlockstore(`${directory}/ipfs/blocks`),
@@ -107,23 +116,44 @@ async function main() {
   db.events.addEventListener('update', (entry) => {
     logger.log(entry.detail.entry.payload)
   })
-  try {
-    await db.put({ _id: 'test', test: 'test' })
-  }
-  catch (error) {
-    logger.error('put error', error)
-  }
 
-  try {
-    const result = await db.get('test')
-    if (result) {
-      logger.log('get result', result.value)
+  while (true) {
+    const command = await new Promise<string>((resolve) => {
+      r.question('\nEnter a command: ', resolve)
+    })
+    const id = await new Promise<string>((resolve) => {
+      r.question('Enter an ID: ', resolve)
+    })
+
+    switch (command) {
+      case 'put':
+        await db.put({ _id: id, test: await new Promise<string>((resolve) => {
+          r.question('Enter a payload: ', resolve)
+        }) })
+        break
+      case 'del':
+        await db.del(id)
+        logger.log('Deleted', id)
+        break
+      case 'get':
+        await db.get(id)
+          .then((result) => {
+            if (result) {
+              logger.log(result.value)
+            }
+            else {
+              logger.log('Not found')
+            }
+          })
+          .catch((error) => {
+            logger.error(error)
+          })
+        break
+      default:
+        logger.log('Unknown command')
+        break
     }
   }
-  catch (error) {
-    logger.error('get error', error)
-  }
-
-  // logger.log(db)
 }
+
 main()
