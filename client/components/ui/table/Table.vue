@@ -9,9 +9,7 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div class="relative w-full">
-    <table :class="cn('w-full caption-bottom text-sm', props.class)">
-      <slot />
-    </table>
-  </div>
+  <table :class="cn('w-full caption-bottom text-sm', props.class)">
+    <slot />
+  </table>
 </template>

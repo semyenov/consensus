@@ -13,11 +13,11 @@ const { identity: user } = useEdgeDbIdentity()
     <ResizablePanelGroup
       id="__layout"
       direction="horizontal"
-      class="h-full max-w-full"
+      class="w-full h-full max-w-full max-h-screen min-h-screen"
     >
-      <ResizablePanel id="demo-panel-2" class="shadow-xl" :default-size="25">
+      <ResizablePanel id="demo-panel-2" class="shadow-xl" :default-size="70">
         <ResizablePanelGroup id="demo-group-3" direction="vertical">
-          <ResizablePanel id="demo-panel-3" :default-size="25">
+          <ResizablePanel id="demo-panel-3" class="shadow-md" :default-size="25">
             <div class="flex items-center justify-center h-full p-6">
               <span class="font-semibold">Two</span>
             </div>
@@ -32,7 +32,7 @@ const { identity: user } = useEdgeDbIdentity()
       <ResizablePanel
         id="__layout"
         direction="horizontal"
-        :default-size="75"
+        :default-size="30"
         class="flex flex-col items-center justify-center"
       >
         <ResizablePanelGroup id="demo-group-1" direction="vertical">

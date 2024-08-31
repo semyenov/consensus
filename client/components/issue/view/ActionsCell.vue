@@ -16,6 +16,7 @@ defineProps<{
   issue: {
     id: string
   }
+  expanded: boolean
 }>()
 
 // Initialize i18n
