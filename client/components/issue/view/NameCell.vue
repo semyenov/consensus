@@ -4,14 +4,14 @@ defineProps<{
 }>()
 
 defineEmits<{
-  (e: 'toggle-expanded'): void
+  (e: 'toggleExpanded'): void
 }>()
 </script>
 
 <template>
   <div
-    class="flex w-full h-full p-2 capitalize rounded-none text-nowrap"
-    @click="$emit('toggle-expanded')"
+    class="flex h-full p-2 capitalize rounded-none min-w-[200px]"
+    @click="$emit('toggleExpanded')"
   >
     {{ name }}
   </div>

@@ -6,6 +6,7 @@ import {
 import { IPFSAccessController } from './access-controllers/ipfs.js'
 import { OrbitDBAddress } from './address.js'
 import { DATABASE_DEFAULT_TYPE } from './constants.js'
+import { EdgeDBDatabase } from './databases/edgedb.js'
 import { type DatabaseTypeMap, getDatabaseType } from './databases/index.js'
 import {
   Identities,
@@ -107,19 +108,23 @@ export class OrbitDB implements OrbitDBInstance {
     const { ipfs } = options
     const directory = options.directory || './orbitdb'
 
-    let keystore: KeyStoreInstance
-    let identities: IdentitiesInstance
+    let { keystore, identities } = options.identities
+      ? {
+          keystore: options.identities.keystore,
+          identities: options.identities,
+        }
+      : {}
 
-    if (options.identities) {
-      identities = options.identities
-      keystore = identities.keystore
-    }
-    else {
+    if (!keystore) {
       keystore = await KeyStore.create({
         path: join(directory, './keystore'),
       })
+    }
+
+    if (!identities) {
+      const { ipfs } = options
       identities = await Identities.create({
-        ipfs: options.ipfs,
+        ipfs,
         keystore,
       })
     }
@@ -164,7 +169,7 @@ export class OrbitDB implements OrbitDBInstance {
     let name: string
     let manifest: Manifest | null
     let accessController: AccessControllerInstance
-    let { meta } = options
+    let { meta, sync, headsStorage, entryStorage, indexStorage, referencesCount } = options
 
     if (this.databases[address_!]) {
       return this.databases[address_!] as DatabaseTypeMap<T>[D]
@@ -192,7 +197,7 @@ export class OrbitDB implements OrbitDBInstance {
         address: manifest.accessController,
       })
 
-      name = manifest.name
+      name = manifest?.name ?? ''
       meta ||= manifest.meta
 
       type_ = type || manifest.type
@@ -217,13 +222,42 @@ export class OrbitDB implements OrbitDBInstance {
 
       address_ = m.hash
 
-      manifest = m.manifest
-      name = manifest.name
+      const { manifest } = m
+      name = manifest?.name
       meta ||= manifest.meta
 
       if (this.databases[address_!] as DatabaseTypeMap<T>[D]) {
         return this.databases[address_!] as DatabaseTypeMap<T>[typeof type]
       }
+    }
+
+    if (type_ === 'edgedb') {
+      const EdgeDBDatabase = options.Database || getDatabaseType('edgedb')
+      if (!EdgeDBDatabase) {
+        throw new Error(`Unsupported database type: 'edgedb'`)
+      }
+
+      const database = (await EdgeDBDatabase({
+        ipfs: this.ipfs,
+        identity: this.identity,
+        address: address_,
+        name,
+        meta,
+        accessController,
+        directory: this.directory,
+        syncAutomatically: sync,
+        headsStorage,
+        entryStorage,
+        indexStorage,
+        referencesCount,
+        ...options, // Spread the options object to include all properties
+      })) as DatabaseTypeMap<T>[typeof type]
+
+      database.events.addEventListener('close', this.onDatabaseClosed(address_))
+
+      this.databases[address_!] = database
+
+      return database
     }
 
     const Database = options.Database || getDatabaseType(type_)
@@ -239,11 +273,11 @@ export class OrbitDB implements OrbitDBInstance {
       meta,
       accessController,
       directory: this.directory,
-      syncAutomatically: options.sync,
-      headsStorage: options.headsStorage,
-      entryStorage: options.entryStorage,
-      indexStorage: options.indexStorage,
-      referencesCount: options.referencesCount,
+      syncAutomatically: sync,
+      headsStorage,
+      entryStorage,
+      indexStorage,
+      referencesCount,
     })) as DatabaseTypeMap<T>[typeof type]
 
     database.events.addEventListener('close', this.onDatabaseClosed(address_))

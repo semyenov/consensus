@@ -14,6 +14,7 @@ export class Heads<T> {
     this.storage = storage || new MemoryStorage<Uint8Array>()
     if (heads) {
       this.put(heads)
+        // eslint-disable-next-line no-console
         .catch(console.error)
     }
   }

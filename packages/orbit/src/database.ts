@@ -98,6 +98,8 @@ export class Database<
   public accessController: AccessControllerInstance
 
   private queue: PQueue
+  private writeQueue: PQueue
+  private batchSize: number
   private onUpdate?: DatabaseOptionsOnUpdate<T>
 
   private constructor(
@@ -121,6 +123,8 @@ export class Database<
     this.onUpdate = onUpdate
     this.events = new TypedEventEmitter<DatabaseEvents<T>>()
     this.queue = new PQueue({ concurrency: 1 })
+    this.writeQueue = new PQueue({ concurrency: 1 })
+    this.batchSize = 100 // Adjust this value based on your needs
 
     this.log = log
     this.sync = new Sync({
@@ -209,26 +213,32 @@ export class Database<
     await this.queue.add(task)
   }
 
-  public async addOperation(op: DatabaseOperation<T>): Promise<string> {
-    const task = async () => {
-      const entry = await this.log.append(op, {
-        referencesCount: DATABASE_REFERENCES_COUNT,
-      })
-      await this.sync.add(entry)
-      if (this.onUpdate) {
-        await this.onUpdate(this.log, entry)
+  async addOperation(op: DatabaseOperation<T>): Promise<string> {
+    return this.writeQueue.add(async () => {
+      const batch = [op]
+
+      while (batch.length < this.batchSize && this.writeQueue.size > 0) {
+        const nextOp = await this.writeQueue.add(() => Promise.resolve())
+        if (nextOp !== undefined) {
+          batch.push(nextOp)
+        }
       }
-      this.events.dispatchEvent(
-        new CustomEvent('update', { detail: { entry } }),
-      )
 
-      return entry.hash!
-    }
+      const entries = await Promise.all(batch.map(op => this.log.append(op, {
+        referencesCount: DATABASE_REFERENCES_COUNT,
+      })))
 
-    const hash = await this.queue.add(task)
-    await this.queue.onIdle()
+      await Promise.all(entries.map(entry => this.sync.add(entry)))
+      if (this.onUpdate) {
+        await Promise.all(entries.map(entry => this.onUpdate!(this.log, entry)))
+      }
 
-    return hash as string
+      for (const entry of entries) {
+        this.events.dispatchEvent(new CustomEvent('update', { detail: { entry } }))
+      }
+
+      return entries[0].hash!
+    }) as Promise<string>
   }
 
   public async drop(): Promise<void> {

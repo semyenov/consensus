@@ -56,7 +56,7 @@ export const Entry = {
       v: 2,
     }
 
-    const { bytes, cid } = await Block.encode({ value: entry, codec, hasher })
+    const { bytes } = await Block.encode({ value: entry, codec, hasher })
 
     const signature = await identity.sign!(bytes)
 

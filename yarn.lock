@@ -50,41 +50,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "@antfu/eslint-config@npm:^3.0.0":
   version: 3.0.0
   resolution: "@antfu/eslint-config@npm:3.0.0"
-=======
-"@antfu/eslint-config@npm:^2.26.0":
-  version: 2.27.3
-  resolution: "@antfu/eslint-config@npm:2.27.3"
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
   dependencies:
     "@antfu/install-pkg": "npm:^0.4.1"
     "@clack/prompts": "npm:^0.7.0"
     "@eslint-community/eslint-plugin-eslint-comments": "npm:^4.4.0"
-<<<<<<< HEAD
     "@stylistic/eslint-plugin": "npm:^2.6.5"
     "@typescript-eslint/eslint-plugin": "npm:^8.3.0"
     "@typescript-eslint/parser": "npm:^8.3.0"
     "@vitest/eslint-plugin": "npm:^1.1.0"
     eslint-config-flat-gitignore: "npm:^0.3.0"
-=======
-    "@stylistic/eslint-plugin": "npm:^2.6.4"
-    "@typescript-eslint/eslint-plugin": "npm:^8.3.0"
-    "@typescript-eslint/parser": "npm:^8.3.0"
-    "@vitest/eslint-plugin": "npm:^1.0.5"
-    eslint-config-flat-gitignore: "npm:^0.1.8"
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
     eslint-flat-config-utils: "npm:^0.3.1"
     eslint-merge-processors: "npm:^0.1.0"
     eslint-plugin-antfu: "npm:^2.3.6"
     eslint-plugin-command: "npm:^0.2.3"
-<<<<<<< HEAD
     eslint-plugin-import-x: "npm:^4.1.0"
-=======
-    eslint-plugin-import-x: "npm:^4.0.0"
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
     eslint-plugin-jsdoc: "npm:^50.2.2"
     eslint-plugin-jsonc: "npm:^2.16.0"
     eslint-plugin-markdown: "npm:^5.1.0"
@@ -151,11 +133,7 @@ __metadata:
       optional: true
   bin:
     eslint-config: bin/index.js
-<<<<<<< HEAD
   checksum: 10c0/694a3fdbf349d4cd67e871f70c6d85c21a2e7907f52de92729f5b18c8be479a07efd3c786c5ce0c5e98bdfb1967937a863e52f57b5124e36378be44819a19947
-=======
-  checksum: 10c0/141e88af69fc933eeed936afb5402a3179b6cbea50407aa9ebbe2d490f166748e2fd944d836bb77161b99c43d0d318c6d7f571def6d557d57970b4ba5df8ca1a
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
   languageName: node
   linkType: hard
 
@@ -750,27 +728,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
-"@edgedb/generate@npm:^0.5.3":
-  version: 0.5.4
-  resolution: "@edgedb/generate@npm:0.5.4"
-=======
-"@edgedb/generate@npm:^0.5.3, @edgedb/generate@npm:^0.5.4":
-  version: 0.5.5
-  resolution: "@edgedb/generate@npm:0.5.5"
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
-  dependencies:
-    "@iarna/toml": "npm:^2.2.5"
-    debug: "npm:^4.3.4"
-  peerDependencies:
-    edgedb: ^1.5.10
-  bin:
-    generate: dist/cli.js
-  checksum: 10c0/9222ae3f8431f793b1742c6e881cdd01d254ad961c50cd4661e0ba6cc4e737ae26198d514f5d33c9ff8c3c32e24a275840b12e13a0da5a55ef01c96f15d7ce8a
-  languageName: node
-  linkType: hard
-
-"@edgedb/generate@npm:^0.5.5":
+"@edgedb/generate@npm:^0.5.3, @edgedb/generate@npm:^0.5.5":
   version: 0.5.5
   resolution: "@edgedb/generate@npm:0.5.5"
   dependencies:
@@ -2644,28 +2602,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
-"@nuxt/devtools-kit@npm:1.4.1":
-  version: 1.4.1
-  resolution: "@nuxt/devtools-kit@npm:1.4.1"
-  dependencies:
-    "@nuxt/kit": "npm:^3.13.0"
-    "@nuxt/schema": "npm:^3.13.0"
-    execa: "npm:^7.2.0"
-  peerDependencies:
-    vite: "*"
-  checksum: 10c0/c4a001db1a879bc8bf557f9dd05326736750f9131c1db12100a6532d2254dd66c591deef59d5b23a3f30d0cdd2c48371ef6fbc37cebf38838437e8aa25ccaf71
-  languageName: node
-  linkType: hard
-
-"@nuxt/devtools-kit@npm:^1.3.9":
-  version: 1.3.14
-  resolution: "@nuxt/devtools-kit@npm:1.3.14"
-=======
 "@nuxt/devtools-kit@npm:1.4.1, @nuxt/devtools-kit@npm:^1.3.9":
   version: 1.4.1
   resolution: "@nuxt/devtools-kit@npm:1.4.1"
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
   dependencies:
     "@nuxt/kit": "npm:^3.13.0"
     "@nuxt/schema": "npm:^3.13.0"
@@ -2772,11 +2711,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "@nuxt/image@npm:^1.8.0":
-=======
-"@nuxt/image@npm:^1.7.0":
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
   version: 1.8.0
   resolution: "@nuxt/image@npm:1.8.0"
   dependencies:
@@ -2798,43 +2733,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
-"@nuxt/kit@npm:3.13.0, @nuxt/kit@npm:^3.13.0":
-  version: 3.13.0
-  resolution: "@nuxt/kit@npm:3.13.0"
-  dependencies:
-    "@nuxt/schema": "npm:3.13.0"
-    c12: "npm:^1.11.1"
-    consola: "npm:^3.2.3"
-    defu: "npm:^6.1.4"
-    destr: "npm:^2.0.3"
-    globby: "npm:^14.0.2"
-    hash-sum: "npm:^2.0.0"
-    ignore: "npm:^5.3.2"
-    jiti: "npm:^1.21.6"
-    klona: "npm:^2.0.6"
-    knitwork: "npm:^1.1.0"
-    mlly: "npm:^1.7.1"
-    pathe: "npm:^1.1.2"
-    pkg-types: "npm:^1.1.3"
-    scule: "npm:^1.3.0"
-    semver: "npm:^7.6.3"
-    ufo: "npm:^1.5.4"
-    unctx: "npm:^2.3.1"
-    unimport: "npm:^3.11.0"
-    untyped: "npm:^1.4.2"
-  checksum: 10c0/b0a239b77a56125c5cbcfc46bcc756f1ac06ce66c94b5a4da9e7ee5b5ff38ba09f6393a1368212a3c8c3a26581ccdb6293f5dbce89f6a73e33842ae8296f213f
-  languageName: node
-  linkType: hard
-
-"@nuxt/kit@npm:^3.11.1, @nuxt/kit@npm:^3.11.2, @nuxt/kit@npm:^3.12.1, @nuxt/kit@npm:^3.12.2, @nuxt/kit@npm:^3.12.3, @nuxt/kit@npm:^3.12.4":
-  version: 3.12.4
-  resolution: "@nuxt/kit@npm:3.12.4"
-=======
 "@nuxt/kit@npm:3.13.0, @nuxt/kit@npm:^3.11.1, @nuxt/kit@npm:^3.11.2, @nuxt/kit@npm:^3.12.1, @nuxt/kit@npm:^3.12.2, @nuxt/kit@npm:^3.12.3, @nuxt/kit@npm:^3.12.4, @nuxt/kit@npm:^3.13.0":
   version: 3.13.0
   resolution: "@nuxt/kit@npm:3.13.0"
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
   dependencies:
     "@nuxt/schema": "npm:3.13.0"
     c12: "npm:^1.11.1"
@@ -2857,26 +2758,6 @@ __metadata:
     unimport: "npm:^3.11.0"
     untyped: "npm:^1.4.2"
   checksum: 10c0/b0a239b77a56125c5cbcfc46bcc756f1ac06ce66c94b5a4da9e7ee5b5ff38ba09f6393a1368212a3c8c3a26581ccdb6293f5dbce89f6a73e33842ae8296f213f
-  languageName: node
-  linkType: hard
-
-"@nuxt/schema@npm:3.13.0, @nuxt/schema@npm:^3.13.0":
-  version: 3.13.0
-  resolution: "@nuxt/schema@npm:3.13.0"
-  dependencies:
-    compatx: "npm:^0.1.8"
-    consola: "npm:^3.2.3"
-    defu: "npm:^6.1.4"
-    hookable: "npm:^5.5.3"
-    pathe: "npm:^1.1.2"
-    pkg-types: "npm:^1.1.3"
-    scule: "npm:^1.3.0"
-    std-env: "npm:^3.7.0"
-    ufo: "npm:^1.5.4"
-    uncrypto: "npm:^0.1.3"
-    unimport: "npm:^3.11.0"
-    untyped: "npm:^1.4.2"
-  checksum: 10c0/e2748930886e3f4f9d30f909769e8a98bd7aaf35f353da8006fa141b3125af37dff15ec582b7bf0eb4a6433f27712091e1b94ca547f32c157fbd0cbd6ad21c97
   languageName: node
   linkType: hard
 
@@ -2970,11 +2851,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "@nuxtjs/i18n@npm:^8.5.1":
-=======
-"@nuxtjs/i18n@npm:^8.5.0":
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
   version: 8.5.1
   resolution: "@nuxtjs/i18n@npm:8.5.1"
   dependencies:
@@ -3603,6 +3480,7 @@ __metadata:
     "@types/elliptic": "npm:^6.4.18"
     "@types/events": "npm:^3.0.3"
     "@types/fs-extra": "npm:^11.0.4"
+    "@types/rocksdb": "npm:^3.0.5"
     "@typeschema/typebox": "npm:^0.14.0"
     blockcodec-to-ipld-format: "npm:^2.0.0"
     blockstore-core: "npm:^5.0.0"
@@ -3646,6 +3524,7 @@ __metadata:
     protons-runtime: "npm:5.5.0"
     remeda: "npm:^2.11.0"
     rimraf: "npm:^6.0.1"
+    rocksdb: "npm:^5.2.1"
     timeout-abort-controller: "npm:^3.0.0"
     ts-pattern: "npm:^5.3.1"
     tsx: "npm:^4.19.0"
@@ -4016,7 +3895,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "@stablelib/binary@npm:^2.0.0":
   version: 2.0.0
   resolution: "@stablelib/binary@npm:2.0.0"
@@ -4078,15 +3956,9 @@ __metadata:
   linkType: hard
 
 "@stylistic/eslint-plugin@npm:^2.6.5":
-  version: 2.7.1
-  resolution: "@stylistic/eslint-plugin@npm:2.7.1"
-  dependencies:
-=======
-"@stylistic/eslint-plugin@npm:^2.6.4":
   version: 2.7.2
   resolution: "@stylistic/eslint-plugin@npm:2.7.2"
   dependencies:
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
     "@types/eslint": "npm:^9.6.1"
     "@typescript-eslint/utils": "npm:^8.3.0"
     eslint-visitor-keys: "npm:^4.0.0"
@@ -4095,11 +3967,7 @@ __metadata:
     picomatch: "npm:^4.0.2"
   peerDependencies:
     eslint: ">=8.40.0"
-<<<<<<< HEAD
-  checksum: 10c0/ff01c46b260efddcfe2825aabeda5bfe0491ee649df1026ef29f2cb2ea7cee24c337a6823616b03b47c4028c7f64cfa427467680ad79ef116eba50ccef994b90
-=======
   checksum: 10c0/266bd65bdc252e4562e8c1c3819bafcec9705cebc3c4f41ce6c2ed3deeaa0ed6ccdffd00a108f51422ae201d32618bd1055cd4977aabccbf8a729fbca1e2bf1e
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
   languageName: node
   linkType: hard
 
@@ -4126,11 +3994,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "@tanstack/vue-table@npm:^8.20.5":
-=======
-"@tanstack/vue-table@npm:^8.20.4":
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
   version: 8.20.5
   resolution: "@tanstack/vue-table@npm:8.20.5"
   dependencies:
@@ -4141,7 +4005,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/vue-virtual@npm:^3.8.1":
+"@tanstack/vue-virtual@npm:^3.10.6, @tanstack/vue-virtual@npm:^3.8.1":
   version: 3.10.6
   resolution: "@tanstack/vue-virtual@npm:3.10.6"
   dependencies:
@@ -4184,6 +4048,13 @@ __metadata:
     mkdirp: "npm:^3.0.1"
     path-browserify: "npm:^1.0.1"
   checksum: 10c0/80d8f230618b022537846b515cb928c636004f216821bec7fea289fd37533b4eaa783d276cc5838b4b6be867fec60fdee5795baac3ed98f1ab7cdd6b35a85179
+  languageName: node
+  linkType: hard
+
+"@types/abstract-leveldown@npm:*":
+  version: 7.2.5
+  resolution: "@types/abstract-leveldown@npm:7.2.5"
+  checksum: 10c0/ec6c054a0a09c5a2ba8de6e640169978d34b6ef9b629183c440330208ad67e1322d7dd0aeb834963a9138b47b78730dcddd929c10138ccfddb7b06869264e173
   languageName: node
   linkType: hard
 
@@ -4248,16 +4119,6 @@ __metadata:
   linkType: hard
 
 "@types/eslint@npm:^9.6.0, @types/eslint@npm:^9.6.1":
-  version: 9.6.1
-  resolution: "@types/eslint@npm:9.6.1"
-  dependencies:
-    "@types/estree": "npm:*"
-    "@types/json-schema": "npm:*"
-  checksum: 10c0/69ba24fee600d1e4c5abe0df086c1a4d798abf13792d8cfab912d76817fe1a894359a1518557d21237fbaf6eda93c5ab9309143dee4c59ef54336d1b3570420e
-  languageName: node
-  linkType: hard
-
-"@types/eslint@npm:^9.6.1":
   version: 9.6.1
   resolution: "@types/eslint@npm:9.6.1"
   dependencies:
@@ -4397,6 +4258,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/rocksdb@npm:^3.0.5":
+  version: 3.0.5
+  resolution: "@types/rocksdb@npm:3.0.5"
+  dependencies:
+    "@types/abstract-leveldown": "npm:*"
+    "@types/node": "npm:*"
+  checksum: 10c0/c919eb52a086ae601357334a953ee5f6252a3279ea4ae3ce9198f008e203fc936fa633f2af7f5dc5a30433ad59282aa53e118efac6f89921b9960c6cc8920c2f
+  languageName: node
+  linkType: hard
+
 "@types/sinon@npm:^17.0.3":
   version: 17.0.3
   resolution: "@types/sinon@npm:17.0.3"
@@ -4434,7 +4305,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "@types/ws@npm:^8.2.2, @types/ws@npm:^8.5.10":
   version: 8.5.12
   resolution: "@types/ws@npm:8.5.12"
@@ -4470,8 +4340,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-=======
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
 "@typescript-eslint/eslint-plugin@npm:^8.3.0":
   version: 8.3.0
   resolution: "@typescript-eslint/eslint-plugin@npm:8.3.0"
@@ -4495,11 +4363,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "@typescript-eslint/parser@npm:^8.3.0":
-=======
-"@typescript-eslint/parser@npm:^8.2.0, @typescript-eslint/parser@npm:^8.3.0":
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
   version: 8.3.0
   resolution: "@typescript-eslint/parser@npm:8.3.0"
   dependencies:
@@ -4514,30 +4378,6 @@ __metadata:
     typescript:
       optional: true
   checksum: 10c0/8185e7f1f570cded8719cfb1e8147fcbbc5b8796de628d68024d2929ce6fb02d1f6101b741161229e877be1c30c720701e1e1f7c4313dba33d4bb1190a85f705
-<<<<<<< HEAD
-=======
-  languageName: node
-  linkType: hard
-
-"@typescript-eslint/scope-manager@npm:8.3.0":
-  version: 8.3.0
-  resolution: "@typescript-eslint/scope-manager@npm:8.3.0"
-  dependencies:
-    "@typescript-eslint/types": "npm:8.3.0"
-    "@typescript-eslint/visitor-keys": "npm:8.3.0"
-  checksum: 10c0/24d093505d444a07db88f9ab44af04eb738ce523ac3f98b0a641cf3a3ee38d18aff9f72bbf2b2e2d9f45e57c973f31016f1e224cd8ab773f6e7c3477c5a09ad3
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
-  languageName: node
-  linkType: hard
-
-"@typescript-eslint/type-utils@npm:8.3.0":
-  version: 8.3.0
-  resolution: "@typescript-eslint/type-utils@npm:8.3.0"
-  dependencies:
-<<<<<<< HEAD
-    "@typescript-eslint/types": "npm:8.2.0"
-    "@typescript-eslint/visitor-keys": "npm:8.2.0"
-  checksum: 10c0/8026e11d9cfbb674c62eb38929d08d42c4a373f3463c2591ed6603c496d3d00321f553edce47f1d7504b55fcbe9664ea2bdcaa3131c8c834bde1b1f07497af5d
   languageName: node
   linkType: hard
 
@@ -4555,8 +4395,6 @@ __metadata:
   version: 8.3.0
   resolution: "@typescript-eslint/type-utils@npm:8.3.0"
   dependencies:
-=======
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
     "@typescript-eslint/typescript-estree": "npm:8.3.0"
     "@typescript-eslint/utils": "npm:8.3.0"
     debug: "npm:^4.3.4"
@@ -4568,16 +4406,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
-"@typescript-eslint/types@npm:8.2.0":
-  version: 8.2.0
-  resolution: "@typescript-eslint/types@npm:8.2.0"
-  checksum: 10c0/2ffba0d0183dfdd2f859fb414013d17d009f5e886664823f973aaa1145243fceb52cfe26aa7c50208af7833b3703b7788337f1aab136c9a4eb36d905493847d1
-  languageName: node
-  linkType: hard
-
-=======
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
 "@typescript-eslint/types@npm:8.3.0, @typescript-eslint/types@npm:^8.3.0":
   version: 8.3.0
   resolution: "@typescript-eslint/types@npm:8.3.0"
@@ -4589,66 +4417,6 @@ __metadata:
   version: 7.18.0
   resolution: "@typescript-eslint/types@npm:7.18.0"
   checksum: 10c0/eb7371ac55ca77db8e59ba0310b41a74523f17e06f485a0ef819491bc3dd8909bb930120ff7d30aaf54e888167e0005aa1337011f3663dc90fb19203ce478054
-<<<<<<< HEAD
-  languageName: node
-  linkType: hard
-
-"@typescript-eslint/typescript-estree@npm:8.2.0":
-  version: 8.2.0
-  resolution: "@typescript-eslint/typescript-estree@npm:8.2.0"
-  dependencies:
-    "@typescript-eslint/types": "npm:8.2.0"
-    "@typescript-eslint/visitor-keys": "npm:8.2.0"
-    debug: "npm:^4.3.4"
-    globby: "npm:^11.1.0"
-    is-glob: "npm:^4.0.3"
-    minimatch: "npm:^9.0.4"
-    semver: "npm:^7.6.0"
-    ts-api-utils: "npm:^1.3.0"
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  checksum: 10c0/f49aabc78e396908307394812fdebc4015ca407983efc361be106d3e2d58971dec4a1a725362fcfbd637f3d8150baa0735eb5929fd170172b7f2a65e06eeb3d2
-  languageName: node
-  linkType: hard
-
-"@typescript-eslint/typescript-estree@npm:8.3.0, @typescript-eslint/typescript-estree@npm:^8.1.0":
-  version: 8.3.0
-  resolution: "@typescript-eslint/typescript-estree@npm:8.3.0"
-  dependencies:
-    "@typescript-eslint/types": "npm:8.3.0"
-    "@typescript-eslint/visitor-keys": "npm:8.3.0"
-    debug: "npm:^4.3.4"
-    fast-glob: "npm:^3.3.2"
-    is-glob: "npm:^4.0.3"
-    minimatch: "npm:^9.0.4"
-    semver: "npm:^7.6.0"
-    ts-api-utils: "npm:^1.3.0"
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  checksum: 10c0/dd73aa1a9d7b5c7e6238e766e6ecdb6d87a9b28a24815258b7bbdc59c49fb525d3fe15d9b7c672e2220678f9d5fabdd9615e4cd5ee97a102fd46023ec0735d50
-  languageName: node
-  linkType: hard
-
-"@typescript-eslint/utils@npm:8.3.0, @typescript-eslint/utils@npm:^8.3.0":
-  version: 8.3.0
-  resolution: "@typescript-eslint/utils@npm:8.3.0"
-  dependencies:
-    "@eslint-community/eslint-utils": "npm:^4.4.0"
-    "@typescript-eslint/scope-manager": "npm:8.3.0"
-    "@typescript-eslint/types": "npm:8.3.0"
-    "@typescript-eslint/typescript-estree": "npm:8.3.0"
-  peerDependencies:
-    eslint: ^8.57.0 || ^9.0.0
-  checksum: 10c0/e4e9e820cf4b4775bb66b2293a2a827897edaba88577b63df317b50752a01d542be521cc4842976fbbd93e08b9e273ce9d20e23768d06de68a83d68cc0f68a93
-  languageName: node
-  linkType: hard
-
-"@typescript-eslint/utils@npm:^8.1.0":
-  version: 8.2.0
-  resolution: "@typescript-eslint/utils@npm:8.2.0"
-=======
   languageName: node
   linkType: hard
 
@@ -4674,7 +4442,6 @@ __metadata:
 "@typescript-eslint/utils@npm:8.3.0, @typescript-eslint/utils@npm:^8.1.0, @typescript-eslint/utils@npm:^8.3.0":
   version: 8.3.0
   resolution: "@typescript-eslint/utils@npm:8.3.0"
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
   dependencies:
     "@eslint-community/eslint-utils": "npm:^4.4.0"
     "@typescript-eslint/scope-manager": "npm:8.3.0"
@@ -4686,19 +4453,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
-"@typescript-eslint/visitor-keys@npm:8.2.0":
-  version: 8.2.0
-  resolution: "@typescript-eslint/visitor-keys@npm:8.2.0"
-  dependencies:
-    "@typescript-eslint/types": "npm:8.2.0"
-    eslint-visitor-keys: "npm:^3.4.3"
-  checksum: 10c0/788633bd2905c88ea2cf20d9e317a2bc992a70fcf725cb54bbe55a17c42138a6fe877c89fbda41a733e0e8ad6dce893163bada60509a1b856321f4329a316973
-  languageName: node
-  linkType: hard
-
-=======
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
 "@typescript-eslint/visitor-keys@npm:8.3.0":
   version: 8.3.0
   resolution: "@typescript-eslint/visitor-keys@npm:8.3.0"
@@ -4706,18 +4460,6 @@ __metadata:
     "@typescript-eslint/types": "npm:8.3.0"
     eslint-visitor-keys: "npm:^3.4.3"
   checksum: 10c0/4c19216636f2cc25026fe20d2832d857f05c262eba78bc4159121c696199e44cac68443565959f9336372f7686a14b452867300cf4deb3c0507b8dbde88ac0e6
-<<<<<<< HEAD
-  languageName: node
-  linkType: hard
-
-"@typescript/vfs@npm:1.5.0":
-  version: 1.5.0
-  resolution: "@typescript/vfs@npm:1.5.0"
-  dependencies:
-    debug: "npm:^4.1.1"
-  checksum: 10c0/9b5d0a80864f1c7920cb353ffb5e0f6c8234edba53bd846a1264699cf3bad4a560818db2b724a8d165cd44f385d8ffc429cc4fc3a26061a52b31948ccb797edc
-=======
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
   languageName: node
   linkType: hard
 
@@ -4827,11 +4569,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "@vitest/eslint-plugin@npm:^1.1.0":
-=======
-"@vitest/eslint-plugin@npm:^1.0.5":
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
   version: 1.1.0
   resolution: "@vitest/eslint-plugin@npm:1.1.0"
   peerDependencies:
@@ -4933,18 +4671,6 @@ __metadata:
 "@volar/language-core@npm:2.4.1, @volar/language-core@npm:~2.4.1":
   version: 2.4.1
   resolution: "@volar/language-core@npm:2.4.1"
-<<<<<<< HEAD
-  dependencies:
-    "@volar/source-map": "npm:2.4.1"
-  checksum: 10c0/3784422c6a6ac37043203574b79df4345b4edbf1404c2ee8d36da05d55bd356453582f30f612b11ea70846fcd45daf80daf84d1cef81ba156668a53f182983fb
-  languageName: node
-  linkType: hard
-
-"@volar/language-core@npm:~2.4.0-alpha.18":
-  version: 2.4.0
-  resolution: "@volar/language-core@npm:2.4.0"
-=======
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
   dependencies:
     "@volar/source-map": "npm:2.4.1"
   checksum: 10c0/3784422c6a6ac37043203574b79df4345b4edbf1404c2ee8d36da05d55bd356453582f30f612b11ea70846fcd45daf80daf84d1cef81ba156668a53f182983fb
@@ -4958,16 +4684,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
-"@volar/source-map@npm:2.4.1":
-  version: 2.4.1
-  resolution: "@volar/source-map@npm:2.4.1"
-  checksum: 10c0/d40a9c2f209a329b9bd7ae51b39ca70ad73d62df69a250b04ff3e0e93626abdb6e436966028557c27fddd32fab19eba765062b2d91b44f128778f5292fd89406
-  languageName: node
-  linkType: hard
-
-=======
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
 "@volar/typescript@npm:~2.4.1":
   version: 2.4.1
   resolution: "@volar/typescript@npm:2.4.1"
@@ -5167,30 +4883,6 @@ __metadata:
 "@vue/language-core@npm:2.1.2":
   version: 2.1.2
   resolution: "@vue/language-core@npm:2.1.2"
-<<<<<<< HEAD
-  dependencies:
-    "@volar/language-core": "npm:~2.4.1"
-    "@vue/compiler-dom": "npm:^3.4.0"
-    "@vue/compiler-vue2": "npm:^2.7.16"
-    "@vue/shared": "npm:^3.4.0"
-    computeds: "npm:^0.0.1"
-    minimatch: "npm:^9.0.3"
-    muggle-string: "npm:^0.4.1"
-    path-browserify: "npm:^1.0.1"
-  peerDependencies:
-    typescript: "*"
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  checksum: 10c0/589fdc15290eb71441506405596ef5b895cd3988e46eb632085ca4d37731ebc9be2582e8e22b523da14f87455f18f56f46ae6edfb23e0f06ee425f75b5f61325
-  languageName: node
-  linkType: hard
-
-"@vue/language-core@npm:^2.0.22":
-  version: 2.0.29
-  resolution: "@vue/language-core@npm:2.0.29"
-=======
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
   dependencies:
     "@volar/language-core": "npm:~2.4.1"
     "@vue/compiler-dom": "npm:^3.4.0"
@@ -5280,11 +4972,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "@vueuse/core@npm:11.0.3, @vueuse/core@npm:^11.0.3":
-=======
-"@vueuse/core@npm:11.0.3, @vueuse/core@npm:^11.0.1":
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
   version: 11.0.3
   resolution: "@vueuse/core@npm:11.0.3"
   dependencies:
@@ -5339,11 +5027,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "@vueuse/nuxt@npm:^11.0.3":
-=======
-"@vueuse/nuxt@npm:^11.0.1":
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
   version: 11.0.3
   resolution: "@vueuse/nuxt@npm:11.0.3"
   dependencies:
@@ -5411,6 +5095,20 @@ __metadata:
     module-error: "npm:^1.0.1"
     queue-microtask: "npm:^1.2.3"
   checksum: 10c0/e89fad8924888b597ca84e6d003a424a670f225fd595ad1f4c2e2d38a5cea3c92877a44f5104cdede1717eb262dd6e7fbf7ef2375569c7395066521170b8d761
+  languageName: node
+  linkType: hard
+
+"abstract-leveldown@npm:^7.2.0":
+  version: 7.2.0
+  resolution: "abstract-leveldown@npm:7.2.0"
+  dependencies:
+    buffer: "npm:^6.0.3"
+    catering: "npm:^2.0.0"
+    is-buffer: "npm:^2.0.5"
+    level-concat-iterator: "npm:^3.0.0"
+    level-supports: "npm:^2.0.1"
+    queue-microtask: "npm:^1.2.3"
+  checksum: 10c0/c81765642fc2100499fadc3254470a338ba7c0ba2e597b15cd13d91f333a54619b4d5c4137765e0835817142cd23e8eb7bf01b6a217e13c492f4872c164184dc
   languageName: node
   linkType: hard
 
@@ -5654,14 +5352,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
-"array-union@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "array-union@npm:2.1.0"
-  checksum: 10c0/429897e68110374f39b771ec47a7161fc6a8fc33e196857c0a396dc75df0b5f65e4d046674db764330b6bb66b39ef48dd7c53b6a2ee75cfb0681e0c1a7033962
-  languageName: node
-  linkType: hard
-
 "asn1js@npm:^3.0.5":
   version: 3.0.5
   resolution: "asn1js@npm:3.0.5"
@@ -5673,8 +5363,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-=======
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
 "assertion-error@npm:^2.0.1":
   version: 2.0.1
   resolution: "assertion-error@npm:2.0.1"
@@ -6178,7 +5866,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"catering@npm:^2.1.0, catering@npm:^2.1.1":
+"catering@npm:^2.0.0, catering@npm:^2.1.0, catering@npm:^2.1.1":
   version: 2.1.1
   resolution: "catering@npm:2.1.1"
   checksum: 10c0/a69f946f82cba85509abcb399759ed4c39d2cc9e33ba35674f242130c1b3c56673da3c3e85804db6898dfd966c395aa128ba484b31c7b906cc2faca6a581e133
@@ -6689,6 +6377,7 @@ __metadata:
     "@nuxtjs/tailwindcss": "npm:^6.12.1"
     "@radix-icons/vue": "npm:^1.0.0"
     "@tanstack/vue-table": "npm:^8.20.5"
+    "@tanstack/vue-virtual": "npm:^3.10.6"
     "@types/add": "npm:^2.0.3"
     "@types/eslint": "npm:^9.6.1"
     "@vitest/ui": "npm:^2.0.5"
@@ -6705,12 +6394,7 @@ __metadata:
     lucide-vue-next: "npm:^0.436.0"
     nuxt: "npm:^3.13.0"
     nuxt-content-assets: "npm:^1.4.4"
-<<<<<<< HEAD
-    nuxt-content-twoslash: "npm:^0.1.1"
     nuxt-echarts: "npm:^0.2.3"
-=======
-    nuxt-echarts: "npm:^0.2.2"
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
     nuxt-edgedb-module: "npm:^0.0.52"
     octokit: "npm:^4.0.2"
     pathe: "npm:^1.1.2"
@@ -6729,12 +6413,7 @@ __metadata:
     vitest: "npm:^2.0.5"
     vue: "npm:^3.4.38"
     vue-router: "npm:^4.4.3"
-<<<<<<< HEAD
     vue-tsc: "npm:^2.1.2"
-    yarn: "npm:^1.22.22"
-=======
-    vue-tsc: "npm:^2.0.29"
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
   languageName: unknown
   linkType: soft
 
@@ -7550,30 +7229,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
-"edgedb@npm:^1.5.11":
+"edgedb@npm:^1.5.11, edgedb@npm:^1.5.7":
   version: 1.5.11
   resolution: "edgedb@npm:1.5.11"
-  dependencies:
-    debug: "npm:^4.3.4"
-    env-paths: "npm:^3.0.0"
-    semver: "npm:^7.6.2"
-    shell-quote: "npm:^1.8.1"
-    which: "npm:^4.0.0"
-  bin:
-    edgedb: dist/cli.mjs
-  checksum: 10c0/a170e9d7e650cd4ee6d3153ce5b9f78a8e3582a8237a23b5bb1ae5569b22115991d7b99e87b7bfc6a0c8ae7053d209c6c74e2ea77504101c29ccda44efddeb05
-  languageName: node
-  linkType: hard
-
-"edgedb@npm:^1.5.7":
-  version: 1.5.9
-  resolution: "edgedb@npm:1.5.9"
-=======
-"edgedb@npm:^1.5.7, edgedb@npm:^1.5.9":
-  version: 1.5.11
-  resolution: "edgedb@npm:1.5.11"
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
   dependencies:
     debug: "npm:^4.3.4"
     env-paths: "npm:^3.0.0"
@@ -8139,11 +7797,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "eslint-plugin-import-x@npm:^4.1.0":
-=======
-"eslint-plugin-import-x@npm:^4.0.0":
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
   version: 4.1.1
   resolution: "eslint-plugin-import-x@npm:4.1.1"
   dependencies:
@@ -8238,11 +7892,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "eslint-plugin-perfectionist@npm:^3.3.0":
-=======
-"eslint-plugin-perfectionist@npm:^3.2.0":
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
   version: 3.3.0
   resolution: "eslint-plugin-perfectionist@npm:3.3.0"
   dependencies:
@@ -10837,6 +10487,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"level-concat-iterator@npm:^3.0.0":
+  version: 3.1.0
+  resolution: "level-concat-iterator@npm:3.1.0"
+  dependencies:
+    catering: "npm:^2.1.0"
+  checksum: 10c0/7bb1b8e991a179de2fecfd38d2c34544a139e1228cb730f3024ef11dcbd514cc89be30b02a2a81ef4e16b0c1553f604378f67302ea23868d98f055f9fa241ae4
+  languageName: node
+  linkType: hard
+
+"level-supports@npm:^2.0.1":
+  version: 2.1.0
+  resolution: "level-supports@npm:2.1.0"
+  checksum: 10c0/60481dd403234c64e2c01ed2aafdc75250ddd49d770f75ebef3f92a2a5b2271bf774858bfd8c47cfae3955855f9ff9dd536683d6cffb7c085cd0e57245c4c039
+  languageName: node
+  linkType: hard
+
 "level-supports@npm:^4.0.0":
   version: 4.0.1
   resolution: "level-supports@npm:4.0.1"
@@ -12225,7 +11891,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"napi-macros@npm:^2.2.2":
+"napi-macros@npm:^2.0.0, napi-macros@npm:^2.2.2":
   version: 2.2.2
   resolution: "napi-macros@npm:2.2.2"
   checksum: 10c0/cc85daaf82a4f585d30561047cef0f3e702be769b5cf2ffadc6242bc5a1033f6b8269012e54178baf66f022bd18aa9ebb619f1b530cc19c1f9b96f9689affd50
@@ -12434,18 +12100,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-gyp-build@npm:^4.2.2":
-  version: 4.8.2
-  resolution: "node-gyp-build@npm:4.8.2"
-  bin:
-    node-gyp-build: bin.js
-    node-gyp-build-optional: optional.js
-    node-gyp-build-test: build-test.js
-  checksum: 10c0/d816b43974d31d6257b6e87d843f2626c72389a285208394bc57a7766b210454d2642860a5e5b5c333d8ecabaeabad3b31b94f58cf8ca1aabdef0c320d02baaa
-  languageName: node
-  linkType: hard
-
-"node-gyp-build@npm:^4.3.0":
+"node-gyp-build@npm:^4.2.2, node-gyp-build@npm:^4.3.0":
   version: 4.8.2
   resolution: "node-gyp-build@npm:4.8.2"
   bin:
@@ -12606,37 +12261,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
-"nuxt-content-twoslash@npm:^0.1.1":
-  version: 0.1.1
-  resolution: "nuxt-content-twoslash@npm:0.1.1"
-  dependencies:
-    "@nuxt/kit": "npm:^3.12.4"
-    "@nuxt/schema": "npm:^3.12.4"
-    "@shikijs/vitepress-twoslash": "npm:^1.12.1"
-    cac: "npm:^6.7.14"
-    chokidar: "npm:^3.6.0"
-    fast-glob: "npm:^3.3.2"
-    pathe: "npm:^1.1.2"
-    picocolors: "npm:^1.0.1"
-    remark-parse: "npm:^11.0.0"
-    shiki: "npm:^1.12.1"
-    twoslash: "npm:^0.2.9"
-    typescript: "npm:^5.5.4"
-    unified: "npm:^11.0.5"
-    unist-util-visit: "npm:^5.0.0"
-  peerDependencies:
-    "@nuxtjs/mdc": ">=0.5.0"
-  bin:
-    nuxt-content-twoslash: bin/nuxt-content-twoslash.mjs
-  checksum: 10c0/17b8c6792e8cbb83b1a518f274827dfdda49625c14e77a135b4a1b3e111756488e7e3e65d3da609202c1491a76ae43ee121ca00de26620976da437366a0475e8
-  languageName: node
-  linkType: hard
-
 "nuxt-echarts@npm:^0.2.3":
-=======
-"nuxt-echarts@npm:^0.2.2":
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
   version: 0.2.3
   resolution: "nuxt-echarts@npm:0.2.3"
   dependencies:
@@ -12665,11 +12290,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "nuxt@npm:^3.13.0":
-=======
-"nuxt@npm:^3.12.4":
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
   version: 3.13.0
   resolution: "nuxt@npm:3.13.0"
   dependencies:
@@ -12744,25 +12365,6 @@ __metadata:
     nuxi: bin/nuxt.mjs
     nuxt: bin/nuxt.mjs
   checksum: 10c0/37ea5b4c21edf56e0230196b37eabc6e969c10bcef319d5a9ec8aac0ea6b7b88a3de4a4132c9f5b298b3201718ef34c5c7058ccbdd1c70dd0e69c5cc7d7093f7
-<<<<<<< HEAD
-  languageName: node
-  linkType: hard
-
-"nypm@npm:^0.3.11":
-  version: 0.3.11
-  resolution: "nypm@npm:0.3.11"
-  dependencies:
-    citty: "npm:^0.1.6"
-    consola: "npm:^3.2.3"
-    execa: "npm:^8.0.1"
-    pathe: "npm:^1.1.2"
-    pkg-types: "npm:^1.2.0"
-    ufo: "npm:^1.5.4"
-  bin:
-    nypm: dist/cli.mjs
-  checksum: 10c0/016a74110f9629ddb9ee06d378aca56004ba0cbf824defb1f558342e411051443f95ae20171f538691798d4ac1da72d7582192c1a9c858843a2a90d6f5c3f86b
-=======
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
   languageName: node
   linkType: hard
 
@@ -13320,17 +12922,6 @@ __metadata:
   linkType: hard
 
 "pkg-types@npm:^1.0.3, pkg-types@npm:^1.1.1, pkg-types@npm:^1.1.3, pkg-types@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "pkg-types@npm:1.2.0"
-  dependencies:
-    confbox: "npm:^0.1.7"
-    mlly: "npm:^1.7.1"
-    pathe: "npm:^1.1.2"
-  checksum: 10c0/111cf6ad4235438821ea195a0d70570b1bd36a71d094d258349027c9c304dea8b4f9669c9f7ce813f9a48a02942fb0d7fe9809127dbe7bb4b18a8de71583a081
-  languageName: node
-  linkType: hard
-
-"pkg-types@npm:^1.2.0":
   version: 1.2.0
   resolution: "pkg-types@npm:1.2.0"
   dependencies:
@@ -13986,7 +13577,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "race-event@npm:^1.2.0, race-event@npm:^1.3.0":
   version: 1.3.0
   resolution: "race-event@npm:1.3.0"
@@ -14001,33 +13591,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"radix-vue@npm:^1.4.9, radix-vue@npm:^1.7.3":
-  version: 1.9.4
-  resolution: "radix-vue@npm:1.9.4"
-=======
-"radix-vue@npm:^1.4.9, radix-vue@npm:^1.7.3, radix-vue@npm:^1.9.4":
-  version: 1.9.5
-  resolution: "radix-vue@npm:1.9.5"
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
-  dependencies:
-    "@floating-ui/dom": "npm:^1.6.7"
-    "@floating-ui/vue": "npm:^1.1.0"
-    "@internationalized/date": "npm:^3.5.4"
-    "@internationalized/number": "npm:^3.5.3"
-    "@tanstack/vue-virtual": "npm:^3.8.1"
-    "@vueuse/core": "npm:^10.11.0"
-    "@vueuse/shared": "npm:^10.11.0"
-    aria-hidden: "npm:^1.2.4"
-    defu: "npm:^6.1.4"
-    fast-deep-equal: "npm:^3.1.3"
-    nanoid: "npm:^5.0.7"
-  peerDependencies:
-    vue: ">= 3.2.0"
-  checksum: 10c0/1aacbf483f938ccfcb9e19dd376571abffa9d15592d1c6bd2b19b927aa7056d72a6821d7625697ba73dea8ea3d872b39d458f6cbc3a1de390391e0d4b9d29c4d
-  languageName: node
-  linkType: hard
-
-"radix-vue@npm:^1.9.5":
+"radix-vue@npm:^1.4.9, radix-vue@npm:^1.7.3, radix-vue@npm:^1.9.5":
   version: 1.9.5
   resolution: "radix-vue@npm:1.9.5"
   dependencies:
@@ -14551,6 +14115,18 @@ __metadata:
   bin:
     rimraf: dist/esm/bin.mjs
   checksum: 10c0/b30b6b072771f0d1e73b4ca5f37bb2944ee09375be9db5f558fcd3310000d29dfcfa93cf7734d75295ad5a7486dc8e40f63089ced1722a664539ffc0c3ece8c6
+  languageName: node
+  linkType: hard
+
+"rocksdb@npm:^5.2.1":
+  version: 5.2.1
+  resolution: "rocksdb@npm:5.2.1"
+  dependencies:
+    abstract-leveldown: "npm:^7.2.0"
+    napi-macros: "npm:^2.0.0"
+    node-gyp: "npm:latest"
+    node-gyp-build: "npm:^4.3.0"
+  checksum: 10c0/d10925ce14846aee32f76c80adcaac07de9d4771a61bdaa716553c4306480452883e49518013e804a247be03056f53edb5dc60ae704bfba5c093ef625f55be37
   languageName: node
   linkType: hard
 
@@ -15254,11 +14830,7 @@ __metadata:
   dependenciesMeta:
     bare-events:
       optional: true
-<<<<<<< HEAD
-  checksum: 10c0/ef50f419252a73dd35abcde72329eafbf5ad9cd2e27f0cc3abebeff6e0dbea124ac6d3e16acbdf081cce41b4125393ac22f9848fcfa19e640830734883e622ba
-=======
   checksum: 10c0/bbf0a95ed129f7ff9fd8fcccaf1074e69a20dcfad6ae7f2de0ce92df049d109ca591f40f465deeb9f5fb478b659fe8cb84127e6d505c15dcac6b8ab277bdabd2
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
   languageName: node
   linkType: hard
 
@@ -15778,23 +15350,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
-"tinyglobby@npm:^0.2.2":
-  version: 0.2.2
-  resolution: "tinyglobby@npm:0.2.2"
-=======
 "tinyglobby@npm:^0.2.2, tinyglobby@npm:^0.2.5":
-  version: 0.2.5
-  resolution: "tinyglobby@npm:0.2.5"
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
-  dependencies:
-    fdir: "npm:^6.2.0"
-    picomatch: "npm:^4.0.2"
-  checksum: 10c0/a9ebb3fd8fec5a7aee9a8078d84db9209986b077d267bc1da41c312d7a19cea8c5ec4fc660a27adea180efda026c30cb7529ff80ef2aa7737ff404de8d0066c2
-  languageName: node
-  linkType: hard
-
-"tinyglobby@npm:^0.2.5":
   version: 0.2.5
   resolution: "tinyglobby@npm:0.2.5"
   dependencies:
@@ -15952,14 +15508,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.0.0, tslib@npm:^2.3.1, tslib@npm:^2.4.0, tslib@npm:^2.6.2, tslib@npm:^2.6.3":
-  version: 2.7.0
-  resolution: "tslib@npm:2.7.0"
-  checksum: 10c0/469e1d5bf1af585742128827000711efa61010b699cb040ab1800bcd3ccdd37f63ec30642c9e07c4439c1db6e46345582614275daca3e0f4abae29b0083f04a6
-  languageName: node
-  linkType: hard
-
-"tslib@npm:^2.6.1, tslib@npm:^2.6.3":
+"tslib@npm:^2.0.0, tslib@npm:^2.3.1, tslib@npm:^2.4.0, tslib@npm:^2.6.1, tslib@npm:^2.6.2, tslib@npm:^2.6.3":
   version: 2.7.0
   resolution: "tslib@npm:2.7.0"
   checksum: 10c0/469e1d5bf1af585742128827000711efa61010b699cb040ab1800bcd3ccdd37f63ec30642c9e07c4439c1db6e46345582614275daca3e0f4abae29b0083f04a6
@@ -15973,11 +15522,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "tsx@npm:^4.19.0":
-=======
-"tsx@npm:^4.17.0":
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
   version: 4.19.0
   resolution: "tsx@npm:4.19.0"
   dependencies:
@@ -16250,36 +15795,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
-"unimport@npm:^3.11.0, unimport@npm:^3.11.1":
-  version: 3.11.1
-  resolution: "unimport@npm:3.11.1"
-  dependencies:
-    "@rollup/pluginutils": "npm:^5.1.0"
-    acorn: "npm:^8.12.1"
-    escape-string-regexp: "npm:^5.0.0"
-    estree-walker: "npm:^3.0.3"
-    fast-glob: "npm:^3.3.2"
-    local-pkg: "npm:^0.5.0"
-    magic-string: "npm:^0.30.11"
-    mlly: "npm:^1.7.1"
-    pathe: "npm:^1.1.2"
-    pkg-types: "npm:^1.2.0"
-    scule: "npm:^1.3.0"
-    strip-literal: "npm:^2.1.0"
-    unplugin: "npm:^1.12.2"
-  checksum: 10c0/4657014c251bcc42dce7e25f8c14afe5b8d0c0e77f5e4244f007ea61d7ac987f1a10dff3550c08718ed6463b8891efb9086743598c0ea2f9ccb6b485b854ea99
-  languageName: node
-  linkType: hard
-
-"unimport@npm:^3.7.2, unimport@npm:^3.9.0":
-  version: 3.10.1
-  resolution: "unimport@npm:3.10.1"
-=======
 "unimport@npm:^3.11.0, unimport@npm:^3.11.1, unimport@npm:^3.7.2":
   version: 3.11.1
   resolution: "unimport@npm:3.11.1"
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
   dependencies:
     "@rollup/pluginutils": "npm:^5.1.0"
     acorn: "npm:^8.12.1"
@@ -17043,11 +16561,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-<<<<<<< HEAD
 "vue-tsc@npm:^2.1.2":
-=======
-"vue-tsc@npm:^2.0.29":
->>>>>>> 0a394e3 (feat(components): add new Vue components for issue management interface)
   version: 2.1.2
   resolution: "vue-tsc@npm:2.1.2"
   dependencies:

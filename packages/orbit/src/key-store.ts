@@ -75,6 +75,7 @@ export class KeyStore implements KeyStoreInstance {
       hasKey = storedKey !== undefined && storedKey !== null
     }
     catch {
+      // eslint-disable-next-line no-console
       console.error('Error: ENOENT: no such file or directory')
     }
 

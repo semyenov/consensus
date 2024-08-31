@@ -29,7 +29,7 @@ function copy(id: string) {
 
 <template>
   <DropdownMenu>
-    <DropdownMenuTrigger as-child>
+    <DropdownMenuTrigger as-child class="p-0">
       <Button variant="link" size="icon">
         <span class="sr-only">{{ t("pages.index.links.open_menu") }}</span>
         <MoreHorizontal class="w-4" />

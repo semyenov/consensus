@@ -13,9 +13,9 @@ const props = defineProps<{
   <td
     :class="
       cn(
-        'align-middle',
+        'align-middle p-0',
         {
-          'sticky z-20': props.pinned,
+          'sticky': props.pinned,
           'left-0': props.pinned === 'left',
           'right-0': props.pinned === 'right',
         },

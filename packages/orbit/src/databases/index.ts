@@ -5,6 +5,12 @@ import {
   type DocumentsOptions,
 } from './documents.js'
 import {
+  EdgeDB,
+  EdgeDBDatabase,
+  type EdgeDBInstance,
+  type EdgeDBOptions,
+} from './edgedb.js'
+import {
   Events,
   EventsDatabase,
   type EventsInstance,
@@ -33,6 +39,7 @@ export interface DatabaseTypeMap<T = unknown> {
   'documents': DocumentsDatabase<T>
   'keyvalue': KeyValueDatabase<T>
   'keyvalue-indexed': KeyValueIndexedDatabase<T>
+  'edgedb': EdgeDBDatabase<T> // Add this line
 }
 
 export interface DatabaseType<T, D extends keyof DatabaseTypeMap<T>> {
@@ -72,8 +79,9 @@ useDatabaseType(EventsDatabase)
 useDatabaseType(DocumentsDatabase)
 useDatabaseType(KeyValueDatabase)
 useDatabaseType(KeyValueIndexedDatabase)
+useDatabaseType(EdgeDBDatabase)
 
-export { Documents, Events, KeyValue, KeyValueIndexed }
+export { Documents, Events, KeyValue, KeyValueIndexed, EdgeDB }
 export type {
   DocumentsInstance,
   DocumentsOptions,
@@ -82,4 +90,6 @@ export type {
   KeyValueIndexedInstance,
   KeyValueIndexedOptions,
   KeyValueInstance,
+  EdgeDBInstance,
+  EdgeDBOptions,
 }

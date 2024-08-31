@@ -137,6 +137,7 @@
     "protons-runtime": "5.5.0",
     "remeda": "^2.11.0",
     "rimraf": "^6.0.1",
+    "rocksdb": "^5.2.1",
     "timeout-abort-controller": "^3.0.0",
     "ts-pattern": "^5.3.1",
     "uint8arraylist": "^2.4.8",
@@ -145,6 +146,7 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
+    "@types/rocksdb": "^3.0.5",
     "fs-extra": "^11.2.0",
     "pkgroll": "^2.4.2",
     "tsx": "^4.19.0",

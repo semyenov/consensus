@@ -106,7 +106,6 @@ export default defineNuxtConfig({
   },
 
   modules: [
-    'nuxt-content-twoslash',
     '@nuxtjs/partytown',
     '@nuxtjs/tailwindcss',
     'nuxt-content-assets',

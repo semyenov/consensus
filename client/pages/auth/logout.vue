@@ -3,7 +3,7 @@ const { t } = useI18n()
 </script>
 
 <template>
-  <EdgeDbAuthLogout
+  <AuthBaseEdgeDbAuthLogout
     v-slot="{ logout }"
     :logout-on-setup="false"
     redirect-to="/"
@@ -28,5 +28,5 @@ const { t } = useI18n()
         <span>{{ t("pages.auth/logout.links.logout") }}</span>
       </Button>
     </div>
-  </EdgeDbAuthLogout>
+  </AuthBaseEdgeDbAuthLogout>
 </template>

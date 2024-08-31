@@ -13,12 +13,26 @@ const { identity: user } = useEdgeDbIdentity()
     <ResizablePanelGroup
       id="__layout"
       direction="horizontal"
-      class="max-w-full h-full"
+      class="h-full max-w-full"
     >
+      <ResizablePanel id="demo-panel-2" class="shadow-xl" :default-size="25">
+        <ResizablePanelGroup id="demo-group-3" direction="vertical">
+          <ResizablePanel id="demo-panel-3" :default-size="25">
+            <div class="flex items-center justify-center h-full p-6">
+              <span class="font-semibold">Two</span>
+            </div>
+          </ResizablePanel>
+          <ResizableHandle id="demo-handle-2" />
+          <ResizablePanel v-if="isLoggedIn" :default-size="75">
+            <IssueView :issues="user.assigned_issues" />
+          </ResizablePanel>
+        </ResizablePanelGroup>
+      </ResizablePanel>
+      <ResizableHandle id="demo-handle-1" />
       <ResizablePanel
         id="__layout"
         direction="horizontal"
-        :default-size="30"
+        :default-size="75"
         class="flex flex-col items-center justify-center"
       >
         <ResizablePanelGroup id="demo-group-1" direction="vertical">
@@ -36,20 +50,6 @@ const { identity: user } = useEdgeDbIdentity()
               <MoonIcon v-else />
             </Button>
           </ClientOnly>
-        </ResizablePanelGroup>
-      </ResizablePanel>
-      <ResizableHandle id="demo-handle-1" />
-      <ResizablePanel id="demo-panel-2" :default-size="50">
-        <ResizablePanelGroup id="demo-group-3" direction="vertical">
-          <ResizablePanel id="demo-panel-3" :default-size="25">
-            <div class="flex items-center justify-center h-full p-6">
-              <span class="font-semibold">Two</span>
-            </div>
-          </ResizablePanel>
-          <ResizableHandle id="demo-handle-2" />
-          <ResizablePanel v-if="isLoggedIn" :default-size="75">
-            <IssueView :issues="user.assigned_issues" />
-          </ResizablePanel>
         </ResizablePanelGroup>
       </ResizablePanel>
     </ResizablePanelGroup>

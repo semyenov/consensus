@@ -14,6 +14,7 @@ const { t } = useI18n()
         class="mt-4 text-sm leading-tight text-center text-gray-800 dark:text-gray-300 w-80 max-w-screen"
       >
         {{ t("pages.auth/callback.description") }}
+        <br>
         {{ t("pages.auth/callback.code", { code }) }}
       </p>
       <Button

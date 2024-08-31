@@ -9,7 +9,8 @@ import {
   getSortedRowModel,
   useVueTable,
 } from '@tanstack/vue-table'
-import { h, ref } from 'vue'
+import { useVirtualizer } from '@tanstack/vue-virtual'
+import { computed, h, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import {
@@ -22,25 +23,26 @@ import {
 } from '@/components/ui/table'
 import { cn, valueUpdater } from '@/lib/utils'
 
-import ActionsHeader from '~/components/issue/view/ActionsHeader.vue'
-import ExpandedRowContent from '~/components/issue/view/ExpandedRowContent.vue'
-import NameCell from '~/components/issue/view/NameCell.vue'
-import NameHeader from '~/components/issue/view/NameHeader.vue'
-import SelectCell from '~/components/issue/view/SelectCell.vue'
-import SelectHeader from '~/components/issue/view/SelectHeader.vue'
-import StatusCell from '~/components/issue/view/StatusCell.vue'
-import StatusHeader from '~/components/issue/view/StatusHeader.vue'
-import UpdatedAtCell from '~/components/issue/view/UpdatedAtCell.vue'
-import UpdatedAtHeader from '~/components/issue/view/UpdatedAtHeader.vue'
-
-import Action from './Actions.vue'
+import ActionsCell from './ActionsCell.vue'
+import ActionsHeader from './ActionsHeader.vue'
+import ExpandedRowContent from './ExpandedRowContent.vue'
+import NameCell from './NameCell.vue'
+import NameHeader from './NameHeader.vue'
+import SelectCell from './SelectCell.vue'
+import SelectHeader from './SelectHeader.vue'
+import StatusCell from './StatusCell.vue'
+import StatusHeader from './StatusHeader.vue'
+import UpdatedAtCell from './UpdatedAtCell.vue'
+import UpdatedAtHeader from './UpdatedAtHeader.vue'
 
 import type { issue } from '#edgedb/interfaces'
 import type {
   ColumnFiltersState,
+  ColumnPinningState,
   ColumnSizingState,
   ExpandedState,
   PaginationState,
+  RowPinningState,
   RowSelectionState,
   SortingState,
   VisibilityState,
@@ -55,132 +57,62 @@ const props = withDefaults(
   },
 )
 
-const { t } = useI18n()
-
 const data = toRef(props, 'issues')
 const columnHelper = createColumnHelper<issue.Issue>()
-const columns = [
-  columnHelper.display({
-    id: 'select',
-    enableHiding: false,
-    enablePinning: true,
-    enableSorting: false,
-    enableGrouping: true,
-    minSize: 0,
-    maxSize: 2,
-    size: 0,
-    header: ({ table }) =>
-      h(SelectHeader, {
-        'checked': table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate'),
-        'onUpdate:checked': (value: boolean) => table.toggleAllPageRowsSelected(value),
-      }),
-    cell: ({ row }) =>
-      h(SelectCell, {
-        'checked': row.getIsSelected(),
-        'onUpdate:checked': (value: boolean) => row.toggleSelected(Boolean(value)),
-      }),
-  }),
-  columnHelper.accessor('status', {
-    enableHiding: false,
-    enablePinning: true,
-    minSize: 0,
-    maxSize: 2,
-    size: 0,
-    header: ({ column }) =>
-      h(StatusHeader, {
-        onToggleSort: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-      }),
-    cell: ({ row }) =>
-      h(StatusCell, {
-        status: row.getValue('status'),
-      }),
-  }),
-  columnHelper.accessor('name', {
-    enableHiding: false,
-    enableSorting: true,
-    minSize: 60,
-    size: 80,
-    maxSize: 100,
-    header: ({ column }) =>
-      h(NameHeader, {
-        onToggleSort: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-      }),
-    cell: ({ row }) =>
-      h(NameCell, {
-        name: row.getValue('name'),
-        onToggleExpanded: () => row.toggleExpanded(),
-      }),
-  }),
-  columnHelper.accessor('updated_at', {
-    enableHiding: true,
-    enableSorting: true,
-    minSize: 0,
-    maxSize: 2,
-    size: 0,
-    header: ({ column }) =>
-      h(UpdatedAtHeader, {
-        onToggleSort: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-      }),
-    cell: ({ row }) =>
-      h(UpdatedAtCell, {
-        updatedAt: Number.parseFloat(row.getValue('updated_at')),
-      }),
-  }),
-  columnHelper.display({
-    id: 'actions',
-    minSize: 0,
-    maxSize: 2,
-    size: 0,
-    header: () => h(ActionsHeader),
-    cell: ({ row }) => {
-      const issue = row.original
-
-      return h(
-        'div',
-        { class: 'relative text-right px-2' },
-        h(Action, {
-          issue,
-          onExpand: row.toggleExpanded,
-          expanded: row.getIsExpanded(),
-        }),
-      )
-    },
-  }),
-]
 
 const sorting = ref<SortingState>([])
 const columnSizing = ref<ColumnSizingState>({})
 const columnFilters = ref<ColumnFiltersState>([])
 const columnVisibility = ref<VisibilityState>({})
+const columnPinning = ref<ColumnPinningState>({
+  left: ['select'],
+  right: ['actions'],
+})
+const rowPinning = ref<RowPinningState>({})
 const expanded = ref<ExpandedState>({})
 const rowSelection = ref<RowSelectionState>({})
 const pagination = ref<PaginationState>({
-  pageIndex: 1,
-  pageSize: 30,
+  pageIndex: 0,
+  pageSize: data.value.length,
 })
 
-const totalRowCount = ref(0)
+const totalRowCount = ref(data.value.length)
+
+const tableContainerRef = ref<HTMLDivElement | null>(null)
+const rowVirtualizer = useVirtualizer({
+  count: totalRowCount.value,
+  getScrollElement: () => tableContainerRef.value,
+  estimateSize: () => 36, // Adjust this value based on your row height
+  overscan: 10,
+})
 
 const table = useVueTable({
-  columns,
   keepPinnedRows: true,
   manualPagination: false,
   enableMultiRemove: true,
   enableRowPinning: true,
   enableRowSelection: true,
   enableMultiRowSelection: true,
+  debugTable: true,
+
+  defaultColumn: {
+    minSize: 0,
+    maxSize: 1,
+    size: 0,
+    enableHiding: true,
+    enablePinning: true,
+    enableResizing: true,
+    enableSorting: true,
+  },
 
   getCoreRowModel: getCoreRowModel(),
-  getPaginationRowModel: getPaginationRowModel(),
-  getSortedRowModel: getSortedRowModel(),
-  getFilteredRowModel: getFilteredRowModel(),
   getExpandedRowModel: getExpandedRowModel(),
+  getFilteredRowModel: getFilteredRowModel(),
+  getSortedRowModel: getSortedRowModel(),
+  getPaginationRowModel: getPaginationRowModel(),
 
-  onPaginationChange: (updaterOrValue) => {
-    valueUpdater(updaterOrValue, pagination)
-    totalRowCount.value = table.getRowModel().rows.length
-  },
-  onSortingChange: updaterOrValue => valueUpdater(updaterOrValue, sorting),
+  onSortingChange: updaterOrValue =>
+    valueUpdater(updaterOrValue, sorting),
   onColumnFiltersChange: updaterOrValue =>
     valueUpdater(updaterOrValue, columnFilters),
   onColumnVisibilityChange: updaterOrValue =>
@@ -191,11 +123,84 @@ const table = useVueTable({
     valueUpdater(updaterOrValue, columnSizing),
   onColumnSizingInfoChange: updaterOrValue =>
     valueUpdater(updaterOrValue, columnSizing),
-  onExpandedChange: updaterOrValue => valueUpdater(updaterOrValue, expanded),
+  onExpandedChange: updaterOrValue =>
+    valueUpdater(updaterOrValue, expanded),
 
   get data() {
     return data.value
   },
+
+  columns: [
+    columnHelper.display({
+      id: 'select',
+      enableHiding: false,
+      enablePinning: true,
+      enableSorting: false,
+      header: ({ table }) =>
+        h(SelectHeader, {
+          'checked': table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate'),
+          'onUpdate:checked': (value: boolean) => table.toggleAllPageRowsSelected(value),
+        }),
+      cell: ({ row }) =>
+        h(SelectCell, {
+          'checked': row.getIsSelected(),
+          'onUpdate:checked': (value: boolean) => row.toggleSelected(Boolean(value)),
+        }),
+    }),
+    columnHelper.accessor('name', {
+      id: 'name',
+      enableHiding: false,
+      size: 98,
+      minSize: 90,
+      maxSize: 100,
+      header: ({ column }) =>
+        h(NameHeader, {
+          onToggleSort: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+        }),
+      cell: ({ row }) =>
+        h(NameCell, {
+          ...row.original,
+          onToggleExpanded: () => row.toggleExpanded(),
+        }),
+    }),
+    columnHelper.accessor('updated_at', {
+      id: 'updated_at',
+      header: ({ column }) =>
+        h(UpdatedAtHeader, {
+          onToggleSort: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+        }),
+      cell: ({ row }) =>
+        h(UpdatedAtCell, {
+          updatedAt: row.original.updated_at,
+        }),
+    }),
+    columnHelper.accessor('status', {
+
+      header: ({ column }) =>
+        h(StatusHeader, {
+          onToggleSort: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+        }),
+      cell: ({ row }) =>
+        h(StatusCell, {
+          ...row.original,
+        }),
+    }),
+    columnHelper.display({
+      id: 'actions',
+      enableHiding: false,
+      header: () => h(ActionsHeader),
+      cell: ({ row }) => {
+        const issue = row.original
+
+        return h(ActionsCell, {
+          issue,
+          onExpand: row.toggleExpanded,
+          expanded: row.getIsExpanded(),
+        })
+      },
+    }),
+  ],
+
   state: {
     get pagination() {
       return pagination.value
@@ -219,53 +224,61 @@ const table = useVueTable({
       return expanded.value
     },
     get rowPinning() {
-      return {
-        top: ['header-1'],
-      }
+      return rowPinning.value
     },
     get columnPinning() {
-      return {
-        left: ['select', 'status'],
-        right: ['actions'],
-      }
+      return columnPinning.value
     },
   },
 })
+
+const rows = computed(() => table.getRowModel().rows)
 </script>
 
 <template>
-  <Table>
-    <TableHeader class="sticky top-0 z-30">
-      <TableRow
-        v-for="headerGroup in table.getHeaderGroups()"
-        :key="headerGroup.id"
-        class="sticky top-0 z-30"
-      >
-        <TableHead
-          v-for="header in headerGroup.headers"
-          :key="header.id"
-          :pinned="header.column.getIsPinned()"
-          class="sticky top-0 z-30"
+  <div ref="tableContainerRef" class="h-full overflow-auto">
+    <Table :style="{ height: `${rowVirtualizer.getTotalSize()}px` }">
+      <!-- <TableCaption>{{ t("pages.index.table.caption") }}</TableCaption> -->
+      <TableHeader class="sticky top-0 z-30 shadow">
+        <TableRow
+          v-for="headerGroup in table.getHeaderGroups()"
+          :key="headerGroup.id"
         >
-          <FlexRender
-            v-if="!header.isPlaceholder"
-            :render="header.column.columnDef.header"
-            :props="header.getContext()"
-          />
-        </TableHead>
-      </TableRow>
-    </TableHeader>
-    <template v-if="table.getRowModel().rows?.length">
+          <TableHead
+            v-for="header in headerGroup.headers"
+            :key="header.id"
+            :pinned="header.column.getIsPinned()"
+            class="sticky top-0 z-30"
+          >
+            <FlexRender
+              v-if="!header.isPlaceholder"
+              :render="header.column.columnDef.header"
+              :props="header.getContext()"
+            />
+          </TableHead>
+        </TableRow>
+      </TableHeader>
       <TableBody>
-        <template v-for="row in table.getRowModel().rows" :key="row.id">
+        <template v-for="(virtualRow, index) in rowVirtualizer.getVirtualItems()" :key="virtualRow.key">
           <TableRow
-            :data-state="row.getIsSelected() && 'selected'"
-            :data-pinned="row.getIsPinned()"
+            :data-state="rows[virtualRow.index].getIsSelected() && 'selected'"
+            :pinned="rows[virtualRow.index].getIsPinned()"
+            :data-index="virtualRow.index"
+            :style="{
+              height: `${virtualRow.size}px`,
+              transform: `translateY(${
+                virtualRow.start - index * virtualRow.size
+              }px)`,
+            }"
           >
             <TableCell
-              v-for="cell in row.getVisibleCells()"
+              v-for="cell in rows[virtualRow.index].getVisibleCells()"
               :key="cell.id"
               :pinned="cell.column.getIsPinned()"
+              :data-index="virtualRow.index"
+              :style="{
+                width: `${cell.column.getSize()}px`,
+              }"
             >
               <FlexRender
                 :render="cell.column.columnDef.cell"
@@ -273,21 +286,20 @@ const table = useVueTable({
               />
             </TableCell>
           </TableRow>
-          <TableRow v-if="row.getIsExpanded()">
-            <TableCell :colspan="row.getAllCells().length">
-              <ExpandedRowContent :issue="row.original" />
+          <TableRow v-if="rows[virtualRow.index].getIsExpanded()">
+            <TableCell :colspan="rows[virtualRow.index].getAllCells().length">
+              <ExpandedRowContent :issue="rows[virtualRow.index].original" />
             </TableCell>
           </TableRow>
         </template>
       </TableBody>
-    </template>
-
-    <TableBody v-else>
-      <TableRow>
-        <TableCell :colspan="columns.length" class="p-4 text-center">
-          {{ t("pages.index.links.no_results") }}
-        </TableCell>
-      </TableRow>
-    </TableBody>
-  </Table>
+    </Table>
+  </div>
 </template>
+
+<style scoped>
+.v-virtual-scroll {
+  position: relative;
+  overflow-y: auto;
+}
+</style>
