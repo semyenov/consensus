@@ -84,14 +84,6 @@ const rowVirtualizer = useVirtualizer({
 })
 
 const table = useVueTable({
-  keepPinnedRows: true,
-  manualPagination: false,
-  enableMultiRemove: true,
-  enableRowPinning: true,
-  enableRowSelection: true,
-  enableMultiRowSelection: true,
-  debugTable: true,
-
   defaultColumn: {
     minSize: 0,
     maxSize: 1,
@@ -101,6 +93,15 @@ const table = useVueTable({
     enableResizing: true,
     enableSorting: true,
   },
+
+  keepPinnedRows: true,
+  manualPagination: false,
+  enableMultiRemove: true,
+  enableRowPinning: true,
+  enableRowSelection: true,
+  enableColumnResizing: true,
+  enableColumnPinning: true,
+  enableMultiRowSelection: true,
 
   getCoreRowModel: getCoreRowModel(),
   getExpandedRowModel: getExpandedRowModel(),
@@ -136,6 +137,7 @@ const table = useVueTable({
 
       header: ({ table }) =>
         h(SelectHeader, {
+          'class': 'z-50',
           'checked': table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate'),
           'onUpdate:checked': (value: boolean) => table.toggleAllPageRowsSelected(value),
         }),
@@ -204,7 +206,6 @@ const table = useVueTable({
   ],
 
   state: {
-
     get pagination() {
       return pagination.value
     },

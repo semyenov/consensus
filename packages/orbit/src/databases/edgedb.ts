@@ -1,5 +1,4 @@
 import { type Client, createClient } from 'edgedb'
-import { v4 as uuidv4 } from 'uuid'
 
 import { DATABASE_EDGEDB_TYPE } from '../constants.js'
 import {

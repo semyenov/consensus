@@ -8,7 +8,9 @@ const { t } = useI18n()
     :logout-on-setup="false"
     redirect-to="/"
   >
-    <div class="flex flex-col items-center justify-center py-8">
+    <div
+      class="flex flex-col items-center justify-center w-full h-full px-4 py-8"
+    >
       <h1
         class="mt-4 text-4xl font-extrabold tracking-tight scroll-m-20 lg:text-5xl"
       >

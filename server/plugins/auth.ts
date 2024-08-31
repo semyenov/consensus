@@ -70,7 +70,7 @@ export default defineNitroPlugin((app) => {
         issuesData.map(async (issue) => {
           await e
             .insert(e.issue.Issue, {
-              name: issue.title,
+              name: `#${issue.id} ${issue.title}`,
               description: issue.body_text ?? '',
               content: issue.body_html ?? '',
               priority: e.issue.IssuePriority.Low,

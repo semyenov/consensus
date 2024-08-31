@@ -13,9 +13,9 @@ const props = defineProps<{
   <th
     :class="
       cn(
-        'h-12 p-0 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0',
+        'h-12 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0',
         {
-          'sticky z-50': !!props.pinned,
+          'sticky': !!props.pinned,
           'left-0': props.pinned === 'left',
           'right-0': props.pinned === 'right',
         },
