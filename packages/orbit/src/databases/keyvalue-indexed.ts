@@ -1,18 +1,18 @@
 import {
   DATABASE_KEYVALUE_INDEXED_TYPE,
   DATABASE_KEYVALUE_INDEXED_VALUE_ENCODING,
-} from '../constants.js'
-import { LevelStorage } from '../storage/level.js'
+} from '../constants'
+import { LevelStorage } from '../storage/level'
 import { join } from '../utils'
 
-import { KeyValueDatabase, type KeyValueInstance } from './keyvalue.js'
+import { KeyValueDatabase, type KeyValueInstance } from './keyvalue'
 
-import type { DatabaseOperation, DatabaseType } from './index.js'
-import type { DatabaseInstance, DatabaseOptions } from '../database.js'
-import type { EntryInstance } from '../oplog/entry.js'
-import type { LogInstance } from '../oplog/log.js'
-import type { StorageInstance } from '../storage/index.js'
-import type { SyncEvents, SyncInstance } from '../sync.js'
+import type { DatabaseOperation, DatabaseType } from './index'
+import type { DatabaseInstance, DatabaseOptions } from '../database'
+import type { EntryInstance } from '../oplog/entry'
+import type { LogInstance } from '../oplog/log'
+import type { StorageInstance } from '../storage/index'
+import type { SyncEvents, SyncInstance } from '../sync'
 import type { PeerSet } from '@libp2p/peer-collections'
 
 class Index<T> {
@@ -42,6 +42,16 @@ class Index<T> {
     return new Index<T>(index, indexedEntries)
   }
 
+  async isNotIndexed(hash: string): Promise<boolean> {
+    return !(await this.isIndexed(hash))
+  }
+
+  async isIndexed(hash: string): Promise<boolean> {
+    const indexedEntry = await this.indexedEntries.get(hash)
+
+    return indexedEntry === true
+  }
+
   async update(
     log: LogInstance<DatabaseOperation<T>>,
     entry: EntryInstance<T> | EntryInstance<DatabaseOperation<T>>,
@@ -50,24 +60,21 @@ class Index<T> {
     const toBeIndexed = new Set()
     const latest = entry.hash
 
-    const isIndexed = async (hash: string) => (await this.indexedEntries.get(hash)) === true
-    const isNotIndexed = async (hash: string) => !(await isIndexed(hash))
-
     const shoudStopTraverse = async (
       entry: EntryInstance<DatabaseOperation<T>>,
     ) => {
       for await (const hash of entry.next!) {
-        if (await isNotIndexed(hash)) {
+        if (await this.isNotIndexed(hash)) {
           toBeIndexed.add(hash)
         }
       }
 
-      return (await isIndexed(latest!)) && toBeIndexed.size === 0
+      return (await this.isIndexed(latest!)) && toBeIndexed.size === 0
     }
 
     for await (const entry of log.traverse(null, shoudStopTraverse)) {
       const { hash, payload } = entry
-      if (await isNotIndexed(hash!)) {
+      if (await this.isNotIndexed(hash!)) {
         const { op, key } = payload
         if (op === 'PUT' && !keys.has(key)) {
           keys.add(key)
@@ -156,7 +163,7 @@ implements KeyValueIndexedInstance<T> {
     )
 
     const index = await Index.create<T>(indexDirectory)
-    const keyValueStore = await KeyValueDatabase.create({
+    const keyValueStore = await KeyValueDatabase.create<T>({
       ipfs,
       identity,
       address,
@@ -172,7 +179,7 @@ implements KeyValueIndexedInstance<T> {
       onUpdate: index.update.bind(index),
     })
 
-    return new KeyValueIndexedDatabase(keyValueStore, index)
+    return new KeyValueIndexedDatabase<T>(keyValueStore as KeyValueInstance<T>, index)
   }
 
   get name(): string | undefined {
@@ -214,8 +221,8 @@ implements KeyValueIndexedInstance<T> {
     return this.keyValueStore.sync
   }
 
-  async addOperation(operation: DatabaseOperation<T>): Promise<string> {
-    return this.keyValueStore.addOperation(operation)
+  async addOperation<D = T>(operation: DatabaseOperation<D>): Promise<string> {
+    return this.keyValueStore.addOperation<D>(operation)
   }
 
   async get(key: string): Promise<T | null> {
@@ -234,7 +241,7 @@ implements KeyValueIndexedInstance<T> {
   }> {
     const it = this.index.iterator({ amount, reverse: true })
     for await (const record of it) {
-      const entry = record[1]
+      const [_, entry] = record
       const { key, value } = entry.payload
       const hash = entry.hash!
       yield {

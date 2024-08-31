@@ -3,7 +3,7 @@ import { base58btc } from 'multiformats/bases/base58'
 import * as Block from 'multiformats/block'
 import { sha256 } from 'multiformats/hashes/sha2'
 
-import { Clock, type ClockInstance } from './clock.js'
+import { Clock, type ClockInstance } from './clock'
 
 import type { IdentityInstance } from '../identities'
 

@@ -2,24 +2,24 @@ import {
   type AccessControllerInstance,
   type AccessControllerTypeMap,
   getAccessController,
-} from './access-controllers/index.js'
-import { IPFSAccessController } from './access-controllers/ipfs.js'
-import { OrbitDBAddress } from './address.js'
-import { DATABASE_DEFAULT_TYPE } from './constants.js'
-import { EdgeDBDatabase } from './databases/edgedb.js'
-import { type DatabaseTypeMap, getDatabaseType } from './databases/index.js'
+} from './access-controllers/index'
+import { IPFSAccessController } from './access-controllers/ipfs'
+import { OrbitDBAddress } from './address'
+import { DATABASE_DEFAULT_TYPE } from './constants'
+import { EdgeDBDatabase } from './databases/edgedb'
+import { type DatabaseTypeMap, getDatabaseType } from './databases/index'
 import {
   Identities,
   type IdentitiesInstance,
   type IdentityInstance,
-} from './identities/index.js'
-import { KeyStore, type KeyStoreInstance } from './key-store.js'
-import { type Manifest, ManifestStore } from './manifest-store.js'
+} from './identities/index'
+import { KeyStore, type KeyStoreInstance } from './key-store'
+import { type Manifest, ManifestStore } from './manifest-store'
 import { join } from './utils'
-import { createId } from './utils/index.js'
+import { createId } from './utils/index'
 
-import type { StorageInstance } from './storage/index.js'
-import type { HeliaInstance, PeerId } from './vendor.js'
+import type { StorageInstance } from './storage/index'
+import type { HeliaInstance, PeerId } from './vendor'
 
 export interface OrbitDBOpenOptions<T, D extends keyof DatabaseTypeMap> {
   type?: D
@@ -108,21 +108,17 @@ export class OrbitDB implements OrbitDBInstance {
     const { ipfs } = options
     const directory = options.directory || './orbitdb'
 
-    let { keystore, identities } = options.identities
-      ? {
-          keystore: options.identities.keystore,
-          identities: options.identities,
-        }
-      : {}
+    let keystore: KeyStoreInstance
+    let identities: IdentitiesInstance
 
-    if (!keystore) {
+    if (options.identities) {
+      keystore = options.identities.keystore
+      identities = options.identities
+    }
+    else {
       keystore = await KeyStore.create({
         path: join(directory, './keystore'),
       })
-    }
-
-    if (!identities) {
-      const { ipfs } = options
       identities = await Identities.create({
         ipfs,
         keystore,
@@ -158,8 +154,8 @@ export class OrbitDB implements OrbitDBInstance {
     )
   }
 
-  async open<T, D extends keyof DatabaseTypeMap>(
-    type: D = DATABASE_DEFAULT_TYPE as D,
+  async open<D extends keyof DatabaseTypeMap, T = unknown>(
+    type: D,
     address: string,
     options: OrbitDBOpenOptions<T, D> = {},
   ): Promise<DatabaseTypeMap<T>[D]> {

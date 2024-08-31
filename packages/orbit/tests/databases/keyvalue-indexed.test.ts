@@ -11,13 +11,13 @@ import {
   KeyStore,
   KeyValueIndexed,
   MemoryStorage,
-} from '../../src/index.js'
-import testKeysPath from '../fixtures/test-keys-path.js'
-import createHelia from '../utils/create-helia.js'
+} from '../../src/index'
+import testKeysPath from '../fixtures/test-keys-path'
+import createHelia from '../utils/create-helia'
 
-import type { KeyValueIndexedDatabase } from '../../src/databases/keyvalue-indexed.js'
-import type { IdentityInstance } from '../../src/identities/identity.js'
-import type { HeliaInstance } from '../../src/vendor.js'
+import type { KeyValueIndexedDatabase } from '../../src/databases/keyvalue-indexed'
+import type { IdentityInstance } from '../../src/identities/identity'
+import type { HeliaInstance } from '../../src/vendor'
 
 const keysPath = './testkeys'
 describe('keyValueIndexed Database', () => {

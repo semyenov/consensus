@@ -15,7 +15,7 @@ import {
   MemoryStorage,
 } from '../src'
 
-import testKeysPath from './fixtures/test-keys-path.js'
+import testKeysPath from './fixtures/test-keys-path'
 import createHelia from './utils/create-helia'
 
 import type { EntryInstance } from '../src/oplog'

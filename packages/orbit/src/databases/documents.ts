@@ -1,14 +1,14 @@
-import { DATABASE_DOCUMENTS_TYPE } from '../constants.js'
+import { DATABASE_DOCUMENTS_TYPE } from '../constants'
 import {
   Database,
   type DatabaseInstance,
   type DatabaseOptions,
-} from '../database.js'
+} from '../database'
 
 import type { DatabaseOperation } from '.'
-import type { DatabaseType } from './index.js'
-import type { LogInstance } from '../oplog/log.js'
-import type { SyncEvents, SyncInstance } from '../sync.js'
+import type { DatabaseType } from './index'
+import type { LogInstance } from '../oplog/log'
+import type { SyncEvents, SyncInstance } from '../sync'
 import type { PeerSet } from '@libp2p/peer-collections'
 
 export interface DocumentsDoc<T = unknown> {
@@ -57,12 +57,12 @@ export class DocumentsDatabase<T = unknown> implements DocumentsInstance<T> {
   }
 
   static async create<T>(
-    options: DatabaseOptions<T> & DocumentsOptions,
+    options: DatabaseOptions<unknown> & DocumentsOptions,
   ): Promise<DocumentsDatabase<T>> {
     const indexBy = options.indexBy || '_id'
-    const database = await Database.create<T>(options)
+    const database = await Database.create<unknown>(options)
 
-    return new DocumentsDatabase<T>(database, indexBy)
+    return new DocumentsDatabase<T>(database as DatabaseInstance<T>, indexBy)
   }
 
   get name(): string | undefined {
@@ -104,12 +104,12 @@ export class DocumentsDatabase<T = unknown> implements DocumentsInstance<T> {
     return this.database.sync
   }
 
-  async addOperation(operation: DatabaseOperation<T>): Promise<string> {
+  async addOperation<D = T>(operation: DatabaseOperation<D>): Promise<string> {
     return this.database.addOperation(operation)
   }
 
-  async put(doc: T): Promise<string> {
-    const key = doc[this.indexBy as keyof T]
+  async put<D = T>(doc: D): Promise<string> {
+    const key = doc[this.indexBy as keyof D]
     if (!key) {
       throw new Error(
         `The provided document doesn't contain field '${String(this.indexBy)}'`,

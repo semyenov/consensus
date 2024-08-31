@@ -73,7 +73,7 @@ export class KeyValueDatabase<T = unknown> implements KeyValueInstance<T> {
   ): Promise<KeyValueDatabase<T>> {
     const database = await Database.create<T>(options)
 
-    return new KeyValueDatabase<T>(database)
+    return new KeyValueDatabase<T>(database as DatabaseInstance<T>)
   }
 
   get indexBy(): string | undefined {
@@ -119,8 +119,8 @@ export class KeyValueDatabase<T = unknown> implements KeyValueInstance<T> {
     return this.database.sync
   }
 
-  async addOperation(operation: DatabaseOperation<T>): Promise<string> {
-    return this.database.addOperation(operation)
+  async addOperation<D = T>(operation: DatabaseOperation<D>): Promise<string> {
+    return this.database.addOperation<D>(operation)
   }
 
   async put(key: string, value: T): Promise<string> {

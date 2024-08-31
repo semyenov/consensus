@@ -3497,6 +3497,7 @@ __metadata:
     denque: "npm:^2.1.0"
     did-jwt: "npm:^8.0.4"
     dotenv: "npm:^16.4.5"
+    edgedb: "npm:^1.5.11"
     events: "npm:^3.3.0"
     fast-glob: "npm:^3.3.2"
     fast-uri: "npm:^3.0.1"

@@ -1,19 +1,20 @@
 import { type Client, createClient } from 'edgedb'
 
-import { DATABASE_EDGEDB_TYPE } from '../constants.js'
+import { DATABASE_EDGEDB_TYPE } from '../constants'
 import {
   Database,
   type DatabaseInstance,
   type DatabaseOptions,
-} from '../database.js'
+} from '../database'
 
 import type { DatabaseOperation, DatabaseType } from '.'
-import type { LogInstance } from '../oplog/log.js'
-import type { SyncEvents, SyncInstance } from '../sync.js'
+import type { LogInstance } from '../oplog/log'
+import type { SyncEvents, SyncInstance } from '../sync'
 import type { PeerSet } from '@libp2p/peer-collections'
+import type { QueryArgs } from 'edgedb/dist/ifaces'
 
 export interface EdgeDBOptions<T> extends DatabaseOptions<T> {
-  dsn?: string // EdgeDB connection string
+  dsn?: string
 }
 
 export interface EdgeDBInstance<T = unknown> extends DatabaseInstance<T> {
@@ -48,7 +49,7 @@ export class EdgeDBDatabase<T = unknown> implements EdgeDBInstance<T> {
     const database = await Database.create<T>(options)
     const client = createClient({ dsn: options.dsn })
 
-    return new EdgeDBDatabase<T>(database, client)
+    return new EdgeDBDatabase<T>(database as DatabaseInstance<T>, client)
   }
 
   get name(): string | undefined {
@@ -90,7 +91,7 @@ export class EdgeDBDatabase<T = unknown> implements EdgeDBInstance<T> {
     return this.database.sync
   }
 
-  async addOperation(operation: DatabaseOperation<T>): Promise<string> {
+  async addOperation<D = T>(operation: DatabaseOperation<D>): Promise<string> {
     return this.database.addOperation(operation)
   }
 
@@ -102,7 +103,7 @@ export class EdgeDBDatabase<T = unknown> implements EdgeDBInstance<T> {
     return this.client.querySingle(query, args)
   }
 
-  async execute(query: string, args?: any): Promise<void> {
+  async execute(query: string, args?: QueryArgs): Promise<void> {
     await this.client.execute(query, args)
   }
 
@@ -116,7 +117,7 @@ export class EdgeDBDatabase<T = unknown> implements EdgeDBInstance<T> {
 
   async set(key: string, value: T): Promise<void> {
     const query = `
-      INSERT Data {
+      INSERT data::Data {
         key := <str>$key,
         value := <json>$value
       }
@@ -128,29 +129,32 @@ export class EdgeDBDatabase<T = unknown> implements EdgeDBInstance<T> {
 
   async get(key: string): Promise<T | null> {
     const query = `
-      SELECT Data.value
-      FILTER Data.key = <str>$key
+      SELECT data::Data {
+        key,
+        value
+      }
+      FILTER .key = <str>$key
     `
-    const result = await this.querySingle<{ value: string }>(query, { key })
+    const result = await this.querySingle<{ key: string, value: string }>(query, { key })
 
     return result ? JSON.parse(result.value) : null
   }
 
   async del(key: string): Promise<void> {
     const query = `
-      DELETE Data
-      FILTER Data.key = <str>$key
+      DELETE data::Data
+      FILTER .key = <str>$key
     `
     await this.execute(query, { key })
   }
 
   async getMany(keys: string[]): Promise<(T | null)[]> {
     const query = `
-      SELECT Data {
+      SELECT data::Data {
         key,
         value
       }
-      FILTER Data.key IN array_unpack(<array<str>>$keys)
+      FILTER .key IN array_unpack(<array<str>>$keys)
     `
     const results = await this.query<{ key: string, value: string }[]>(query, { keys })
     const resultMap = new Map(results.map(r => [r.key, JSON.parse(r.value)]))
@@ -162,7 +166,7 @@ export class EdgeDBDatabase<T = unknown> implements EdgeDBInstance<T> {
     const query = `
       FOR entry IN array_unpack(<array<tuple<str, json>>>$entries)
       UNION (
-        INSERT Data {
+        INSERT data::Data {
           key := entry.0,
           value := <json>entry.1
         }
@@ -175,8 +179,8 @@ export class EdgeDBDatabase<T = unknown> implements EdgeDBInstance<T> {
 
   async delMany(keys: string[]): Promise<void> {
     const query = `
-      DELETE Data
-      FILTER Data.key IN array_unpack(<array<str>>$keys)
+      DELETE data::Data
+      FILTER .key IN array_unpack(<array<str>>$keys)
     `
     await this.execute(query, { keys })
   }

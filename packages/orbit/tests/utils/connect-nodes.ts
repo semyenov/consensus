@@ -1,7 +1,7 @@
 import { multiaddr } from '@multiformats/multiaddr'
 import { WebRTC } from '@multiformats/multiaddr-matcher'
 
-import waitFor from './wait-for.js'
+import waitFor from './wait-for'
 
 const defaultFilter = () => true
 

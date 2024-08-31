@@ -4,15 +4,15 @@
 import LRU from 'lru'
 import PQueue from 'p-queue'
 
-import { MemoryStorage } from '../storage/memory.js'
+import { MemoryStorage } from '../storage/memory'
 
-import { Clock, type ClockInstance } from './clock.js'
-import { ConflictResolution } from './conflict-resolution.js'
-import { Entry, type EntryInstance } from './entry.js'
-import { Heads } from './heads.js'
+import { Clock, type ClockInstance } from './clock'
+import { ConflictResolution } from './conflict-resolution'
+import { Entry, type EntryInstance } from './entry'
+import { Heads } from './heads'
 
-import type { AccessControllerInstance } from '../access-controllers/index.js'
-import type { IdentityInstance } from '../identities/index.js'
+import type { AccessControllerInstance } from '../access-controllers/index'
+import type { IdentityInstance } from '../identities/index'
 import type { StorageInstance } from '../storage'
 
 export interface LogIteratorOptions {
@@ -44,12 +44,12 @@ export interface LogInstance<T> {
   identity: IdentityInstance
   storage: StorageInstance<Uint8Array>
   clock: () => Promise<ClockInstance>
-  heads: () => Promise<EntryInstance<T>[]>
-  values: () => Promise<EntryInstance<T>[]>
-  all: () => Promise<EntryInstance<T>[]>
-  get: (hash: string) => Promise<EntryInstance<T> | null>
+  heads: <D = T>() => Promise<EntryInstance<D>[]>
+  values: <D = T>() => Promise<EntryInstance<D>[]>
+  all: <D = T>() => Promise<EntryInstance<D>[]>
+  get: <D = T>(hash: string) => Promise<EntryInstance<D> | null>
   has: (hash: string) => Promise<boolean>
-  append: (payload: T, options?: LogAppendOptions) => Promise<EntryInstance<T>>
+  append: <D = T>(payload: D, options?: LogAppendOptions) => Promise<EntryInstance<D>>
   join: (log: LogInstance<T>) => Promise<void>
   joinEntry: (entry: EntryInstance<T>, dbname?: string) => Promise<boolean>
   traverse: (
@@ -60,7 +60,7 @@ export interface LogInstance<T> {
     ) => Promise<boolean>,
     useRefs?: boolean,
   ) => AsyncGenerator<EntryInstance<T>>
-  iterator: (options?: LogIteratorOptions) => AsyncIterable<EntryInstance<T>>
+  iterator: <D = T>(options?: LogIteratorOptions) => AsyncIterable<EntryInstance<D>>
   clear: () => Promise<void>
   close: () => Promise<void>
 }
@@ -74,7 +74,7 @@ export class Log<T> implements LogInstance<T> {
   private indexStorage: StorageInstance<boolean>
   private headsStorage: StorageInstance<Uint8Array>
   private heads_: Heads<T>
-  private sortFn: (a: EntryInstance<T>, b: EntryInstance<T>) => number
+  private sortFn: (a: EntryInstance<any>, b: EntryInstance<any>) => number
   private appendQueue: PQueue
   private joinQueue: PQueue
 
@@ -140,30 +140,30 @@ export class Log<T> implements LogInstance<T> {
     return Clock.create(this.identity.publicKey, maxTime)
   }
 
-  async heads(): Promise<EntryInstance<T>[]> {
-    const res = await this.heads_.all()
+  async heads<D = T>(): Promise<EntryInstance<D>[]> {
+    const res = await this.heads_.all<D>()
 
     return res.sort(this.sortFn)
       .reverse()
   }
 
-  async values(): Promise<EntryInstance<T>[]> {
+  async values<D = T>(): Promise<EntryInstance<D>[]> {
     const values = []
-    for await (const entry of this.traverse()) {
+    for await (const entry of this.traverse<D>()) {
       values.unshift(entry)
     }
 
     return values
   }
 
-  all(): Promise<EntryInstance<T>[]> {
+  async all<D = T>(): Promise<EntryInstance<D>[]> {
     return this.values()
   }
 
-  async get(hash: string): Promise<EntryInstance<T> | null> {
+  async get<D = T>(hash: string): Promise<EntryInstance<D> | null> {
     const bytes = await this.storage.get(hash)
     if (bytes) {
-      return Entry.decode<T>(bytes)
+      return Entry.decode<D>(bytes)
     }
 
     return null
@@ -175,10 +175,10 @@ export class Log<T> implements LogInstance<T> {
     return Boolean(entry)
   }
 
-  async append(
-    data: T,
+  async append<D = T>(
+    data: D,
     options: LogAppendOptions = { referencesCount: 0 },
-  ): Promise<EntryInstance<T>> {
+  ): Promise<EntryInstance<D>> {
     return this.appendQueue.add(async () => {
       const headsEntries = await this.heads()
       const next_ = headsEntries.map(entry => entry)
@@ -186,7 +186,7 @@ export class Log<T> implements LogInstance<T> {
         headsEntries,
         options.referencesCount + headsEntries.length,
       )
-      const entry = await Entry.create<T>(
+      const entry = await Entry.create<D>(
         this.identity,
         this.id,
         data,
@@ -206,10 +206,10 @@ export class Log<T> implements LogInstance<T> {
       await this.indexStorage.put(entry.hash!, true)
 
       return entry
-    }) as Promise<EntryInstance<T>>
+    }) as Promise<EntryInstance<D>>
   }
 
-  async join(log: LogInstance<T>): Promise<void> {
+  async join<D = T>(log: LogInstance<D>): Promise<void> {
     if (!log) {
       throw new Error('Log instance not defined')
     }
@@ -225,7 +225,7 @@ export class Log<T> implements LogInstance<T> {
     }
   }
 
-  async joinEntry(entry: EntryInstance<T>): Promise<boolean> {
+  async joinEntry<D = T>(entry: EntryInstance<D>): Promise<boolean> {
     return this.joinQueue.add(async () => {
       const isAlreadyInTheLog = await this.has(entry.hash!)
       if (isAlreadyInTheLog) {
@@ -264,16 +264,16 @@ export class Log<T> implements LogInstance<T> {
     }) as Promise<boolean>
   }
 
-  async *traverse(
-    rootEntries?: EntryInstance<T>[] | null,
+  async *traverse<D = T>(
+    rootEntries?: EntryInstance<D>[] | null,
     shouldStopFn: (
-      entry: EntryInstance<T>,
+      entry: EntryInstance<D>,
       useRefs: boolean,
     ) => Promise<boolean> = this.defaultStopFn,
     useRefs = true,
-  ): AsyncGenerator<EntryInstance<T>> {
+  ): AsyncGenerator<EntryInstance<D>> {
     let toFetch: string[] = []
-    const rootEntries_ = rootEntries || (await this.heads())
+    const rootEntries_ = rootEntries || (await this.heads()) as EntryInstance<D>[]
     let stack = rootEntries_.sort(this.sortFn)
     const fetched: Record<string, boolean> = {}
     const traversed: Record<string, boolean> = {}
@@ -281,7 +281,7 @@ export class Log<T> implements LogInstance<T> {
 
     while (stack.length > 0) {
       stack = stack.sort(this.sortFn)
-      const entry = stack.pop() as EntryInstance<T>
+      const entry = stack.pop() as EntryInstance<D>
       if (entry && !traversed[entry.hash!]) {
         yield entry
         const done = await shouldStopFn(entry, useRefs)
@@ -300,10 +300,10 @@ export class Log<T> implements LogInstance<T> {
             if (!traversed[hash] && !fetched[hash]) {
               fetched[hash] = true
 
-              return await this.get(hash)
+              return await this.get<D>(hash)
             }
           }))
-        ).filter((e): e is EntryInstance<T> => e !== null && e !== undefined)
+        ).filter((e): e is EntryInstance<D> => e !== null && e !== undefined)
         toFetch = nexts
           .reduce(
             (acc, cur) => Array.from(
@@ -317,20 +317,20 @@ export class Log<T> implements LogInstance<T> {
     }
   }
 
-  async *iterator(
+  async *iterator<D = T>(
     options: LogIteratorOptions = { amount: -1 },
-  ): AsyncIterable<EntryInstance<T>> {
+  ): AsyncIterable<EntryInstance<D>> {
     const { amount = -1, lte, lt, gt, gte } = options
     if (amount === 0) {
       return
     }
 
-    const start = await this.getStartEntries(lt, lte)
-    const end = gt || gte ? await this.get((gt || gte)!) : null
+    const start = await this.getStartEntries<D>(lt, lte)
+    const end = gt || gte ? await this.get<D>((gt || gte)!) : null
     const amountToIterate = end || amount === -1 ? -1 : amount
 
     let count = 0
-    const shouldStopTraversal = async (entry: EntryInstance<T>) => {
+    const shouldStopTraversal = async (entry: EntryInstance<D>) => {
       count++
       if (!entry) {
         return false
@@ -349,7 +349,7 @@ export class Log<T> implements LogInstance<T> {
     const useBuffer = (end || false) && amount !== -1 && !lt && !lte
     const buffer = useBuffer ? new LRU(amount + 2) : null
 
-    const it = this.traverse(start, shouldStopTraversal)
+    const it = this.traverse<D>(start, shouldStopTraversal)
 
     for await (const entry of it) {
       const skipFirst = lt && Entry.isEqual(entry, start[0])
@@ -371,7 +371,7 @@ export class Log<T> implements LogInstance<T> {
       const keys = buffer!.keys.slice(startIndex, endIndex)
       for (const key of keys) {
         const hash = buffer!.get(key)
-        const entry = await this.get(hash)
+        const entry = await this.get<D>(hash)
         if (entry) {
           yield entry
         }
@@ -391,36 +391,36 @@ export class Log<T> implements LogInstance<T> {
     await this.storage.close()
   }
 
-  private defaultStopFn = async (
-    entry: EntryInstance<T>,
+  private defaultStopFn = async <D = T>(
+    entry: EntryInstance<D>,
     useRefs: boolean,
   ): Promise<boolean> => false
 
-  private async getStartEntries(
+  private async getStartEntries<D = T>(
     lt?: string,
     lte?: string,
-  ): Promise<EntryInstance<T>[]> {
+  ): Promise<EntryInstance<D>[]> {
     if (typeof lte === 'string') {
-      const entry = await this.get(lte)
+      const entry = await this.get<D>(lte)
 
       return entry ? [entry] : []
     }
 
     if (typeof lt === 'string') {
-      const entry = await this.get(lt)
+      const entry = await this.get<D>(lt)
       if (entry) {
         const nexts = await Promise.all(
-          (entry.next ?? []).map(n => this.get(n)),
+          (entry.next ?? []).map(n => this.get<D>(n)),
         )
 
-        return nexts.filter((e): e is EntryInstance<T> => e !== null)
+        return nexts.filter((e): e is EntryInstance<D> => e !== null)
       }
     }
 
-    return this.heads()
+    return this.heads() as Promise<EntryInstance<D>[]>
   }
 
-  private async verifyEntry(entry: EntryInstance<T>): Promise<void> {
+  private async verifyEntry<D = T>(entry: EntryInstance<D>): Promise<void> {
     if (entry.id !== this.id) {
       throw new Error(
         `Entry's id (${entry.id}) doesn't match the log's id (${this.id}).`,
@@ -439,7 +439,7 @@ export class Log<T> implements LogInstance<T> {
     }
   }
 
-  private async traverseAndVerify(
+  private async traverseAndVerify<D = T>(
     hashesToAdd: Set<string>,
     hashesToGet: Set<string>,
     headsHashes: string[],
@@ -447,7 +447,7 @@ export class Log<T> implements LogInstance<T> {
   ): Promise<void> {
     const getEntries = Array.from(hashesToGet.values())
       .filter(hash => this.has(hash))
-      .map(hash => this.get(hash))
+      .map(hash => this.get<D>(hash))
     const entries = await Promise.all(getEntries)
 
     for (const e of entries) {
@@ -480,8 +480,8 @@ export class Log<T> implements LogInstance<T> {
     }
   }
 
-  private async getReferences(
-    heads: EntryInstance<T>[],
+  private async getReferences<D = T>(
+    heads: EntryInstance<D>[],
     amount: number,
   ): Promise<string[]> {
     let refs: string[] = []
@@ -502,7 +502,7 @@ export class Log<T> implements LogInstance<T> {
     return refs
   }
 
-  private async fetchEntry(hash: string): Promise<EntryInstance<T> | null> {
-    return await this.get(hash)
+  private async fetchEntry<D = T>(hash: string): Promise<EntryInstance<D> | null> {
+    return await this.get<D>(hash)
   }
 }

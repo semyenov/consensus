@@ -47,8 +47,7 @@ export class RocksDBStorage<T = RocksDB.Bytes> implements StorageInstance<T> {
   }
 
   async put(hash: string, data: T): Promise<void> {
-    const buffer = Buffer.from(JSON.stringify(data))
-    this.db.put(hash, buffer, { sync: true }, (err) => {
+    this.db.put(hash, Buffer.from(data as any), { sync: true }, (err) => {
       if (err) {
         this.handleError(err)
       }
@@ -65,7 +64,7 @@ export class RocksDBStorage<T = RocksDB.Bytes> implements StorageInstance<T> {
 
   async get(hash: string): Promise<T | null> {
     return new Promise<T | null>((resolve, reject) => {
-      this.db.get(hash, (err, value) => {
+      this.db.get(hash, { asBuffer: true }, (err, value) => {
         if (err) {
           this.handleError(err)
           reject(err)

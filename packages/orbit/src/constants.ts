@@ -18,7 +18,7 @@ export const DATABASE_KEYVALUE_INDEXED_VALUE_ENCODING = 'json'
 export const DATABASE_REFERENCES_COUNT = 16
 export const DATABASE_CACHE_SIZE = 1000
 
-export const DATABASE_DEFAULT_TYPE = DATABASE_EVENTS_TYPE
+export const DATABASE_DEFAULT_TYPE = 'events' as const
 
 export const STORAGE_LEVEL_PATH = './.orbitdb/level'
 export const STORAGE_LEVEL_VALUE_ENCODING = 'view'

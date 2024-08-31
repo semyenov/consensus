@@ -1,7 +1,7 @@
 import { base58btc } from 'multiformats/bases/base58'
 import { CID } from 'multiformats/cid'
 
-import { posixJoin } from './utils/path-join.js'
+import { posixJoin } from './utils/path-join'
 
 export interface OrbitDBAddressInstance {
   protocol: string

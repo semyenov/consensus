@@ -3,30 +3,30 @@ import {
   DocumentsDatabase,
   type DocumentsInstance,
   type DocumentsOptions,
-} from './documents.js'
+} from './documents'
 import {
   EdgeDB,
   EdgeDBDatabase,
   type EdgeDBInstance,
   type EdgeDBOptions,
-} from './edgedb.js'
+} from './edgedb'
 import {
   Events,
   EventsDatabase,
   type EventsInstance,
   type EventsOptions,
-} from './events.js'
+} from './events'
+import {
+  KeyValue,
+  KeyValueDatabase,
+  type KeyValueInstance,
+} from './keyvalue'
 import {
   KeyValueIndexed,
   KeyValueIndexedDatabase,
   type KeyValueIndexedInstance,
   type KeyValueIndexedOptions,
-} from './keyvalue-indexed.js'
-import {
-  KeyValue,
-  KeyValueDatabase,
-  type KeyValueInstance,
-} from './keyvalue.js'
+} from './keyvalue-indexed'
 
 export interface DatabaseOperation<T> {
   op: 'PUT' | 'DEL' | 'ADD'

@@ -8,10 +8,10 @@ import {
   IPFSBlockStorage,
   LRUStorage,
   type StorageInstance,
-} from './storage/index.js'
+} from './storage/index'
 
-import type { DatabaseTypeMap } from './databases/index.js'
-import type { HeliaInstance } from './vendor.js'
+import type { DatabaseTypeMap } from './databases/index'
+import type { HeliaInstance } from './vendor'
 
 export interface Manifest {
   name: string

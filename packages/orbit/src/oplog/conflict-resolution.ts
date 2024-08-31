@@ -1,7 +1,7 @@
 /* eslint-disable unused-imports/no-unused-vars */
-import { Clock } from './clock.js'
+import { Clock } from './clock'
 
-import type { EntryInstance } from './entry.js'
+import type { EntryInstance } from './entry'
 
 export class ConflictResolution {
   private static sortById<T>(a: EntryInstance<T>, b: EntryInstance<T>): number {

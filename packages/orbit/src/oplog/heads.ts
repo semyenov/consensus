@@ -19,20 +19,20 @@ export class Heads<T> {
     }
   }
 
-  async put(heads: EntryInstance<T>[]): Promise<void> {
+  async put<D = T>(heads: EntryInstance<D>[]): Promise<void> {
     const heads_ = Heads.findHeads(heads)
     for (const head of heads_) {
       await this.storage.put(head.hash!, head.bytes!)
     }
   }
 
-  async set(heads: EntryInstance<T>[]): Promise<void> {
+  async set<D = T>(heads: EntryInstance<D>[]): Promise<void> {
     await this.storage.clear()
     await this.put(heads)
   }
 
-  async add(head: EntryInstance<T>): Promise<EntryInstance<T>[] | undefined> {
-    const currentHeads = await this.all()
+  async add<D = T>(head: EntryInstance<D>): Promise<EntryInstance<D>[] | undefined> {
+    const currentHeads = await this.all<D>()
     if (currentHeads.some(e => Entry.isEqual(e, head))) {
       return
     }
@@ -48,17 +48,17 @@ export class Heads<T> {
     await this.set(newHeads)
   }
 
-  async *iterator(): AsyncGenerator<EntryInstance<T>> {
+  async *iterator<D = T>(): AsyncGenerator<EntryInstance<D>> {
     const it = this.storage.iterator()
     for await (const [, bytes] of it) {
-      const head = await Entry.decode<T>(bytes)
+      const head = await Entry.decode<D>(bytes)
       yield head
     }
   }
 
-  async all(): Promise<EntryInstance<T>[]> {
-    const values: EntryInstance<T>[] = []
-    for await (const head of this.iterator()) {
+  async all<D = T>(): Promise<EntryInstance<D>[]> {
+    const values: EntryInstance<D>[] = []
+    for await (const head of this.iterator<D>()) {
       values.push(head)
     }
 

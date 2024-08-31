@@ -11,8 +11,8 @@ import {
   OrbitDB,
   OrbitDBAccessController,
 } from '../../src'
-import connectPeers from '../utils/connect-nodes.js'
-import createHelia from '../utils/create-helia.js'
+import connectPeers from '../utils/connect-nodes'
+import createHelia from '../utils/create-helia'
 
 const dbPath1 = './orbitdb/tests/orbitdb-access-controller/1'
 const dbPath2 = './orbitdb/tests/orbitdb-access-controller/2'

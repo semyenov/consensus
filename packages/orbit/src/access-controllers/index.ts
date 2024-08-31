@@ -1,15 +1,15 @@
 import {
   IPFSAccessController,
   type IPFSAccessControllerInstance,
-} from './ipfs.js'
+} from './ipfs'
 import {
   OrbitDBAccessController,
   type OrbitDBAccessControllerInstance,
-} from './orbitdb.js'
+} from './orbitdb'
 
-import type { IdentitiesInstance } from '../identities/identities.js'
+import type { IdentitiesInstance } from '../identities/identities'
 import type { EntryInstance } from '../oplog/entry'
-import type { OrbitDBInstance } from '../orbitdb.js'
+import type { OrbitDBInstance } from '../orbitdb'
 import type { StorageInstance } from '../storage'
 
 export interface CreateAccessControllerOptions {

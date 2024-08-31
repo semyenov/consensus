@@ -5,27 +5,27 @@ import {
   DATABASE_CACHE_SIZE,
   DATABASE_PATH,
   DATABASE_REFERENCES_COUNT,
-} from './constants.js'
-import { Entry, Log } from './oplog/index.js'
+} from './constants'
+import { Entry, Log } from './oplog/index'
 import {
   ComposedStorage,
   IPFSBlockStorage,
   LRUStorage,
   LevelStorage,
   type StorageInstance,
-} from './storage/index.js'
-import { Sync, type SyncEvents, type SyncInstance } from './sync.js'
+} from './storage/index'
+import { Sync, type SyncEvents, type SyncInstance } from './sync'
 import { join } from './utils'
 
 import type { AccessControllerInstance } from './access-controllers'
-import type { DatabaseOperation } from './databases/index.js'
+import type { DatabaseOperation } from './databases/index'
 import type {
   IdentitiesInstance,
   IdentityInstance,
-} from './identities/index.js'
-import type { EntryInstance } from './oplog/entry.js'
-import type { LogInstance } from './oplog/log.js'
-import type { HeliaInstance, PeerId } from './vendor.js'
+} from './identities/index'
+import type { EntryInstance } from './oplog/entry'
+import type { LogInstance } from './oplog/log'
+import type { HeliaInstance, PeerId } from './vendor'
 import type { PeerSet } from '@libp2p/peer-collections'
 
 export type DatabaseOptionsOnUpdate<T> = (
@@ -73,7 +73,7 @@ export interface DatabaseInstance<
   events: TypedEventEmitter<E>
   identity: IdentityInstance
   accessController: AccessControllerInstance
-  addOperation: (op: DatabaseOperation<T>) => Promise<string>
+  addOperation: <D = T>(op: DatabaseOperation<D>) => Promise<string>
   close: () => Promise<void>
   drop: () => Promise<void>
 }
@@ -100,7 +100,7 @@ export class Database<
   private queue: PQueue
   private writeQueue: PQueue
   private batchSize: number
-  private onUpdate?: DatabaseOptionsOnUpdate<T>
+  private onUpdate?: DatabaseOptionsOnUpdate<unknown>
 
   private constructor(
     ipfs: HeliaInstance,
@@ -113,7 +113,7 @@ export class Database<
     name?: string,
     address?: string,
     meta?: any,
-    onUpdate?: DatabaseOptionsOnUpdate<T>,
+    onUpdate?: DatabaseOptionsOnUpdate<unknown>,
   ) {
     this.meta = meta
     this.name = name
@@ -150,14 +150,14 @@ export class Database<
     const entryStorage
       = options.entryStorage
       || ComposedStorage.create({
-        storage1: LRUStorage.create({ size: DATABASE_CACHE_SIZE }),
+        storage1: await Promise.resolve(LRUStorage.create({ size: DATABASE_CACHE_SIZE })),
         storage2: IPFSBlockStorage.create({ ipfs, pin: true }),
       })
 
     const headsStorage
       = options.headsStorage
       || ComposedStorage.create({
-        storage1: LRUStorage.create({ size: DATABASE_CACHE_SIZE }),
+        storage1: await Promise.resolve(LRUStorage.create({ size: DATABASE_CACHE_SIZE })),
         storage2: await LevelStorage.create({
           path: join(path, '/log/_heads/'),
         }),
@@ -166,7 +166,7 @@ export class Database<
     const indexStorage
       = options.indexStorage
       || ComposedStorage.create({
-        storage1: LRUStorage.create({ size: DATABASE_CACHE_SIZE }),
+        storage1: await Promise.resolve(LRUStorage.create({ size: DATABASE_CACHE_SIZE })),
         storage2: await LevelStorage.create({
           path: join(path, '/log/_index/'),
         }),
@@ -189,7 +189,7 @@ export class Database<
       name,
       address,
       meta,
-      onUpdate,
+      onUpdate as DatabaseOptionsOnUpdate<unknown>,
     )
   }
 
@@ -201,7 +201,7 @@ export class Database<
 
         if (updated) {
           if (this.onUpdate) {
-            await this.onUpdate(this.log, entry)
+            await this.onUpdate(this.log as LogInstance<DatabaseOperation<unknown>>, entry)
           }
           this.events.dispatchEvent(
             new CustomEvent('update', { detail: { entry } }),
@@ -213,7 +213,7 @@ export class Database<
     await this.queue.add(task)
   }
 
-  async addOperation(op: DatabaseOperation<T>): Promise<string> {
+  async addOperation<D = T>(op: DatabaseOperation<D>): Promise<string> {
     return this.writeQueue.add(async () => {
       const batch = [op]
 
@@ -228,9 +228,9 @@ export class Database<
         referencesCount: DATABASE_REFERENCES_COUNT,
       })))
 
-      await Promise.all(entries.map(entry => this.sync.add(entry)))
+      await Promise.all(entries.map(entry => this.sync.add<DatabaseOperation<D>>(entry)))
       if (this.onUpdate) {
-        await Promise.all(entries.map(entry => this.onUpdate!(this.log, entry)))
+        await Promise.all(entries.map(entry => this.onUpdate!(this.log as LogInstance<DatabaseOperation<unknown>>, entry)))
       }
 
       for (const entry of entries) {

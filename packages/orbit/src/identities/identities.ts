@@ -3,7 +3,7 @@ import {
   type KeyStoreInstance,
   signMessage,
   verifyMessage,
-} from '../key-store.js'
+} from '../key-store'
 import {
   ComposedStorage,
   IPFSBlockStorage,
@@ -12,10 +12,10 @@ import {
 } from '../storage'
 import { join } from '../utils'
 
-import { Identity, type IdentityInstance } from './identity.js'
+import { Identity, type IdentityInstance } from './identity'
 import { type IdentityProviderInstance, IdentityProviders } from './providers'
 
-import type { HeliaInstance } from '../vendor.js'
+import type { HeliaInstance } from '../vendor'
 
 interface IdentitiesCreateIdentityOptions {
   id?: string

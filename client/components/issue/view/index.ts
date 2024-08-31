@@ -1,3 +1,3 @@
-import { default as IssueTable } from './Root.vue'
+import IssueTable from './Root.vue'
 
 export default IssueTable

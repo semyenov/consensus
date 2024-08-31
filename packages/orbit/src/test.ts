@@ -1,4 +1,4 @@
-import { type GossipSub, gossipsub } from '@chainsafe/libp2p-gossipsub'
+import { gossipsub } from '@chainsafe/libp2p-gossipsub'
 import { noise } from '@chainsafe/libp2p-noise'
 import { yamux } from '@chainsafe/libp2p-yamux'
 import { bitswap } from '@helia/block-brokers'
@@ -16,9 +16,14 @@ import { all } from '@libp2p/websockets/filters'
 import { LevelBlockstore } from 'blockstore-level'
 import { createConsola } from 'consola'
 import { createHelia } from 'helia'
-import { type Libp2pOptions, createLibp2p } from 'libp2p'
+import { createLibp2p } from 'libp2p'
+import RocksDB from 'rocksdb'
 
-import { OrbitDB } from './index.js'
+import { ComposedStorage, RocksDBStorage } from './storage'
+
+import { OrbitDB } from './index'
+
+import type { Libp2pOptions } from './vendor'
 
 const logger = createConsola({
   defaults: {
@@ -28,9 +33,7 @@ const logger = createConsola({
 })
 
 const directory = './orbitdb'
-const options: Libp2pOptions<{
-  pubsub: GossipSub
-}> = {
+const options: Libp2pOptions = {
   addresses: {
     listen: ['/ip4/127.0.0.1/tcp/0/ws'],
   },
@@ -53,9 +56,9 @@ const options: Libp2pOptions<{
   // },
   peerDiscovery: [
     mdns(),
-    bootstrap({
-      list: ['/ip4/192.168.10.53/tcp/41613/ws/p2p/12D3KooWHrQf4KmPEJEwY53NdzQ5woniNq6Jt7So8fEYScjUWeQQ'],
-    }),
+    // bootstrap({
+    //   list: ['/ip4/192.168.10.53/tcp/41613/ws/p2p/12D3KooWHrQf4KmPEJEwY53NdzQ5woniNq6Jt7So8fEYScjUWeQQ'],
+    // }),
   ],
   transports: [
     tcp(),
@@ -74,9 +77,7 @@ const options: Libp2pOptions<{
   services: {
     identify: identify(),
     circuitRelay: circuitRelayServer(),
-    pubsub: gossipsub({
-      allowPublishToZeroTopicPeers: true,
-    }) as unknown as GossipSub,
+    pubsub: gossipsub({ allowPublishToZeroTopicPeers: true }),
   },
 }
 
@@ -92,19 +93,37 @@ async function main() {
     ipfs,
   })
 
-  const db = await orbit.open<{ _id: string, test: string }, 'documents'>(
-    'documents',
-    '/orbitdb/zdpuAqDgvEBDFh2xdNMwzAYJXg17J46Z25yMYHsMuiZpJcbT6',
-  )
-
-  db.events.addEventListener('update', (entry) => {
-    logger.log(entry)
+  const db = await orbit.open('documents', 'new', {
+    entryStorage: ComposedStorage.create({
+      storage1: await RocksDBStorage.create<Uint8Array>({
+        path: `${directory}/entries1`,
+      }),
+      storage2: await RocksDBStorage.create<Uint8Array>({
+        path: `${directory}/entries2`,
+      }),
+    }),
   })
 
-  logger.log(db)
-  // db.put({ _id: 'test', test: 'test' })
+  db.events.addEventListener('update', (entry) => {
+    logger.log(entry.detail.entry.payload)
+  })
+  try {
+    await db.put({ _id: 'test', test: 'test' })
+  }
+  catch (error) {
+    logger.error('put error', error)
+  }
 
-  // const result = await db.get('test')
-  // logger.log(result)
+  try {
+    const result = await db.get('test')
+    if (result) {
+      logger.log('get result', result.value)
+    }
+  }
+  catch (error) {
+    logger.error('get error', error)
+  }
+
+  // logger.log(db)
 }
 main()

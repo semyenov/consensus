@@ -9,10 +9,10 @@ import {
   KeyStore,
   KeyValueIndexed,
 } from '../../../src'
-import testKeysPath from '../../fixtures/test-keys-path.js'
-import connectPeers from '../../utils/connect-nodes.js'
-import createHelia from '../../utils/create-helia.js'
-import waitFor from '../../utils/wait-for.js'
+import testKeysPath from '../../fixtures/test-keys-path'
+import connectPeers from '../../utils/connect-nodes'
+import createHelia from '../../utils/create-helia'
+import waitFor from '../../utils/wait-for'
 
 import type { KeyValueIndexedDatabase } from '../../../src/databases/keyvalue-indexed'
 import type { IdentityInstance } from '../../../src/identities/identity'

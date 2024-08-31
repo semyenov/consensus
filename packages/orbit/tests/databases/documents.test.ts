@@ -11,8 +11,8 @@ import {
   Identities,
   KeyStore,
 } from '../../src'
-import testKeysPath from '../fixtures/test-keys-path.js'
-import createHelia from '../utils/create-helia.js'
+import testKeysPath from '../fixtures/test-keys-path'
+import createHelia from '../utils/create-helia'
 
 import type {
   AccessControllerInstance,

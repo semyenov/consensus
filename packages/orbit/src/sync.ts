@@ -14,19 +14,19 @@ import { TimeoutController } from 'timeout-abort-controller'
 import { SYNC_PROTOCOL, SYNC_TIMEOUT } from './constants'
 import { join } from './utils'
 
-import type { EntryInstance } from './oplog/entry.js'
+import type { EntryInstance } from './oplog/entry'
 import type { LogInstance } from './oplog/log'
 import type { HeliaInstance, PeerId } from './vendor'
 import type { Sink, Source } from 'it-stream-types'
 import type { Uint8ArrayList } from 'uint8arraylist'
 
-interface SyncEvents<T> {
+export interface SyncEvents<T> {
   join: CustomEvent<{ peerId: PeerId, heads: EntryInstance<T>[] }>
   leave: CustomEvent<{ peerId: PeerId }>
   error: ErrorEvent
 }
 
-interface SyncOptions<T> {
+export interface SyncOptions<T> {
   ipfs: HeliaInstance
   log: LogInstance<T>
   events?: TypedEventEmitter<SyncEvents<T>>
@@ -36,16 +36,16 @@ interface SyncOptions<T> {
   onSynced?: (head: Uint8Array) => Promise<void>
 }
 
-interface SyncInstance<T, E extends SyncEvents<T>> {
+export interface SyncInstance<T, E extends SyncEvents<T>> {
   peers: PeerSet
   events: TypedEventEmitter<E>
 
   start: () => Promise<void>
   stop: () => Promise<void>
-  add: (entry: EntryInstance<T>) => Promise<void>
+  add: <D = T>(entry: EntryInstance<D>) => Promise<void>
 }
 
-class Sync<T, E extends SyncEvents<T> = SyncEvents<T>>
+export class Sync<T, E extends SyncEvents<T> = SyncEvents<T>>
 implements SyncInstance<T, E> {
   private ipfs: HeliaInstance
   private log: LogInstance<T>
@@ -243,11 +243,9 @@ implements SyncInstance<T, E> {
     }
   }
 
-  public async add(entry: EntryInstance<T>): Promise<void> {
+  public async add<D = T>(entry: EntryInstance<D>): Promise<void> {
     if (this.started) {
       await this.ipfs.libp2p.services.pubsub.publish(this.address, entry.bytes!)
     }
   }
 }
-
-export { Sync, SyncEvents, SyncOptions, SyncInstance }

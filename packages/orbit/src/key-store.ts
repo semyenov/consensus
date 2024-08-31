@@ -5,8 +5,8 @@ import {
   toString as uint8ArrayToString,
 } from 'uint8arrays'
 
-import { KEYSTORE_PATH } from './constants.js'
-import { ComposedStorage, LRUStorage, LevelStorage } from './storage/index.js'
+import { KEYSTORE_PATH } from './constants'
+import { ComposedStorage, LRUStorage, LevelStorage } from './storage/index'
 
 import type { StorageInstance } from './storage'
 import type { PrivateKey } from './vendor'
@@ -27,10 +27,10 @@ export interface KeyStoreInstance {
   close: () => Promise<void>
 }
 
-const VERIFIED_CACHE_STORAGE = LRUStorage.create<{
+const VERIFIED_CACHE_STORAGE = Promise.resolve(LRUStorage.create<{
   publicKey: string
   data: string | Uint8Array
-}>({ size: 1000 })
+}>({ size: 1000 }))
 
 const unmarshal
   = crypto.keys.supportedKeys.secp256k1.unmarshalSecp256k1PrivateKey
@@ -49,7 +49,7 @@ export class KeyStore implements KeyStoreInstance {
     const storage: StorageInstance<Uint8Array>
       = options.storage
       || ComposedStorage.create<Uint8Array>({
-        storage1: await LRUStorage.create({ size: 1000 }),
+        storage1: await Promise.resolve(LRUStorage.create({ size: 1000 })),
         storage2: await LevelStorage.create({ path }),
       })
 
@@ -206,7 +206,9 @@ export async function verifyMessage(
   }
 
   const compare = (cached: string | Uint8Array, data: string | Uint8Array) => {
-    const match = data instanceof Uint8Array && cached instanceof Uint8Array ? uint8ArrayCompare(cached, data) === 0 : cached.toString() === data.toString()
+    const match = data instanceof Uint8Array && cached instanceof Uint8Array
+      ? uint8ArrayCompare(cached, data) === 0
+      : cached.toString() === data.toString()
 
     return match
   }

@@ -22,6 +22,8 @@ import {
 } from '@/components/ui/table'
 import { cn, valueUpdater } from '@/lib/utils'
 
+import ScrollArea from '~/components/ui/scroll-area/ScrollArea.vue'
+
 import ActionsCell from './ActionsCell.vue'
 import ActionsHeader from './ActionsHeader.vue'
 import ExpandedRowContent from './ExpandedRowContent.vue'
@@ -64,7 +66,7 @@ const columnSizing = ref<ColumnSizingState>({})
 const columnFilters = ref<ColumnFiltersState>([])
 const columnVisibility = ref<VisibilityState>({})
 const columnPinning = ref<ColumnPinningState>({
-  left: ['select'],
+  left: ['select', 'status'],
   right: ['actions'],
 })
 const rowPinning = ref<RowPinningState>({})
@@ -75,19 +77,19 @@ const pagination = ref<PaginationState>({
   pageSize: data.value.length,
 })
 
-const tableContainerRef = ref<HTMLDivElement | null>(null)
+const tableContainerRef = ref<typeof ScrollArea | null>(null)
 const rowVirtualizer = useVirtualizer({
   count: data.value.length,
-  getScrollElement: () => tableContainerRef.value,
-  estimateSize: () => 36, // Adjust this value based on your row height
+  getScrollElement: () => tableContainerRef.value?.$el.children[0],
+  estimateSize: () => 36,
   overscan: 10,
 })
 
 const table = useVueTable({
   defaultColumn: {
-    minSize: 0,
+    minSize: 1,
     maxSize: 1,
-    size: 0,
+    size: 1,
     enableHiding: true,
     enablePinning: true,
     enableResizing: true,
@@ -137,7 +139,6 @@ const table = useVueTable({
 
       header: ({ table }) =>
         h(SelectHeader, {
-          'class': 'z-50',
           'checked': table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate'),
           'onUpdate:checked': (value: boolean) => table.toggleAllPageRowsSelected(value),
         }),
@@ -147,11 +148,24 @@ const table = useVueTable({
           'onUpdate:checked': (value: boolean) => row.toggleSelected(Boolean(value)),
         }),
     }),
+    columnHelper.accessor('status', {
+      id: 'status',
+
+      header: ({ column }) =>
+        h(StatusHeader, {
+          onToggleSort: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+        }),
+      cell: ({ row }) =>
+        h(StatusCell, {
+          ...row.original,
+        }),
+    }),
     columnHelper.accessor('name', {
       id: 'name',
       enableHiding: false,
-      size: 98,
-      minSize: 90,
+
+      size: 97,
+      minSize: 97,
       maxSize: 100,
 
       header: ({ column }) =>
@@ -174,18 +188,6 @@ const table = useVueTable({
       cell: ({ row }) =>
         h(UpdatedAtCell, {
           updatedAt: new Date(row.original.updated_at),
-        }),
-    }),
-    columnHelper.accessor('status', {
-      id: 'status',
-
-      header: ({ column }) =>
-        h(StatusHeader, {
-          onToggleSort: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-        }),
-      cell: ({ row }) =>
-        h(StatusCell, {
-          ...row.original,
         }),
     }),
     columnHelper.display({
@@ -240,11 +242,8 @@ const rows = computed(() => table.getRowModel().rows)
 </script>
 
 <template>
-  <div ref="tableContainerRef" class="h-full overflow-auto">
-    <div
-      class="w-full min-h-full"
-      :style="{ height: `${rowVirtualizer.getTotalSize()}px` }"
-    >
+  <ScrollArea ref="tableContainerRef" class="h-full v-virtual-scroll" type="scroll">
+    <div :style="{ height: `${rowVirtualizer.getTotalSize()}px` }" class="flex flex-col overflow-hidden">
       <Table>
         <!-- <TableCaption>{{ t("pages.index.table.caption") }}</TableCaption> -->
         <TableHeader>
@@ -256,7 +255,10 @@ const rows = computed(() => table.getRowModel().rows)
               v-for="header in headerGroup.headers"
               :key="header.id"
               :pinned="header.column.getIsPinned()"
-              class="sticky top-0 z-30"
+              :data-index="header.index"
+              :style="{
+                width: `${header.column.getSize()}px`,
+              }"
             >
               <FlexRender
                 v-if="!header.isPlaceholder"
@@ -266,7 +268,7 @@ const rows = computed(() => table.getRowModel().rows)
             </TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody class="h-auto">
           <template v-for="(virtualRow, index) in rowVirtualizer.getVirtualItems()" :key="virtualRow.key">
             <TableRow
               :data-state="rows[virtualRow.index].getIsSelected() && 'selected'"
@@ -285,6 +287,7 @@ const rows = computed(() => table.getRowModel().rows)
                 :pinned="cell.column.getIsPinned()"
                 :data-index="virtualRow.index"
                 :style="{
+                  height: `${virtualRow.size}px !important`,
                   width: `${cell.column.getSize()}px`,
                 }"
               >
@@ -310,7 +313,7 @@ const rows = computed(() => table.getRowModel().rows)
         </TableBody>
       </Table>
     </div>
-  </div>
+  </ScrollArea>
 </template>
 
 <style scoped>

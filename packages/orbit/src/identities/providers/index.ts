@@ -1,6 +1,6 @@
-import { PublicKeyIdentityProvider } from './publickey.js'
+import { PublicKeyIdentityProvider } from './publickey'
 
-import type { KeyStoreInstance } from '../../key-store.js'
+import type { KeyStoreInstance } from '../../key-store'
 
 export interface IdentityProviderGetIdOptions {
   id: string
