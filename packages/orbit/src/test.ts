@@ -1,5 +1,4 @@
 import process from 'node:process'
-import rl from 'node:readline'
 
 import { gossipsub } from '@chainsafe/libp2p-gossipsub'
 import { noise } from '@chainsafe/libp2p-noise'
@@ -19,13 +18,17 @@ import { LevelBlockstore } from 'blockstore-level'
 import { createConsola } from 'consola'
 import { createHelia } from 'helia'
 import { createLibp2p } from 'libp2p'
-import RocksDB from 'rocksdb'
 
 import { ComposedStorage, RocksDBStorage } from './storage'
 
 import { OrbitDB } from './index'
 
 import type { Libp2pOptions } from './vendor'
+
+interface Entry {
+  _id: string
+  payload: string
+}
 
 const logger = createConsola({
   defaults: {
@@ -87,10 +90,6 @@ const options: Libp2pOptions = {
 }
 
 async function main() {
-  const r = rl.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  })
   const ipfs = await createHelia({
     libp2p: await createLibp2p({ ...options }),
     blockstore: new LevelBlockstore(`${directory}/ipfs/blocks`),
@@ -102,7 +101,7 @@ async function main() {
     ipfs,
   })
 
-  const db = await orbit.open('documents', 'new', {
+  const db = await orbit.open<'documents', Entry>('documents', 'new', {
     entryStorage: ComposedStorage.create({
       storage1: await RocksDBStorage.create<Uint8Array>({
         path: `${directory}/entries1`,
@@ -118,18 +117,32 @@ async function main() {
   })
 
   while (true) {
-    const command = await new Promise<string>((resolve) => {
-      r.question('\nEnter a command: ', resolve)
+    const command = await logger.prompt('Enter a command: ', {
+      type: 'select',
+      options: [
+        'get',
+        'put',
+        'del',
+        'close',
+      ],
     })
-    const id = await new Promise<string>((resolve) => {
-      r.question('Enter an ID: ', resolve)
+    if (command === 'close') {
+      await db.close()
+      process.exit(0)
+    }
+
+    const id = await logger.prompt('Enter an ID: ', {
+      type: 'text',
     })
 
     switch (command) {
       case 'put':
-        await db.put({ _id: id, test: await new Promise<string>((resolve) => {
-          r.question('Enter a payload: ', resolve)
-        }) })
+        await db.put({
+          _id: id,
+          payload: await logger.prompt('Enter a payload: ', {
+            type: 'text',
+          }),
+        })
         break
       case 'del':
         await db.del(id)
