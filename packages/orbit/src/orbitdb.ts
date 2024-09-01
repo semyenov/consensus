@@ -50,7 +50,6 @@ export interface OrbitDBInstance {
   id: string
   ipfs: HeliaInstance
   directory: string
-  keystore: KeyStoreInstance
   identity: IdentityInstance
   peerId: PeerId
 
@@ -65,16 +64,16 @@ export interface OrbitDBInstance {
 const DEFAULT_ACCESS_CONTROLLER = IPFSAccessController.create
 
 export class OrbitDB implements OrbitDBInstance {
-  public id: string
-  public ipfs: HeliaInstance
-  public directory: string
-  public keystore: KeyStoreInstance
-  public identity: IdentityInstance
-  public peerId: PeerId
+  public readonly id: string
+  public readonly ipfs: HeliaInstance
+  public readonly directory: string
+  // public keystore: KeyStoreInstance
+  public readonly identity: IdentityInstance
+  public readonly peerId: PeerId
 
-  private identities: IdentitiesInstance
-  private manifestStore: ManifestStore
-  private databases: Record<
+  private readonly identities: IdentitiesInstance
+  private readonly manifestStore: ManifestStore
+  private readonly databases: Record<
     string,
     DatabaseTypeMap<any>[keyof DatabaseTypeMap<any>]
   > = {}
@@ -83,7 +82,6 @@ export class OrbitDB implements OrbitDBInstance {
     id: string,
     ipfs: HeliaInstance,
     directory: string,
-    keystore: KeyStoreInstance,
     identity: IdentityInstance,
     identities: IdentitiesInstance,
     manifestStore: ManifestStore,
@@ -91,7 +89,6 @@ export class OrbitDB implements OrbitDBInstance {
     this.id = id
     this.ipfs = ipfs
     this.directory = directory
-    this.keystore = keystore
     this.identity = identity
     this.peerId = ipfs.libp2p.peerId
     this.identities = identities
@@ -103,19 +100,15 @@ export class OrbitDB implements OrbitDBInstance {
       throw new Error('IPFS instance is a required argument.')
     }
 
-    const id = options.id || (await createId())
-    const { ipfs } = options
-    const directory = options.directory || './orbitdb'
+    let { identities } = options
+    const {
+      ipfs,
+      directory = './orbitdb',
+      id = await createId(),
+    } = options
 
-    let keystore: KeyStoreInstance
-    let identities: IdentitiesInstance
-
-    if (options.identities) {
-      keystore = options.identities.keystore
-      identities = options.identities
-    }
-    else {
-      keystore = await KeyStore.create({
+    if (!identities) {
+      const keystore = await KeyStore.create({
         path: join(directory, './keystore'),
       })
       identities = await Identities.create({
@@ -146,7 +139,6 @@ export class OrbitDB implements OrbitDBInstance {
       id,
       ipfs,
       directory,
-      keystore,
       identity,
       identities,
       manifestStore,
@@ -260,8 +252,8 @@ export class OrbitDB implements OrbitDBInstance {
     for (const database of Object.values(this.databases)) {
       await database.close()
     }
-    if (this.keystore) {
-      await this.keystore.close()
+    if (this.identities.keystore) {
+      await this.identities.keystore.close()
     }
     if (this.manifestStore) {
       await this.manifestStore.close()

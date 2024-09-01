@@ -26,7 +26,7 @@ export class RocksDBStorage<T = RocksDB.Bytes> implements StorageInstance<T> {
     const path = options.path || join(STORAGE_LEVEL_PATH, 'rocksdb')
     const storage = new RocksDBStorage<T>(path)
     await new Promise<void>((resolve, reject) => {
-      storage.db.open((err) => {
+      storage.db.open({ createIfMissing: true }, (err) => {
         if (err) {
           reject(err)
         }
@@ -39,26 +39,29 @@ export class RocksDBStorage<T = RocksDB.Bytes> implements StorageInstance<T> {
     return storage
   }
 
-  private handleError(err: Error | undefined): void {
-    if (err) {
-      // eslint-disable-next-line no-console
-      console.error(err)
-    }
-  }
-
   async put(hash: string, data: T): Promise<void> {
-    this.db.put(hash, Buffer.from(data as any), { sync: true }, (err) => {
-      if (err) {
-        this.handleError(err)
-      }
+    await new Promise<void>((resolve, reject) => {
+      this.db.put(hash, Buffer.from(data as any), { sync: true }, (err) => {
+        if (err) {
+          reject(err)
+        }
+        else {
+          resolve()
+        }
+      })
     })
   }
 
   async del(hash: string): Promise<void> {
-    this.db.del(hash, { sync: true }, (err) => {
-      if (err) {
-        this.handleError(err)
-      }
+    await new Promise<void>((resolve, reject) => {
+      this.db.del(hash, { sync: true }, (err) => {
+        if (err) {
+          reject(err)
+        }
+        else {
+          resolve()
+        }
+      })
     })
   }
 
@@ -66,7 +69,6 @@ export class RocksDBStorage<T = RocksDB.Bytes> implements StorageInstance<T> {
     return new Promise<T | null>((resolve, reject) => {
       this.db.get(hash, { asBuffer: true }, (err, value) => {
         if (err) {
-          this.handleError(err)
           reject(err)
         }
         else {
@@ -79,46 +81,37 @@ export class RocksDBStorage<T = RocksDB.Bytes> implements StorageInstance<T> {
   async *iterator(options: RocksDB.IteratorOptions = {}): AsyncIterableIterator<[string, T]> {
     const iterator = this.db.iterator(options)
 
-    try {
-      while (true) {
-        const result = await new Promise<[RocksDB.Bytes, RocksDB.Bytes] | null>((resolve, reject) => {
-          iterator.next((err, key, value) => {
-            if (err) {
-              reject(err)
-            }
-            else if (key === undefined && value === undefined) {
-              resolve(null)
-            }
-            else {
-              resolve(result)
-            }
-          })
-        })
-
-        if (result === null) {
-          break
-        }
-
-        const [key, value] = result
-
-        yield [key.toString(), JSON.parse(value.toString()) as T]
-      }
-    }
-    catch (error) {
-      this.handleError(error as Error)
-    }
-    finally {
-      await new Promise<void>((resolve) => {
-        iterator.end((err) => {
+    while (true) {
+      const result = await new Promise<[string, T] | null>((resolve, reject) => {
+        iterator.next((err, key, value) => {
           if (err) {
-            this.handleError(err)
+            reject(err)
+          }
+          else if (key === undefined && value === undefined) {
+            resolve(null)
           }
           else {
-            resolve()
+            resolve([key.toString(), value as T])
           }
         })
       })
+
+      if (result === null) {
+        break
+      }
+
+      yield result
     }
+    await new Promise<void>((resolve, reject) => {
+      iterator.end((err) => {
+        if (err) {
+          reject(err)
+        }
+        else {
+          resolve()
+        }
+      })
+    })
   }
 
   async merge(other: StorageInstance<T>): Promise<void> {
@@ -129,7 +122,6 @@ export class RocksDBStorage<T = RocksDB.Bytes> implements StorageInstance<T> {
     await new Promise<void>((resolve, reject) => {
       batch.write((err) => {
         if (err) {
-          this.handleError(err)
           reject(err)
         }
         else {
@@ -143,7 +135,6 @@ export class RocksDBStorage<T = RocksDB.Bytes> implements StorageInstance<T> {
     await new Promise<void>((resolve, reject) => {
       this.db.clear((err: Error | null) => {
         if (err) {
-          this.handleError(err)
           reject(err)
         }
         else {
@@ -157,7 +148,6 @@ export class RocksDBStorage<T = RocksDB.Bytes> implements StorageInstance<T> {
     await new Promise<void>((resolve, reject) => {
       this.db.close((err) => {
         if (err) {
-          this.handleError(err)
           reject(err)
         }
         else {

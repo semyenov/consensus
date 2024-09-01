@@ -108,6 +108,18 @@ export class Log<T> implements LogInstance<T> {
       .toString()
   }
 
+  public static defaultAccessController(): AccessControllerInstance {
+    return {
+      write: [],
+      type: 'allow-all',
+      canAppend: async (entry: EntryInstance<any>) => true,
+    }
+  }
+
+  public static maxClockTimeReducer(res: number, acc: EntryInstance): number {
+    return Math.max(res, acc.clock.time)
+  }
+
   public static isLog(obj: any): obj is LogInstance<any> {
     return (
       obj
@@ -119,18 +131,6 @@ export class Log<T> implements LogInstance<T> {
       && obj.identity !== undefined
       && obj.storage !== undefined
     )
-  }
-
-  public static defaultAccessController(): AccessControllerInstance {
-    return {
-      write: [],
-      type: 'allow-all',
-      canAppend: async (entry: EntryInstance<any>) => true,
-    }
-  }
-
-  public static maxClockTimeReducer(res: number, acc: EntryInstance): number {
-    return Math.max(res, acc.clock.time)
   }
 
   async clock(): Promise<ClockInstance> {

@@ -139,25 +139,39 @@ export class Database<
   }
 
   static async create<T>(options: DatabaseOptions<T>) {
-    const meta = options.meta || {}
-    const { name, address, ipfs, onUpdate, directory } = options
-    const identity = options.identity!
-    const accessController = options.accessController!
-    const syncAutomatically = options.syncAutomatically ?? true
+    const {
+      name,
+      meta,
+      address,
+      ipfs,
+      onUpdate,
+      directory,
+      identity,
+      accessController,
+      syncAutomatically = true,
+    } = options
+
+    if (!identity) {
+      throw new Error('Identity is required')
+    }
+
+    if (!accessController) {
+      throw new Error('Access controller is required')
+    }
 
     const path = join(directory || DATABASE_PATH, `./${address}/`)
 
     const entryStorage
       = options.entryStorage
       || ComposedStorage.create({
-        storage1: await Promise.resolve(LRUStorage.create({ size: DATABASE_CACHE_SIZE })),
+        storage1: LRUStorage.create({ size: DATABASE_CACHE_SIZE }),
         storage2: IPFSBlockStorage.create({ ipfs, pin: true }),
       })
 
     const headsStorage
       = options.headsStorage
       || ComposedStorage.create({
-        storage1: await Promise.resolve(LRUStorage.create({ size: DATABASE_CACHE_SIZE })),
+        storage1: LRUStorage.create({ size: DATABASE_CACHE_SIZE }),
         storage2: await LevelStorage.create({
           path: join(path, '/log/_heads/'),
         }),
@@ -166,7 +180,7 @@ export class Database<
     const indexStorage
       = options.indexStorage
       || ComposedStorage.create({
-        storage1: await Promise.resolve(LRUStorage.create({ size: DATABASE_CACHE_SIZE })),
+        storage1: LRUStorage.create({ size: DATABASE_CACHE_SIZE }),
         storage2: await LevelStorage.create({
           path: join(path, '/log/_index/'),
         }),

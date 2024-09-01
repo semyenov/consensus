@@ -1,3 +1,5 @@
+import { exists } from 'node:fs'
+import { mkdir } from 'node:fs/promises'
 import process from 'node:process'
 
 import { gossipsub } from '@chainsafe/libp2p-gossipsub'
@@ -18,8 +20,10 @@ import { LevelBlockstore } from 'blockstore-level'
 import { createConsola } from 'consola'
 import { createHelia } from 'helia'
 import { createLibp2p } from 'libp2p'
+import { omit } from 'remeda'
 
-import { ComposedStorage, RocksDBStorage } from './storage'
+import { ComposedStorage, LRUStorage, LevelStorage, RocksDBStorage } from './storage'
+import { join } from './utils'
 
 import { OrbitDB } from './index'
 
@@ -37,34 +41,14 @@ const logger = createConsola({
   },
 })
 
-const directory = './orbitdb'
+const directory = '.data'
+const address = 'new'
+
 const options: Libp2pOptions = {
   addresses: {
     listen: ['/ip4/127.0.0.1/tcp/0/ws'],
   },
-  // logger: {
-  //   forComponent(name: string) {
-  //     const l = (formatter: string, ...args: []) => {
-  //       logger.info(formatter, { label: name, ...args })
-  //     }
-
-  //     l.enabled = true
-  //     l.error = (formatter: string, ...args: []) => {
-  //       logger.error(formatter, { label: name, ...args })
-  //     }
-  //     l.trace = (formatter: string, ...args: []) => {
-  //       logger.debug(formatter, { label: name, ...args })
-  //     }
-
-  //     return l
-  //   },
-  // },
-  peerDiscovery: [
-    mdns(),
-    // bootstrap({
-    //   list: ['/ip4/192.168.10.53/tcp/41613/ws/p2p/12D3KooWHrQf4KmPEJEwY53NdzQ5woniNq6Jt7So8fEYScjUWeQQ'],
-    // }),
-  ],
+  peerDiscovery: [mdns()],
   transports: [
     tcp(),
     webRTC(),
@@ -90,6 +74,9 @@ const options: Libp2pOptions = {
 }
 
 async function main() {
+  const dbPath = join(directory, 'orbitdb', address)
+  await mkdir(dbPath, { recursive: true, mode: 0o777 })
+
   const ipfs = await createHelia({
     libp2p: await createLibp2p({ ...options }),
     blockstore: new LevelBlockstore(`${directory}/ipfs/blocks`),
@@ -97,23 +84,39 @@ async function main() {
   })
   const orbit = await OrbitDB.create({
     id: 'test',
-    directory: './orbitdb',
+    directory,
     ipfs,
   })
 
-  const db = await orbit.open<'documents', Entry>('documents', 'new', {
-    entryStorage: ComposedStorage.create({
-      storage1: await RocksDBStorage.create<Uint8Array>({
-        path: `${directory}/entries1`,
+  const db = await orbit.open<'documents', Entry>('documents', address, {
+    entryStorage: await ComposedStorage.create({
+      storage1: LRUStorage.create<Uint8Array>({
+        size: 1000,
       }),
       storage2: await RocksDBStorage.create<Uint8Array>({
-        path: `${directory}/entries2`,
+        path: join(dbPath, 'entries'),
+      }),
+    }),
+    headsStorage: await ComposedStorage.create({
+      storage1: LRUStorage.create<Uint8Array>({
+        size: 1000,
+      }),
+      storage2: await RocksDBStorage.create<Uint8Array>({
+        path: join(dbPath, 'heads'),
+      }),
+    }),
+    indexStorage: await ComposedStorage.create({
+      storage1: LRUStorage.create<boolean>({
+        size: 1000,
+      }),
+      storage2: await LevelStorage.create<boolean>({
+        path: join(dbPath, 'indexes'),
       }),
     }),
   })
 
   db.events.addEventListener('update', (event) => {
-    logger.log(JSON.stringify(event.detail.entry, null, 2))
+    logger.log(JSON.stringify(omit(event.detail.entry, ['bytes']), null, 2))
   })
 
   while (true) {
@@ -143,6 +146,7 @@ async function main() {
             type: 'text',
           }),
         })
+        logger.log('Put', id)
         break
       case 'del':
         await db.del(id)
@@ -171,3 +175,9 @@ async function main() {
 }
 
 main()
+  .catch((error) => {
+    logger.error(error)
+  })
+  .finally(() => {
+    logger.info('Done')
+  })

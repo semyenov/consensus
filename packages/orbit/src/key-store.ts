@@ -49,7 +49,7 @@ export class KeyStore implements KeyStoreInstance {
     const storage: StorageInstance<Uint8Array>
       = options.storage
       || ComposedStorage.create<Uint8Array>({
-        storage1: await Promise.resolve(LRUStorage.create({ size: 1000 })),
+        storage1: LRUStorage.create({ size: 1000 }),
         storage2: await LevelStorage.create({ path }),
       })
 

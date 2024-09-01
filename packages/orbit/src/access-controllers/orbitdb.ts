@@ -115,8 +115,8 @@ implements OrbitDBAccessControllerInstance<DatabaseEvents<string[]>> {
     }
 
     const toSet = (e: [string, Set<string>]) => {
-      const key = e[0]
-      caps[key!] = new Set([...(caps[key!] || []), ...e[1]])
+      const [key, value] = e
+      caps[key!] = new Set([...(caps[key] || []), ...value])
     }
 
     Object.entries({
@@ -128,7 +128,18 @@ implements OrbitDBAccessControllerInstance<DatabaseEvents<string[]>> {
         ]),
       },
     })
-      .forEach(toSet)
+
+    for (const entry of Object.entries({
+      ...caps,
+      ...{
+        admin: new Set([
+          ...(caps.admin || []),
+          ...this.database.accessController.write,
+        ]),
+      },
+    })) {
+      toSet(entry)
+    }
 
     return caps
   }
