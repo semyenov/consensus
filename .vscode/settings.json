@@ -7,7 +7,7 @@
   "workbench.editor.tabSizing": "fixed",
   "workbench.editor.tabActionLocation": "right",
   "workbench.activityBar.orientation": "vertical",
-  "workbench.activityBar.location": "top",
+  "workbench.activityBar.location": "default",
   "workbench.panel.defaultLocation": "right",
   "workbench.commandPalette.experimental.askChatLocation": "chatView",
 

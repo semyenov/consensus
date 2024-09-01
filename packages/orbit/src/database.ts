@@ -130,10 +130,8 @@ export class Database<
     this.sync = new Sync({
       ipfs,
       log,
-      start: syncAutomatically ?? true,
-      onSynced: async (bytes) => {
-        await this.applyOperation(bytes)
-      },
+      start: syncAutomatically,
+      onSynced: head => this.applyOperation(head),
     })
     this.peers = this.sync.peers
   }
