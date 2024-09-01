@@ -1,4 +1,3 @@
-import { exists } from 'node:fs'
 import { mkdir } from 'node:fs/promises'
 import process from 'node:process'
 
@@ -22,7 +21,7 @@ import { createHelia } from 'helia'
 import { createLibp2p } from 'libp2p'
 import { omit } from 'remeda'
 
-import { ComposedStorage, LRUStorage, LevelStorage, RocksDBStorage } from './storage'
+import { ComposedStorage, LRUStorage, RocksDBStorage } from './storage'
 import { join } from './utils'
 
 import { OrbitDB } from './index'
@@ -41,7 +40,7 @@ const logger = createConsola({
   },
 })
 
-const directory = '.data'
+const directory = '.orbitdb'
 const address = 'new'
 
 const options: Libp2pOptions = {
@@ -89,7 +88,7 @@ async function main() {
   })
 
   const db = await orbit.open<'documents', Entry>('documents', address, {
-    entryStorage: await ComposedStorage.create({
+    entryStorage: ComposedStorage.create({
       storage1: LRUStorage.create<Uint8Array>({
         size: 1000,
       }),
@@ -97,7 +96,7 @@ async function main() {
         path: join(dbPath, 'entries'),
       }),
     }),
-    headsStorage: await ComposedStorage.create({
+    headsStorage: ComposedStorage.create({
       storage1: LRUStorage.create<Uint8Array>({
         size: 1000,
       }),
@@ -105,11 +104,11 @@ async function main() {
         path: join(dbPath, 'heads'),
       }),
     }),
-    indexStorage: await ComposedStorage.create({
+    indexStorage: ComposedStorage.create({
       storage1: LRUStorage.create<boolean>({
         size: 1000,
       }),
-      storage2: await LevelStorage.create<boolean>({
+      storage2: await RocksDBStorage.create<boolean>({
         path: join(dbPath, 'indexes'),
       }),
     }),

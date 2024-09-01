@@ -7,6 +7,7 @@ export { OrbitDB, OrbitDBAddress } from './orbitdb'
 
 export {
   Documents,
+  EdgeDB,
   Events,
   KeyValue,
   KeyValueIndexed,
@@ -31,5 +32,6 @@ export {
   LevelStorage,
   LRUStorage,
   MemoryStorage,
+  RocksDBStorage,
   ComposedStorage,
 } from './storage'

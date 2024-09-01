@@ -151,13 +151,13 @@ export class Database<
       syncAutomatically = true,
     } = options
 
-    if (!identity) {
-      throw new Error('Identity is required')
-    }
+    // if (!identity) {
+    //   throw new Error('Identity is required')
+    // }
 
-    if (!accessController) {
-      throw new Error('Access controller is required')
-    }
+    // if (!accessController) {
+    //   throw new Error('Access controller is required')
+    // }
 
     const path = join(directory || DATABASE_PATH, `./${address}/`)
 
@@ -186,7 +186,7 @@ export class Database<
         }),
       })
 
-    const log = new Log<DatabaseOperation<T>>(identity, {
+    const log = new Log<DatabaseOperation<T>>(identity!, {
       logId: address,
       accessController,
       entryStorage,
@@ -196,8 +196,8 @@ export class Database<
 
     return new Database(
       ipfs,
-      identity,
-      accessController,
+      identity!,
+      accessController!,
       log,
       syncAutomatically,
       name,

@@ -37,12 +37,12 @@
     "dist"
   ],
   "scripts": {
-    "build": "pkgroll",
+    "build": "pkgroll --minify",
     "start": "cross-env NODE_OPTIONS=\"--no-warnings --experimental-modules --experimental-import-meta-resolve\" yarn node dist/esm/index.mjs",
     "schema": "yarn typescript-json-schema --out schema.json --skipLibCheck src/index.ts Options",
     "typecheck": "yarn tsc --noEmit",
     "release": "yarn npm publish",
-    "clean": "yarn exec rm -rf dist",
+    "clean": "yarn exec rm -rf dist .data",
     "lint": "yarn eslint --config eslint.config.js",
     "dev": "yarn tsx --watch src",
     "client": "yarn tsx --watch src/client",
@@ -149,6 +149,7 @@
     "unstorage": "^1.10.2"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "^2.0.5",
     "pkgroll": "^2.4.2",
     "tsx": "^4.19.0",
     "vitest": "^2.0.5"

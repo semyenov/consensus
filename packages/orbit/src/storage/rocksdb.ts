@@ -25,6 +25,7 @@ export class RocksDBStorage<T = RocksDB.Bytes> implements StorageInstance<T> {
   ): Promise<RocksDBStorage<T>> {
     const path = options.path || join(STORAGE_LEVEL_PATH, 'rocksdb')
     const storage = new RocksDBStorage<T>(path)
+
     await new Promise<void>((resolve, reject) => {
       storage.db.open({ createIfMissing: true }, (err) => {
         if (err) {
@@ -41,7 +42,13 @@ export class RocksDBStorage<T = RocksDB.Bytes> implements StorageInstance<T> {
 
   async put(hash: string, data: T): Promise<void> {
     await new Promise<void>((resolve, reject) => {
-      this.db.put(hash, Buffer.from(data as any), { sync: true }, (err) => {
+      const value = typeof data === 'string'
+        ? data as string
+        : (data instanceof Uint8Array
+            ? Buffer.from(data)
+            : Buffer.from(JSON.stringify(data)))
+
+      this.db.put(hash, value, { sync: true }, (err) => {
         if (err) {
           reject(err)
         }
@@ -102,6 +109,7 @@ export class RocksDBStorage<T = RocksDB.Bytes> implements StorageInstance<T> {
 
       yield result
     }
+
     await new Promise<void>((resolve, reject) => {
       iterator.end((err) => {
         if (err) {
@@ -119,6 +127,7 @@ export class RocksDBStorage<T = RocksDB.Bytes> implements StorageInstance<T> {
     for await (const [key, value] of other.iterator()) {
       batch.put(key, JSON.stringify(value))
     }
+
     await new Promise<void>((resolve, reject) => {
       batch.write((err) => {
         if (err) {

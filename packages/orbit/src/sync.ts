@@ -1,6 +1,7 @@
 import {
   type EventHandler,
   type Message,
+  type PubSub,
   type SignedMessage,
   type StreamHandler,
   type SubscriptionChangeData,
@@ -17,6 +18,7 @@ import { join } from './utils'
 import type { EntryInstance } from './oplog/entry'
 import type { LogInstance } from './oplog/log'
 import type { HeliaInstance, PeerId } from './vendor'
+import type { GossipsubEvents } from '@chainsafe/libp2p-gossipsub'
 import type { Sink, Source } from 'it-stream-types'
 import type { Uint8ArrayList } from 'uint8arraylist'
 
@@ -48,6 +50,7 @@ export interface SyncInstance<T, E extends SyncEvents<T>> {
 export class Sync<T, E extends SyncEvents<T> = SyncEvents<T>>
 implements SyncInstance<T, E> {
   private ipfs: HeliaInstance
+  private pubsub: PubSub<GossipsubEvents>
   private log: LogInstance<T>
   private onSynced?: (bytes: Uint8Array) => Promise<void>
   private timeout: number
@@ -61,6 +64,7 @@ implements SyncInstance<T, E> {
 
   constructor(options: SyncOptions<T>) {
     this.ipfs = options.ipfs
+    this.pubsub = options.ipfs.libp2p.services.pubsub
     this.log = options.log
     this.onSynced = options.onSynced
     this.timeout = options.timeout || SYNC_TIMEOUT
@@ -72,8 +76,12 @@ implements SyncInstance<T, E> {
     this.headsSyncAddress = join(SYNC_PROTOCOL, this.address)
 
     if (options.start !== false) {
-      this.start()
-        .catch(error => this.events.dispatchEvent(new ErrorEvent('error', { error })),
+      this
+        .start()
+        .catch(
+          error =>
+            this.events
+              .dispatchEvent(new CustomEvent('error', { detail: { error } })),
         )
     }
   }
@@ -123,8 +131,7 @@ implements SyncInstance<T, E> {
     }
     catch (error) {
       this.peers.delete(peerId)
-      console.error('error', error)
-      this.events.dispatchEvent(new ErrorEvent('error', { error }))
+      this.events.dispatchEvent(new CustomEvent('error', { detail: { error } }))
     }
   }
 
@@ -149,19 +156,21 @@ implements SyncInstance<T, E> {
           const timeoutController = new TimeoutController(this.timeout)
           const { signal } = timeoutController
           try {
-            this.peers.add(peerId)
-            const stream = await this.ipfs.libp2p.dialProtocol(
-              remotePeer,
-              this.headsSyncAddress,
-              { signal },
-            )
-            pipe(this.sendHeads(), stream, this.receiveHeads(peerId))
+            this.peers
+              .add(peerId)
+            const stream = await this.ipfs.libp2p
+              .dialProtocol(
+                remotePeer,
+                this.headsSyncAddress,
+                { signal },
+              )
+
+            await pipe(this.sendHeads(), stream, this.receiveHeads(peerId))
           }
           catch (error: any) {
-            console.error(error)
             this.peers.delete(peerId)
             if (error.code !== 'ERR_UNSUPPORTED_PROTOCOL') {
-              this.events.dispatchEvent(new ErrorEvent('error', { error }))
+              this.events.dispatchEvent(new CustomEvent('error', { detail: { error } }))
             }
           }
           finally {
@@ -177,6 +186,7 @@ implements SyncInstance<T, E> {
       }
 
       this.queue.add(task)
+      await this.queue.onIdle()
     }
 
   private handleUpdateMessage: EventHandler<CustomEvent<Message>> = async (
@@ -191,8 +201,7 @@ implements SyncInstance<T, E> {
         }
       }
       catch (error) {
-        console.error('error 123', error)
-        this.events.dispatchEvent(new ErrorEvent('error', { error }))
+        this.events.dispatchEvent(new CustomEvent('error', { detail: { error } }))
       }
     }
 
@@ -203,20 +212,24 @@ implements SyncInstance<T, E> {
 
   public async start(): Promise<void> {
     if (!this.started) {
-      await this.ipfs.libp2p.handle(
-        this.headsSyncAddress,
-        this.handleReceiveHeads,
-      )
-      this.ipfs.libp2p.services.pubsub.addEventListener(
-        'subscription-change',
-        this.handlePeerSubscribed,
-      )
-      this.ipfs.libp2p.services.pubsub.addEventListener(
-        'message',
-        this.handleUpdateMessage,
-      )
+      await this.ipfs.libp2p
+        .handle(
+          this.headsSyncAddress,
+          this.handleReceiveHeads,
+        )
+      this.pubsub
+        .addEventListener(
+          'subscription-change',
+          this.handlePeerSubscribed,
+        )
+      this.pubsub
+        .addEventListener(
+          'message',
+          this.handleUpdateMessage,
+        )
       await Promise.resolve(
-        this.ipfs.libp2p.services.pubsub.subscribe(this.address),
+        this.pubsub
+          .subscribe(this.address),
       )
 
       this.started = true
@@ -227,25 +240,33 @@ implements SyncInstance<T, E> {
     if (this.started) {
       this.started = false
       await this.queue.onIdle()
-      this.ipfs.libp2p.services.pubsub.removeEventListener(
-        'subscription-change',
-        this.handlePeerSubscribed,
-      )
-      this.ipfs.libp2p.services.pubsub.removeEventListener(
-        'message',
-        this.handleUpdateMessage,
-      )
-      await this.ipfs.libp2p.unhandle(this.headsSyncAddress)
+
+      this.pubsub
+        .removeEventListener(
+          'subscription-change',
+          this.handlePeerSubscribed,
+        )
+      this.pubsub
+        .removeEventListener(
+          'message',
+          this.handleUpdateMessage,
+        )
+
+      await this.ipfs.libp2p
+        .unhandle(this.headsSyncAddress)
       await Promise.resolve(
-        this.ipfs.libp2p.services.pubsub.unsubscribe(this.address),
+        this.pubsub
+          .unsubscribe(this.address),
       )
+
       this.peers.clear()
     }
   }
 
   public async add<D = T>(entry: EntryInstance<D>): Promise<void> {
-    if (this.started) {
-      await this.ipfs.libp2p.services.pubsub.publish(this.address, entry.bytes!)
+    if (this.started && entry.bytes) {
+      await this.pubsub
+        .publish(this.address, entry.bytes)
     }
   }
 }

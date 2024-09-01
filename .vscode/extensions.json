@@ -65,6 +65,7 @@
     "yatki.vscode-surround",
     "yoavbls.pretty-ts-errors",
     "Yseop.vscode-yseopml",
-    "zardoy.ts-essential-plugins"
+    "zardoy.ts-essential-plugins",
+    "vitest.explorer"
   ]
 }
