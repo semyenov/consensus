@@ -1,5 +1,4 @@
-# Nuxt dev/build outputs
-.data
+.orbitdb
 dist
 
 # Node dependencies

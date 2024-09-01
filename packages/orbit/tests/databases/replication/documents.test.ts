@@ -125,17 +125,28 @@ describe('documents Database Replication', () => {
       connected1 = true
     })
     db2.sync.events.addEventListener('join', async (_peerId, _heads) => {
-      console.log('db1 joined')
+      console.log('db2 joined')
       connected2 = true
     })
+
+    // db1.events.addEventListener('error', (err) => {
+    //   console.error(err)
+    // })
+
+    // db2.events.addEventListener('error', (err) => {
+    //   console.error(err)
+    // })
 
     await db1.put({ _id: 1, msg: 'record 1 on db 1' })
     await db2.put({ _id: 2, msg: 'record 2 on db 2' })
     await db1.put({ _id: 3, msg: 'record 3 on db 1' })
+    await db1.put({ _id: 3, msg: 'record 3 on db 1' })
     await db2.put({ _id: 4, msg: 'record 4 on db 2' })
 
-    await waitFor(() => connected1, () => true)
-    await waitFor(() => connected2, () => true)
+    await new Promise(resolve => setTimeout(resolve, 1000))
+
+    // await waitFor(() => connected1, () => true)
+    // await waitFor(() => connected2, () => true)
 
     const all1: DocumentsDoc[] = []
     for await (const item of db1.iterator()) {

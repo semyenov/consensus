@@ -1,5 +1,6 @@
 import {
   type EventHandler,
+  type Libp2p,
   type Message,
   type PubSub,
   type SignedMessage,
@@ -19,7 +20,7 @@ import type { EntryInstance } from './oplog/entry'
 import type { LogInstance } from './oplog/log'
 import type { HeliaInstance, PeerId } from './vendor'
 import type { GossipsubEvents } from '@chainsafe/libp2p-gossipsub'
-import type { Sink, Source } from 'it-stream-types'
+import type { Sink, Source, Transform } from 'it-stream-types'
 import type { Uint8ArrayList } from 'uint8arraylist'
 
 export interface SyncEvents<T> {
@@ -100,20 +101,27 @@ implements SyncInstance<T, E> {
     }
   }
 
-  private sendHeads(): () => Source<Uint8Array> {
-    return () => this.headsIterator()
+  private async *sendHeads(): AsyncGenerator<Uint8Array> {
+    const headsIterator = this.headsIterator()
+
+    return async function *() {
+      for await (const bytes of headsIterator) {
+        yield bytes
+      }
+    }
   }
 
   private receiveHeads(
     peerId: PeerId,
-  ): Sink<AsyncIterable<Uint8ArrayList>, void> {
-    return async (source) => {
+  ): Sink<AsyncIterable<Uint8ArrayList>> {
+    return async (source: AsyncIterable<Uint8ArrayList>) => {
       for await (const value of source) {
         const headBytes = value.subarray()
         if (headBytes && this.onSynced) {
           await this.onSynced(headBytes)
         }
       }
+
       if (this.started) {
         await this.onPeerJoined(peerId)
       }
@@ -127,7 +135,7 @@ implements SyncInstance<T, E> {
     const peerId = connection.remotePeer
     try {
       this.peers.add(peerId)
-      await pipe(stream, this.receiveHeads(peerId), this.sendHeads(), stream)
+      await pipe(stream, this.receiveHeads(peerId), () => this.sendHeads(), stream)
     }
     catch (error) {
       this.peers.delete(peerId)
@@ -141,6 +149,7 @@ implements SyncInstance<T, E> {
       const task = async () => {
         const { peerId: remotePeer, subscriptions } = event.detail
         const peerId = remotePeer
+
         const subscription = subscriptions.find(
           (e: any) => e.topic === this.address,
         )
@@ -165,7 +174,7 @@ implements SyncInstance<T, E> {
                 { signal },
               )
 
-            await pipe(this.sendHeads(), stream, this.receiveHeads(peerId))
+            await pipe(() => this.sendHeads(), stream, this.receiveHeads(peerId))
           }
           catch (error: any) {
             this.peers.delete(peerId)
@@ -192,7 +201,11 @@ implements SyncInstance<T, E> {
   private handleUpdateMessage: EventHandler<CustomEvent<Message>> = async (
     message,
   ) => {
-    const { topic, data, from } = message.detail as SignedMessage
+    const {
+      topic,
+      data,
+      from,
+    } = message.detail as SignedMessage
 
     const task = async () => {
       try {

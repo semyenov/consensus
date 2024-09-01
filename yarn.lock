@@ -6418,6 +6418,7 @@ __metadata:
     "@tanstack/vue-virtual": "npm:^3.10.6"
     "@types/add": "npm:^2.0.3"
     "@types/eslint": "npm:^9.6.1"
+    "@vitest/coverage-v8": "npm:^2.0.5"
     "@vitest/ui": "npm:^2.0.5"
     "@vueuse/core": "npm:^11.0.3"
     "@vueuse/nuxt": "npm:^11.0.3"

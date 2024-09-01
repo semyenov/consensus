@@ -232,16 +232,22 @@ describe('database - Replication', () => {
       let connected = false
 
       const onConnected = () => {
+        console.log('connected')
         connected = true
       }
 
-      await db1.addOperation({ op: 'PUT', key: 1, value: 'record 1 on db 1' })
+      await db1.addOperation({ op: 'PUT', key: String(1), value: 'record 1 on db 1' })
 
       db2 = await Database.create({
         ipfs: ipfs2,
         identity: testIdentity2,
         address: databaseId,
-        accessController,
+        accessController: {
+          type: 'test',
+          write: [] as any,
+          canAppend: async () => true,
+        },
+        meta: {},
         directory: './.out/orbitdb2',
       })
 
