@@ -104,14 +104,14 @@ describe('keyValue Database Replication', () => {
       identity: testIdentity1,
       address: databaseId,
       accessController,
-      directory: './.out/orbitdb1',
+      directory: './.data/orbitdb/orbitdb1',
     })
     kv2 = await KeyValue.create({
       ipfs: ipfs2,
       identity: testIdentity2,
       address: databaseId,
       accessController,
-      directory: './.out/orbitdb2',
+      directory: './.data/orbitdb/orbitdb2',
     })
 
     kv2.sync.events.addEventListener('join', onConnected)
@@ -194,14 +194,14 @@ describe('keyValue Database Replication', () => {
       identity: testIdentity1,
       address: databaseId,
       accessController,
-      directory: './.out/orbitdb1',
+      directory: './.data/orbitdb/orbitdb1',
     })
     kv2 = await KeyValue.create({
       ipfs: ipfs2,
       identity: testIdentity2,
       address: databaseId,
       accessController,
-      directory: './.out/orbitdb2',
+      directory: './.data/orbitdb/orbitdb2',
     })
 
     kv2.events.addEventListener('join', onConnected)
@@ -229,14 +229,14 @@ describe('keyValue Database Replication', () => {
       identity: testIdentity1,
       address: databaseId,
       accessController,
-      directory: './.out/orbitdb1',
+      directory: './.data/orbitdb/orbitdb1',
     })
     kv2 = await KeyValue.create({
       ipfs: ipfs2,
       identity: testIdentity2,
       address: databaseId,
       accessController,
-      directory: './.out/orbitdb2',
+      directory: './.data/orbitdb/orbitdb2',
     })
 
     const value0 = await kv2.get('init')

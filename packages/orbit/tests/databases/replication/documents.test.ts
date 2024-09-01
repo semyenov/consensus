@@ -67,7 +67,7 @@ describe('documents Database Replication', () => {
       address: databaseId,
       accessController,
       name: 'testdb1',
-      directory: './orbitdb1',
+      directory: './.data/orbitdb/documents-1',
     })
     db2 = await Documents.create({
       ipfs: ipfs2,
@@ -75,7 +75,7 @@ describe('documents Database Replication', () => {
       address: databaseId,
       name: 'testdb2',
       accessController,
-      directory: './orbitdb2',
+      directory: './.data/orbitdb/documents-2',
     })
   })
   afterEach(async () => {
@@ -103,10 +103,10 @@ describe('documents Database Replication', () => {
     }
 
     await rimraf(keysPath)
-    await rimraf('./orbitdb1')
-    await rimraf('./orbitdb2')
-    await rimraf('./ipfs1')
-    await rimraf('./ipfs2')
+    await rimraf('./.data/orbitdb/documents-1')
+    await rimraf('./.data/orbitdb/documents-2')
+    await rimraf('./.data/ipfs-1')
+    await rimraf('./.data/ipfs-2')
   })
 
   it('basic Verification', async () => {
@@ -140,13 +140,12 @@ describe('documents Database Replication', () => {
     await db1.put({ _id: 1, msg: 'record 1 on db 1' })
     await db2.put({ _id: 2, msg: 'record 2 on db 2' })
     await db1.put({ _id: 3, msg: 'record 3 on db 1' })
-    await db1.put({ _id: 3, msg: 'record 3 on db 1' })
     await db2.put({ _id: 4, msg: 'record 4 on db 2' })
 
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    // await new Promise(resolve => setTimeout(resolve, 1000))
 
-    // await waitFor(() => connected1, () => true)
-    // await waitFor(() => connected2, () => true)
+    await waitFor(() => connected1, () => true)
+    await waitFor(() => connected2, () => true)
 
     const all1: DocumentsDoc[] = []
     for await (const item of db1.iterator()) {
@@ -157,6 +156,7 @@ describe('documents Database Replication', () => {
     for await (const item of db2.iterator()) {
       all2.unshift(item)
     }
+
     console.log('all1:', all1)
     console.log('all2:', all2)
     deepStrictEqual(all1, all2)

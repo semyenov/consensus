@@ -195,7 +195,6 @@ implements SyncInstance<T, E> {
       }
 
       this.queue.add(task)
-      await this.queue.onIdle()
     }
 
   private handleUpdateMessage: EventHandler<CustomEvent<Message>> = async (

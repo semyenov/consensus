@@ -99,14 +99,14 @@ describe('keyValueIndexed Database Replication', () => {
       identity: testIdentity1,
       address: databaseId,
       accessController,
-      directory: './.out/orbitdb1',
+      directory: './.data/orbitdb/orbitdb1',
     })
     kv2 = await KeyValueIndexed.create({
       ipfs: ipfs2,
       identity: testIdentity2,
       address: databaseId,
       accessController,
-      directory: './.out/orbitdb2',
+      directory: './.data/orbitdb/orbitdb2',
     })
 
     kv2.sync.events.addEventListener('join', (event: CustomEvent) => {
@@ -416,7 +416,7 @@ describe('keyValueIndexed Database Replication', () => {
       identity: testIdentity1,
       address: databaseId,
       accessController,
-      directory: './.out/orbitdb11',
+      directory: './.data/orbitdb/kv-replicate-1',
     })
 
     kv1.events.addEventListener('error', (err) => {
@@ -435,7 +435,7 @@ describe('keyValueIndexed Database Replication', () => {
       identity: testIdentity2,
       address: databaseId,
       accessController,
-      directory: './orbitdb22',
+      directory: './.data/orbitdb/kv-replicate-2',
     })
 
     kv2.events.addEventListener('update', (_entry) => {

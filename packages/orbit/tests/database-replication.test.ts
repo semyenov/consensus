@@ -100,7 +100,7 @@ describe('database - Replication', () => {
         address: databaseId,
         name: 'test',
         accessController,
-        directory: './.out/orbitdb1',
+        directory: './.data/orbitdb/orbitdb1',
       })
     })
 
@@ -128,7 +128,7 @@ describe('database - Replication', () => {
         address: databaseId,
         name: 'test2',
         accessController,
-        directory: './.out/orbitdb2',
+        directory: './.data/orbitdb/orbitdb2',
       })
 
       db2.sync.events.addEventListener('join', onConnected)
@@ -185,7 +185,7 @@ describe('database - Replication', () => {
         identity: testIdentity2,
         address: databaseId,
         accessController,
-        directory: './.out/orbitdb2',
+        directory: './.data/orbitdb/orbitdb2',
       })
 
       db2.sync.events.addEventListener('join', onConnected)
@@ -248,7 +248,7 @@ describe('database - Replication', () => {
           canAppend: async () => true,
         },
         meta: {},
-        directory: './.out/orbitdb2',
+        directory: './.data/orbitdb/orbitdb2',
       })
 
       db2.sync.events.addEventListener('join', onConnected)
@@ -288,7 +288,7 @@ describe('database - Replication', () => {
         identity: testIdentity1,
         address: databaseId,
         accessController,
-        directory: './.out/orbitdb1',
+        directory: './.data/orbitdb/orbitdb1',
         entryStorage: storage1,
       })
       db2 = await Database.create({
@@ -296,7 +296,7 @@ describe('database - Replication', () => {
         identity: testIdentity2,
         address: databaseId,
         accessController,
-        directory: './.out/orbitdb2',
+        directory: './.data/orbitdb/orbitdb2',
         entryStorage: storage2,
       })
 
@@ -349,14 +349,14 @@ describe('database - Replication', () => {
         identity: testIdentity1,
         address: databaseId,
         accessController,
-        directory: './.out/orbitdb1',
+        directory: './.data/orbitdb/orbitdb1',
       })
       db2 = await Database.create({
         ipfs: ipfs2,
         identity: testIdentity2,
         address: databaseId,
         accessController,
-        directory: './.out/orbitdb2',
+        directory: './.data/orbitdb/orbitdb2',
       })
     })
 
