@@ -53,7 +53,7 @@ export interface OrbitDBInstance {
   identity: IdentityInstance
   peerId: PeerId
 
-  open: <T, D extends keyof DatabaseTypeMap>(
+  open: <D extends keyof DatabaseTypeMap, T = unknown>(
     type: D,
     address: string,
     options: OrbitDBOpenOptions<T, D>,

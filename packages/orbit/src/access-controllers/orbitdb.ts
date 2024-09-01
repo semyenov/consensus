@@ -73,7 +73,7 @@ implements OrbitDBAccessControllerInstance<DatabaseEvents<string[]>> {
     const { orbitdb, identities, name, write } = options
     const address = options.address || name || (await createId(64))
 
-    const database = await orbitdb.open<string[], 'keyvalue'>(
+    const database = await orbitdb.open<'keyvalue', string[]>(
       'keyvalue',
       address,
       {
