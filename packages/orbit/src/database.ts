@@ -28,6 +28,7 @@ import type { LogInstance } from './oplog/log'
 import type { HeliaInstance, PeerId } from './vendor'
 import type { PeerSet } from '@libp2p/peer-collections'
 
+// Type Definitions
 export type DatabaseOptionsOnUpdate<T> = (
   log: LogInstance<DatabaseOperation<T>>,
   entry: EntryInstance<T> | EntryInstance<DatabaseOperation<T>>,
@@ -78,6 +79,7 @@ export interface DatabaseInstance<
   drop: () => Promise<void>
 }
 
+// Database Class
 export class Database<
   T = unknown,
   E extends DatabaseEvents<T> = DatabaseEvents<T> & SyncEvents<T>,
@@ -103,13 +105,10 @@ export class Database<
   private onUpdate?: DatabaseOptionsOnUpdate<unknown>
 
   private constructor(
-    ipfs: HeliaInstance,
-
-    identity: IdentityInstance,
-    accessController: AccessControllerInstance,
     log: LogInstance<DatabaseOperation<T>>,
+    ipfs: HeliaInstance,
+    identity: IdentityInstance,
     syncAutomatically: boolean,
-
     name?: string,
     address?: string,
     meta?: any,
@@ -119,7 +118,7 @@ export class Database<
     this.name = name
     this.address = address
     this.identity = identity
-    this.accessController = accessController
+    this.accessController = log.accessController
     this.onUpdate = onUpdate
     this.events = new TypedEventEmitter<DatabaseEvents<T>>()
     this.queue = new PQueue({ concurrency: 1 })
@@ -149,42 +148,32 @@ export class Database<
       syncAutomatically = true,
     } = options
 
-    // if (!identity) {
-    //   throw new Error('Identity is required')
-    // }
-
-    // if (!accessController) {
-    //   throw new Error('Access controller is required')
-    // }
+    if (!identity) {
+      throw new Error('Identity is required')
+    }
 
     const path = join(directory || DATABASE_PATH, `./${address}/`)
 
-    const entryStorage
-      = options.entryStorage
-      || ComposedStorage.create({
-        storage1: LRUStorage.create({ size: DATABASE_CACHE_SIZE }),
-        storage2: IPFSBlockStorage.create({ ipfs, pin: true }),
-      })
+    const entryStorage = options.entryStorage || ComposedStorage.create({
+      storage1: LRUStorage.create({ size: DATABASE_CACHE_SIZE }),
+      storage2: IPFSBlockStorage.create({ ipfs, pin: true }),
+    })
 
-    const headsStorage
-      = options.headsStorage
-      || ComposedStorage.create({
-        storage1: LRUStorage.create({ size: DATABASE_CACHE_SIZE }),
-        storage2: await LevelStorage.create({
-          path: join(path, '/log/_heads/'),
-        }),
-      })
+    const headsStorage = options.headsStorage || ComposedStorage.create({
+      storage1: LRUStorage.create({ size: DATABASE_CACHE_SIZE }),
+      storage2: await LevelStorage.create({
+        path: join(path, '/log/_heads/'),
+      }),
+    })
 
-    const indexStorage
-      = options.indexStorage
-      || ComposedStorage.create({
-        storage1: LRUStorage.create({ size: DATABASE_CACHE_SIZE }),
-        storage2: await LevelStorage.create({
-          path: join(path, '/log/_index/'),
-        }),
-      })
+    const indexStorage = options.indexStorage || ComposedStorage.create({
+      storage1: LRUStorage.create({ size: DATABASE_CACHE_SIZE }),
+      storage2: await LevelStorage.create({
+        path: join(path, '/log/_index/'),
+      }),
+    })
 
-    const log = new Log<DatabaseOperation<T>>(identity!, {
+    const log = new Log<DatabaseOperation<T>>(identity, {
       logId: address,
       accessController,
       entryStorage,
@@ -193,10 +182,9 @@ export class Database<
     })
 
     return new Database(
-      ipfs,
-      identity!,
-      accessController!,
       log,
+      ipfs,
+      identity,
       syncAutomatically,
       name,
       address,

@@ -40,9 +40,9 @@ export interface LogOptions<T> {
 
 export interface LogInstance<T> {
   id: string
-  access?: AccessControllerInstance
   identity: IdentityInstance
   storage: StorageInstance<Uint8Array>
+  accessController: AccessControllerInstance
   clock: () => Promise<ClockInstance>
   heads: <D = T>() => Promise<EntryInstance<D>[]>
   values: <D = T>() => Promise<EntryInstance<D>[]>
@@ -67,7 +67,7 @@ export interface LogInstance<T> {
 
 export class Log<T> implements LogInstance<T> {
   public id: string
-  public access?: AccessControllerInstance
+  public accessController: AccessControllerInstance
   public identity: IdentityInstance
   public storage: StorageInstance<Uint8Array>
 
@@ -88,7 +88,7 @@ export class Log<T> implements LogInstance<T> {
 
     this.id = options.logId || Log.randomId()
     this.identity = identity
-    this.access = options.accessController || Log.defaultAccessController()
+    this.accessController = options.accessController || Log.defaultAccessController()
     this.storage = options.entryStorage || new MemoryStorage()
     this.indexStorage = options.indexStorage || new MemoryStorage()
     this.headsStorage = options.headsStorage || new MemoryStorage()
@@ -195,7 +195,7 @@ export class Log<T> implements LogInstance<T> {
         refs_,
       )
 
-      const canAppend = await this.access!.canAppend(entry)
+      const canAppend = await this.accessController!.canAppend(entry)
       if (!canAppend) {
         throw new Error(
           `Could not append entry: Key "${this.identity.hash}" is not allowed to write to the log`,
@@ -426,7 +426,7 @@ export class Log<T> implements LogInstance<T> {
         `Entry's id (${entry.id}) doesn't match the log's id (${this.id}).`,
       )
     }
-    const canAppend = await this.access!.canAppend(entry)
+    const canAppend = await this.accessController!.canAppend(entry)
     if (!canAppend) {
       throw new Error(
         `Could not append entry: Key "${entry.identity}" is not allowed to write to the log`,
