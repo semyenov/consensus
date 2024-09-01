@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@formkit/auto-animate": "^0.8.2",
+    "@ksassnowski/vueclid": "^1.2.0",
     "@nuxt/image": "^1.8.0",
     "@nuxtjs/mdc": "^0.8.3",
     "@radix-icons/vue": "^1.0.0",

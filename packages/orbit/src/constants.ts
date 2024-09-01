@@ -1,7 +1,7 @@
 export const DATABASE_PATH = './.orbitdb/databases'
 export const KEYSTORE_PATH = './.orbitdb/keystore'
 
-export const SYNC_PROTOCOL = '/.orbitdb/heads'
+export const SYNC_PROTOCOL = '/orbitdb/heads'
 export const SYNC_TIMEOUT = 30000
 
 export const ACCESS_CONTROLLER_IPFS_TYPE = 'ipfs'

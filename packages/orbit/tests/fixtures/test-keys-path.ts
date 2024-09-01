@@ -1,1 +1,3 @@
-export default './packages/orbit/tests/fixtures/newtestkeys2'
+import { resolve } from 'pathe'
+
+export default resolve('./tests/fixtures/newtestkeys2')

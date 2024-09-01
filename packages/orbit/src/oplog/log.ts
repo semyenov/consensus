@@ -1,6 +1,4 @@
-/* eslint-disable unused-imports/no-unused-vars */
-// eslint-disable-next-line ts/ban-ts-comment
-// @ts-ignore
+// @ts-expect-error: Missing types
 import LRU from 'lru'
 import PQueue from 'p-queue'
 
@@ -49,7 +47,10 @@ export interface LogInstance<T> {
   all: <D = T>() => Promise<EntryInstance<D>[]>
   get: <D = T>(hash: string) => Promise<EntryInstance<D> | null>
   has: (hash: string) => Promise<boolean>
-  append: <D = T>(payload: D, options?: LogAppendOptions) => Promise<EntryInstance<D>>
+  append: <D = T>(
+    payload: D,
+    options?: LogAppendOptions,
+  ) => Promise<EntryInstance<D>>
   join: (log: LogInstance<T>) => Promise<void>
   joinEntry: (entry: EntryInstance<T>, dbname?: string) => Promise<boolean>
   traverse: (
@@ -60,7 +61,9 @@ export interface LogInstance<T> {
     ) => Promise<boolean>,
     useRefs?: boolean,
   ) => AsyncGenerator<EntryInstance<T>>
-  iterator: <D = T>(options?: LogIteratorOptions) => AsyncIterable<EntryInstance<D>>
+  iterator: <D = T>(
+    options?: LogIteratorOptions,
+  ) => AsyncIterable<EntryInstance<D>>
   clear: () => Promise<void>
   close: () => Promise<void>
 }
@@ -88,7 +91,8 @@ export class Log<T> implements LogInstance<T> {
 
     this.id = options.logId || Log.randomId()
     this.identity = identity
-    this.accessController = options.accessController || Log.defaultAccessController()
+    this.accessController
+      = options.accessController || Log.defaultAccessController()
     this.storage = options.entryStorage || new MemoryStorage()
     this.indexStorage = options.indexStorage || new MemoryStorage()
     this.headsStorage = options.headsStorage || new MemoryStorage()
@@ -273,7 +277,8 @@ export class Log<T> implements LogInstance<T> {
     useRefs = true,
   ): AsyncGenerator<EntryInstance<D>> {
     let toFetch: string[] = []
-    const rootEntries_ = rootEntries || (await this.heads()) as EntryInstance<D>[]
+    const rootEntries_
+      = rootEntries || ((await this.heads()) as EntryInstance<D>[])
     let stack = rootEntries_.sort(this.sortFn)
     const fetched: Record<string, boolean> = {}
     const traversed: Record<string, boolean> = {}
@@ -296,19 +301,26 @@ export class Log<T> implements LogInstance<T> {
           ...(useRefs ? entry.refs : []),
         ].filter(notIndexed)
         const nexts = (
-          await Promise.all(toFetch.map(async (hash) => {
-            if (!traversed[hash] && !fetched[hash]) {
-              fetched[hash] = true
+          await Promise.all(
+            toFetch.map(async (hash) => {
+              if (!traversed[hash] && !fetched[hash]) {
+                fetched[hash] = true
 
-              return await this.get<D>(hash)
-            }
-          }))
+                return await this.get<D>(hash)
+              }
+            }),
+          )
         ).filter((e): e is EntryInstance<D> => e !== null && e !== undefined)
         toFetch = nexts
           .reduce(
-            (acc, cur) => Array.from(
-              new Set([...acc, ...cur.next!, ...(useRefs ? cur.refs! : []).values()]),
-            ),
+            (acc, cur) =>
+              Array.from(
+                new Set([
+                  ...acc,
+                  ...cur.next!,
+                  ...(useRefs ? cur.refs! : []).values(),
+                ]),
+              ),
             [] as string[],
           )
           .filter(notIndexed)
@@ -485,7 +497,8 @@ export class Log<T> implements LogInstance<T> {
     amount: number,
   ): Promise<string[]> {
     let refs: string[] = []
-    const shouldStopTraversal = async () => refs.length >= amount && amount !== -1
+    const shouldStopTraversal = async () =>
+      refs.length >= amount && amount !== -1
     for await (const { hash } of this.traverse(
       heads,
       shouldStopTraversal,
@@ -500,9 +513,5 @@ export class Log<T> implements LogInstance<T> {
     refs = refs.slice(heads.length + 1, amount)
 
     return refs
-  }
-
-  private async fetchEntry<D = T>(hash: string): Promise<EntryInstance<D> | null> {
-    return await this.get<D>(hash)
   }
 }

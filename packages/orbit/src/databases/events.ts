@@ -31,7 +31,7 @@ export interface EventsInstance<T = unknown> extends DatabaseInstance<T> {
   add: (value: T) => Promise<string>
   all: () => Promise<Omit<EventsDoc<T>, 'key'>[]>
   get: (hash: string) => Promise<T | null>
-  iterator: (options: EventsIteratorOptions) => AsyncIterable<EventsDoc<T>>
+  iterator: (options?: EventsIteratorOptions) => AsyncIterable<EventsDoc<T>>
 }
 
 export class EventsDatabase<T = unknown> implements EventsInstance<T> {

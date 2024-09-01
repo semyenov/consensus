@@ -66,11 +66,15 @@ export default defineNitroPlugin((app) => {
         filter: 'all',
       })
 
+      const { result } = await runTask('edgedb:generate')
+      // eslint-disable-next-line no-console
+      console.log(result)
+
       await Promise.all(
         issuesData.map(async (issue) => {
           await e
             .insert(e.issue.Issue, {
-              name: `#${issue.id} ${issue.title}`,
+              name: `${issue.title}`,
               description: issue.body_text ?? '',
               content: issue.body_html ?? '',
               priority: e.issue.IssuePriority.Low,

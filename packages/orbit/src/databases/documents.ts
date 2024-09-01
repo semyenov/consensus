@@ -159,15 +159,26 @@ export class DocumentsDatabase<T = unknown> implements DocumentsInstance<T> {
   > {
     const keys: Record<string, boolean> = {}
     let count = 0
-    const files = []
+    // const files = [] // TODO: remove
     for await (const entry of this.database.log.iterator()) {
-      files.push(entry)
-      const { op, key, value } = entry.payload
+      const {
+        op,
+        key,
+        value,
+      } = entry.payload
+
+      // files.push(entry) // TODO: wtf?
+
       if (op === 'PUT' && !keys[key!]) {
         keys[key!] = true
         count++
         const hash = entry.hash!
-        yield { hash, key: key!, value: value || null }
+
+        yield {
+          hash,
+          key: key!,
+          value: value || null,
+        }
       }
       else if (op === 'DEL' && !keys[key!]) {
         keys[key!] = true

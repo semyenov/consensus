@@ -25,7 +25,8 @@ import type {
   KeyStoreInstance,
 } from '@orbitdb/core'
 
-const keysPath = './testkeys'
+const keysPath = './.orbitdb/keystore'
+
 describe('events Database', () => {
   let ipfs: IPFS
   let keystore: KeyStoreInstance
@@ -70,8 +71,7 @@ describe('events Database', () => {
     }
 
     await rimraf(keysPath)
-    await rimraf('./orbitdb')
-    await rimraf('./ipfs1')
+    await rimraf('./.orbitdb')
   })
 
   it('creates an event store', async () => {

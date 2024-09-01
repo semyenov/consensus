@@ -122,9 +122,21 @@ export default defineNuxtConfig({
 
   content: {
     locales: ['ru', 'en'],
-    sources: [join(rootDir, 'content')],
+    sources: {
+      content: {
+        driver: 'fs',
+        prefix: '/content',
+        base: join(rootDir, 'content'),
+      },
+    },
     navigation: {
-      fields: ['title', 'description', 'image', 'tags', 'slug'],
+      fields: [
+        'title',
+        'description',
+        'image',
+        'tags',
+        'slug',
+      ],
     },
     experimental: {
       clientDB: true,

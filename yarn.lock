@@ -1811,6 +1811,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ksassnowski/vueclid@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "@ksassnowski/vueclid@npm:1.2.0"
+  checksum: 10c0/ec165f9df79303245040cd72264782be33f53e6ff650be21b07505288127dbc1d5d8a8050742a10bdf333914064ea403c0b5e09c5b5481c8e1ee76f58b76d1b3
+  languageName: node
+  linkType: hard
+
 "@kwsites/file-exists@npm:^1.1.1":
   version: 1.1.1
   resolution: "@kwsites/file-exists@npm:1.1.1"
@@ -6406,6 +6413,7 @@ __metadata:
     "@consensus/eslint-config": "workspace:*"
     "@edgedb/generate": "npm:^0.5.5"
     "@formkit/auto-animate": "npm:^0.8.2"
+    "@ksassnowski/vueclid": "npm:^1.2.0"
     "@nuxt/content": "npm:^2.13.2"
     "@nuxt/fonts": "npm:^0.7.2"
     "@nuxt/image": "npm:^1.8.0"
