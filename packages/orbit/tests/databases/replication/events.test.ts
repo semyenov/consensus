@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import { deepStrictEqual } from 'node:assert'
+import { basename, dirname, join } from 'node:path'
 
 import { copy } from 'fs-extra'
 import { rimraf } from 'rimraf'
@@ -15,25 +16,31 @@ import connectPeers from '../../utils/connect-nodes'
 import createHelia from '../../utils/create-helia'
 import waitFor from '../../utils/wait-for'
 
+import type { AccessControllerInstance } from '../../../src/access-controllers'
 import type { EventsInstance } from '../../../src/databases/events'
 import type { IdentitiesInstance, IdentityInstance } from '../../../src/identities'
 import type { KeyStoreInstance } from '../../../src/key-store'
 import type { EntryInstance } from '../../../src/oplog'
 import type { HeliaInstance } from '../../../src/vendor'
 
-const keysPath = './.orbitdb/keystore'
+const testsPath = join(
+  dirname(__filename),
+  '.orbitdb/tests',
+  basename(__filename, 'test.ts'),
+)
 
 describe('events Database Replication', () => {
   let ipfs1: HeliaInstance, ipfs2: HeliaInstance
   let keystore: KeyStoreInstance
-  let identities: IdentitiesInstance
-  let identities2: IdentitiesInstance
+  let identities: IdentitiesInstance, identities2: IdentitiesInstance
   let testIdentity1: IdentityInstance, testIdentity2: IdentityInstance
   let db1: EventsInstance, db2: EventsInstance
 
   const databaseId = 'events-AAA'
 
-  const accessController = {
+  const accessController: AccessControllerInstance = {
+    type: 'basic',
+    write: ['*'],
     canAppend: async (entry: EntryInstance) => {
       const identity = await identities.getIdentity(entry.identity!)
       if (!identity) {
@@ -56,11 +63,14 @@ describe('events Database Replication', () => {
   ]
 
   beforeAll(async () => {
-    [ipfs1, ipfs2] = await Promise.all([createHelia(), createHelia()])
+    [ipfs1, ipfs2] = await Promise.all([
+      createHelia({ directory: join(testsPath, '1', 'ipfs') }),
+      createHelia({ directory: join(testsPath, '2', 'ipfs') }),
+    ])
     await connectPeers(ipfs1, ipfs2)
 
-    await copy(testKeysPath, keysPath)
-    keystore = await KeyStore.create({ path: keysPath })
+    await copy(testKeysPath, testsPath)
+    keystore = await KeyStore.create({ path: join(testsPath, 'keystore') })
     identities = await Identities.create({ keystore, ipfs: ipfs1 })
     identities2 = await Identities.create({ keystore, ipfs: ipfs2 })
     testIdentity1 = await identities.createIdentity({ id: 'userA' })
@@ -92,11 +102,7 @@ describe('events Database Replication', () => {
       await keystore.close()
     }
 
-    await rimraf(keysPath)
-    await rimraf('./.orbitdb/orbitdb1')
-    await rimraf('./.orbitdb/orbitdb2')
-    await rimraf('./.ipfs1')
-    await rimraf('./.ipfs2')
+    await rimraf(testsPath)
   })
 
   it('replicates a database', async () => {
@@ -135,6 +141,7 @@ describe('events Database Replication', () => {
     await db1.add(expected[4])
     await db1.add(expected[5])
     await db1.add(expected[6])
+
     expectedEntryHash = await db1.add(expected[7])
 
     await waitFor(() => replicated, () => true)
@@ -158,14 +165,14 @@ describe('events Database Replication', () => {
       identity: testIdentity1,
       address: databaseId,
       accessController,
-      directory: './.orbitdb/orbitdb1',
+      directory: join(testsPath, '1', 'orbitdb'),
     })
     db2 = await Events.create({
       ipfs: ipfs2,
       identity: testIdentity2,
       address: databaseId,
       accessController,
-      directory: './.orbitdb/orbitdb2',
+      directory: join(testsPath, '2', 'orbitdb'),
     })
 
     db2.sync.events.addEventListener('join', (event: CustomEvent) => {
@@ -207,7 +214,7 @@ describe('events Database Replication', () => {
       identity: testIdentity2,
       address: databaseId,
       accessController,
-      directory: './.orbitdb/orbitdb2',
+      directory: join(testsPath, '2', 'orbitdb'),
     })
 
     const all2: { key?: string, value: any }[] = []

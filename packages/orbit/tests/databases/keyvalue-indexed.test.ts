@@ -1,6 +1,6 @@
 import { deepStrictEqual, notStrictEqual, strictEqual } from 'node:assert'
 import fs from 'node:fs'
-import path from 'node:path'
+import path, { basename, dirname, join } from 'node:path'
 
 import { copy } from 'fs-extra'
 import { rimraf } from 'rimraf'
@@ -21,7 +21,12 @@ import type { KeyValueIndexedDatabase } from '../../src/databases/keyvalue-index
 import type { IdentityInstance } from '../../src/identities/identity'
 import type { HeliaInstance } from '../../src/vendor'
 
-const keysPath = './testkeys'
+const testsPath = join(
+  dirname(__filename),
+  '.orbitdb/tests',
+  basename(__filename, 'test.ts'),
+)
+
 describe('keyValueIndexed Database', () => {
   let ipfs: HeliaInstance
   let keystore: KeyStore
@@ -33,15 +38,16 @@ describe('keyValueIndexed Database', () => {
   const databaseId = 'keyvalue-AAA'
 
   beforeAll(async () => {
-    ipfs = await createHelia()
+    ipfs = await createHelia({ directory: join(testsPath, 'ipfs') })
+
     accessController = {
       type: 'basic',
       write: ['*'],
       canAppend: async () => true,
     }
 
-    await copy(testKeysPath, keysPath)
-    keystore = await KeyStore.create({ path: keysPath })
+    await copy(testKeysPath, join(testsPath, 'keystore'))
+    keystore = await KeyStore.create({ path: join(testsPath, 'keystore') })
     identities = await Identities.create({ keystore, ipfs })
     testIdentity1 = await identities.createIdentity({ id: 'userA' })
   })
@@ -59,9 +65,7 @@ describe('keyValueIndexed Database', () => {
       await keystore.close()
     }
 
-    await rimraf(keysPath)
-    await rimraf('./.orbitdb')
-    await rimraf('./ipfs1')
+    await rimraf(testsPath)
   })
 
   describe('creating a KeyValueIndexed database', () => {
@@ -71,6 +75,7 @@ describe('keyValueIndexed Database', () => {
         identity: testIdentity1,
         address: databaseId,
         accessController,
+        directory: join(testsPath, 'orbitdb'),
       })
     })
 
@@ -87,7 +92,7 @@ describe('keyValueIndexed Database', () => {
     })
 
     it('creates a directory for the persisted index', async () => {
-      const expectedPath = path.join('./.orbitdb', `./${db.address}`, '/_index')
+      const expectedPath = join(testsPath, '.orbitdb', databaseId, '/_index')
       const directoryExists = fs.existsSync(expectedPath)
       strictEqual(directoryExists, true)
     })
@@ -109,6 +114,7 @@ describe('keyValueIndexed Database', () => {
         identity: testIdentity1,
         address: databaseId,
         accessController,
+        directory: join(testsPath, 'orbitdb'),
       })
     })
 
@@ -349,6 +355,7 @@ describe('keyValueIndexed Database', () => {
         identity: testIdentity1,
         address: databaseId,
         accessController,
+        directory: join(testsPath, 'orbitdb'),
       })
 
       await db.put('key', 'value')

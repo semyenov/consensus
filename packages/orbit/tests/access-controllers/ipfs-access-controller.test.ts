@@ -1,4 +1,5 @@
 import { deepStrictEqual, notStrictEqual, strictEqual } from 'node:assert'
+import { basename, dirname, join } from 'node:path'
 
 import { rimraf } from 'rimraf'
 import { afterAll, beforeAll, describe, it } from 'vitest'
@@ -17,10 +18,13 @@ import type { IdentitiesInstance, IdentityInstance } from '../../src/identities'
 import type { KeyStoreInstance } from '../../src/key-store'
 import type { HeliaInstance } from '../../src/vendor'
 
-describe('iPFSAccessController', () => {
-  const dbPath1 = './.orbitdb/tests/ipfs-access-controller/1'
-  const dbPath2 = './.orbitdb/tests/ipfs-access-controller/2'
+const testsPath = join(
+  dirname(__filename),
+  '.orbitdb/tests',
+  basename(__filename, 'test.ts'),
+)
 
+describe('iPFSAccessController', () => {
   let ipfs1: HeliaInstance, ipfs2: HeliaInstance
   let keystore1: KeyStoreInstance, keystore2: KeyStoreInstance
   let identities1: IdentitiesInstance, identities2: IdentitiesInstance
@@ -28,11 +32,15 @@ describe('iPFSAccessController', () => {
   let orbitdb1: OrbitDBInstance, orbitdb2: OrbitDBInstance
 
   beforeAll(async () => {
-    [ipfs1, ipfs2] = await Promise.all([createHelia(), createHelia()])
+    [ipfs1, ipfs2] = await Promise.all([
+      createHelia({ directory: `${testsPath}/1/ipfs` }),
+      createHelia({ directory: `${testsPath}/2/ipfs` }),
+    ])
+
     await connectPeers(ipfs1, ipfs2)
 
-    keystore1 = await KeyStore.create({ path: `${dbPath1}/keys` })
-    keystore2 = await KeyStore.create({ path: `${dbPath2}/keys` })
+    keystore1 = await KeyStore.create({ path: `${testsPath}/1/keys` })
+    keystore2 = await KeyStore.create({ path: `${testsPath}/2/keys` })
 
     identities1 = await Identities.create({ keystore: keystore1, ipfs: ipfs1 })
     identities2 = await Identities.create({ keystore: keystore2, ipfs: ipfs2 })
@@ -61,9 +69,7 @@ describe('iPFSAccessController', () => {
       await keystore2.close()
     }
 
-    await rimraf('./orbitdb')
-    await rimraf('./ipfs1')
-    await rimraf('./ipfs2')
+    await rimraf(testsPath)
   })
 
   let accessController: AccessControllerInstance

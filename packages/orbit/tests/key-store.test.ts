@@ -1,4 +1,5 @@
 import { deepEqual, strictEqual } from 'node:assert'
+import path, { basename, dirname, join } from 'node:path'
 
 import * as crypto from '@libp2p/crypto'
 import { copy } from 'fs-extra'
@@ -17,14 +18,13 @@ import {
 
 import testKeysPath from './fixtures/test-keys-path'
 
-// import type {
-//   // KeyStoreInstance,
-//   // PrivateKeys,
-//   // Secp256k1PrivateKey,
-// } from '../src'
+import type { Secp256k1PrivateKey } from '../src/vendor'
 
-const defaultPath = './.orbitdb/keystore'
-const keysPath = './testkeys'
+const testsPath = join(
+  dirname(__filename),
+  '.orbitdb/tests',
+  basename(__filename, 'test.ts'),
+)
 
 describe('keyStore', () => {
   let keystore: KeyStore
@@ -33,7 +33,7 @@ describe('keyStore', () => {
     let id: string
 
     beforeEach(async () => {
-      keystore = await KeyStore.create({ path: defaultPath })
+      keystore = await KeyStore.create({ path: join(testsPath, 'keystore') })
 
       id = 'key1'
       await keystore.createKey(id)
@@ -42,7 +42,7 @@ describe('keyStore', () => {
     afterEach(async () => {
       if (keystore) {
         await keystore.close()
-        await rimraf(defaultPath)
+        await rimraf(join(testsPath, 'keystore'))
       }
     })
 
@@ -172,7 +172,7 @@ describe('keyStore', () => {
       = '198594a8de39fd97017d11996d619b3746211605a9d290964badf58bc79bdb33'
     const publicKey
       = '0260baeaffa1de1e4135e5b395e0380563a622b9599d1b8e012a0f7603f516bdaa'
-    let privateKeyBuffer, publicKeyBuffer, unmarshalledPrivateKey
+    let privateKeyBuffer: Uint8Array, publicKeyBuffer: Uint8Array, unmarshalledPrivateKey: Secp256k1PrivateKey
 
     beforeAll(async () => {
       privateKeyBuffer = uint8ArrayFromString(privateKey, 'base16')
@@ -182,18 +182,18 @@ describe('keyStore', () => {
 
     describe('using default options', () => {
       beforeEach(async () => {
-        const storage = await LevelStorage.create({ path: defaultPath })
+        const storage = await LevelStorage.create<Uint8Array>({ path: join(testsPath, 'keystore') })
         await storage.put('private_key1', privateKeyBuffer)
         await storage.put('public_key1', publicKeyBuffer)
         await storage.close()
 
-        keystore = await KeyStore.create({})
+        keystore = await KeyStore.create({ storage })
       })
 
       afterEach(async () => {
         if (keystore) {
           await keystore.close()
-          await rimraf(defaultPath)
+          await rimraf(join(testsPath, 'keystore'))
         }
       })
 
@@ -203,10 +203,8 @@ describe('keyStore', () => {
     })
 
     describe('setting options.storage', () => {
-      const path = './custom-level-key-store'
-
       beforeEach(async () => {
-        const storage = await LevelStorage.create({ path })
+        const storage = await LevelStorage.create<Uint8Array>({ path: join(testsPath, 'custom-level-key-store') })
         await storage.put('private_key2', privateKeyBuffer)
         await storage.put('public_key2', publicKeyBuffer)
 
@@ -216,7 +214,7 @@ describe('keyStore', () => {
       afterEach(async () => {
         if (keystore) {
           await keystore.close()
-          await rimraf(path)
+          await rimraf(join(testsPath, 'custom-level-key-store'))
         }
       })
 
@@ -227,14 +225,14 @@ describe('keyStore', () => {
 
     describe('setting options.path', () => {
       beforeEach(async () => {
-        await copy(testKeysPath, keysPath)
+        await copy(testKeysPath, join(testsPath, 'keystore'))
 
-        const storage = await LevelStorage.create({ path: keysPath })
+        const storage = await LevelStorage.create({ path: join(testsPath, 'keystore') })
         await storage.put('private_key3', privateKeyBuffer)
         await storage.put('public_key3', publicKeyBuffer)
         await storage.close()
 
-        keystore = await KeyStore.create({ path: keysPath })
+        keystore = await KeyStore.create({ path: join(testsPath, 'keystore') })
       })
 
       afterEach(async () => {
@@ -242,7 +240,7 @@ describe('keyStore', () => {
           await keystore.close()
         }
 
-        await rimraf(keysPath)
+        await rimraf(join(testsPath, 'keystore'))
       })
 
       it('uses default storage using given path to retrieve a key', async () => {
@@ -253,8 +251,8 @@ describe('keyStore', () => {
 
   describe('using keys for signing and verifying', () => {
     beforeEach(async () => {
-      await copy(testKeysPath, keysPath)
-      keystore = await KeyStore.create({ path: keysPath })
+      await copy(testKeysPath, join(testsPath, 'keystore'))
+      keystore = await KeyStore.create({ path: join(testsPath, 'keystore') })
       // For creating test keys fixtures (level) database
       // const identities = await Identities({ keystore })
       // const a = await identities.createIdentity({ id: 'userA' })
@@ -268,7 +266,7 @@ describe('keyStore', () => {
       if (keystore) {
         await keystore.close()
       }
-      await rimraf(keysPath)
+      await rimraf(join(testsPath, 'keystore'))
     })
 
     describe('signing', () => {
@@ -276,7 +274,7 @@ describe('keyStore', () => {
         const expected
           = '3045022100df961fa46bb8a3cb92594a24205e6008a84daa563ac3530f583bb9f9cef5af3b02207b84c5d63387d0a710e42e05785fbccdaf2534c8ed16adb8afd57c3eba930529'
 
-        const key = await keystore.getKey('userA')
+        const key = await keystore.getKey('userA') as Secp256k1PrivateKey
         const actual = await signMessage(key, 'data data data')
         strictEqual(actual, expected)
       })
@@ -311,16 +309,16 @@ describe('keyStore', () => {
     })
 
     describe('getting the public key', async () => {
-      let key
+      let key: Secp256k1PrivateKey
 
       beforeEach(async () => {
-        key = await keystore.getKey('userA')
+        key = await keystore.getKey('userA') as Secp256k1PrivateKey
       })
 
       it('gets the public key', async () => {
         const expected
           = '02e7247a4c155b63d182a23c70cb6fe8ba2e44bc9e9d62dc45d4c4167ccde95944'
-        const publicKey = await keystore.getPublic(key)
+        const publicKey = keystore.getPublic(key)
         strictEqual(publicKey, expected)
       })
 
@@ -334,7 +332,7 @@ describe('keyStore', () => {
 
       it('throws an error if no keys are passed', async () => {
         try {
-          await keystore.getPublic(null as unknown as PrivateKeys)
+          keystore.getPublic(null as unknown as Secp256k1PrivateKey)
         }
         catch {
           strictEqual(true, true)
@@ -343,7 +341,7 @@ describe('keyStore', () => {
 
       it('throws an error if a bad format is passed', async () => {
         try {
-          await keystore.getPublic(key, { format: 'foo' as 'hex' })
+          keystore.getPublic(key)
         }
         catch {
           strictEqual(true, true)
@@ -355,8 +353,8 @@ describe('keyStore', () => {
       let key: Secp256k1PrivateKey, publicKey: string
 
       beforeEach(async () => {
-        key = await keystore.getKey('userA')
-        publicKey = await keystore.getPublic(key)
+        key = await keystore.getKey('userA') as Secp256k1PrivateKey
+        publicKey = keystore.getPublic(key)
       })
 
       it('verifies content', async () => {
@@ -384,14 +382,7 @@ describe('keyStore', () => {
         await verifyMessage(signature, publicKey, data)
         const after = new Date()
           .getTime()
-        console.log(
-          'First pass:',
-          first - startTime,
-          'ms',
-          'Cached:',
-          after - first,
-          'ms',
-        )
+
         strictEqual(first - startTime > after - first, true)
       })
 

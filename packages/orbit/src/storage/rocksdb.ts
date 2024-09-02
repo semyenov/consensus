@@ -11,7 +11,7 @@ export interface RocksDBStorageOptions {
   path?: string
 }
 
-export class RocksDBStorage<T = RocksDB.Bytes> implements StorageInstance<T> {
+export class RocksDBStorage<T extends RocksDB.Bytes> implements StorageInstance<T> {
   private db: RocksDB
   private path: string
 
@@ -20,7 +20,7 @@ export class RocksDBStorage<T = RocksDB.Bytes> implements StorageInstance<T> {
     this.db = new RocksDB(this.path)
   }
 
-  static async create<T = unknown>(
+  static async create<T extends RocksDB.Bytes = RocksDB.Bytes>(
     options: RocksDBStorageOptions = {},
   ): Promise<RocksDBStorage<T>> {
     const path = options.path || join(STORAGE_LEVEL_PATH, 'rocksdb')
@@ -41,16 +41,12 @@ export class RocksDBStorage<T = RocksDB.Bytes> implements StorageInstance<T> {
   }
 
   async put(hash: string, data: T): Promise<void> {
-    await new Promise<void>((resolve, reject) => {
-      const value = typeof data === 'string'
-        ? data as string
-        : (data instanceof Uint8Array
-            ? Buffer.from(data)
-            : Buffer.from(JSON.stringify(data)))
-
-      this.db.put(hash, value, { sync: true }, (err) => {
+    await new Promise<void>((resolve) => {
+      this.db.put(hash, data, { sync: true }, (err) => {
         if (err) {
-          reject(err)
+          // eslint-disable-next-line no-console
+          console.error(err)
+          resolve()
         }
         else {
           resolve()
@@ -60,10 +56,12 @@ export class RocksDBStorage<T = RocksDB.Bytes> implements StorageInstance<T> {
   }
 
   async del(hash: string): Promise<void> {
-    await new Promise<void>((resolve, reject) => {
+    await new Promise<void>((resolve) => {
       this.db.del(hash, { sync: true }, (err) => {
         if (err) {
-          reject(err)
+          // eslint-disable-next-line no-console
+          console.error(err)
+          resolve()
         }
         else {
           resolve()
@@ -73,32 +71,35 @@ export class RocksDBStorage<T = RocksDB.Bytes> implements StorageInstance<T> {
   }
 
   async get(hash: string): Promise<T | null> {
-    return new Promise<T | null>((resolve, reject) => {
-      this.db.get(hash, { asBuffer: true }, (err, value) => {
+    return new Promise<T | null>((resolve) => {
+      this.db.get(hash, { asBuffer: false }, (err, value) => {
         if (err) {
-          reject(err)
+          // reject(err)
+          resolve(null)
         }
         else {
-          resolve(value ? value as T : null)
+          resolve(value as T)
         }
       })
     })
   }
 
   async *iterator(options: RocksDB.IteratorOptions = {}): AsyncIterableIterator<[string, T]> {
-    const iterator = this.db.iterator(options)
+    const iterator = this.db.iterator({ keyAsBuffer: false, valueAsBuffer: false, ...options })
 
     while (true) {
-      const result = await new Promise<[string, T] | null>((resolve, reject) => {
+      const result = await new Promise<[string, T] | null>((resolve) => {
         iterator.next((err, key, value) => {
           if (err) {
-            reject(err)
+            // eslint-disable-next-line no-console
+            console.error(err)
+            resolve(null)
           }
           else if (key === undefined && value === undefined) {
             resolve(null)
           }
           else {
-            resolve([key.toString(), value as T])
+            resolve([key.toString('utf8'), value as T])
           }
         })
       })
@@ -125,7 +126,7 @@ export class RocksDBStorage<T = RocksDB.Bytes> implements StorageInstance<T> {
   async merge(other: StorageInstance<T>): Promise<void> {
     const batch = this.db.batch()
     for await (const [key, value] of other.iterator()) {
-      batch.put(key, JSON.stringify(value))
+      batch.put(key, value)
     }
 
     await new Promise<void>((resolve, reject) => {
@@ -154,10 +155,12 @@ export class RocksDBStorage<T = RocksDB.Bytes> implements StorageInstance<T> {
   }
 
   async close(): Promise<void> {
-    await new Promise<void>((resolve, reject) => {
+    await new Promise<void>((resolve) => {
       this.db.close((err) => {
         if (err) {
-          reject(err)
+          // eslint-disable-next-line no-console
+          console.error(err)
+          resolve()
         }
         else {
           resolve()

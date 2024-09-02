@@ -1,39 +1,37 @@
 /* eslint-disable no-console */
 import { deepStrictEqual, strictEqual } from 'node:assert'
 import { existsSync, readdirSync } from 'node:fs'
-import Path from 'node:path'
+import Path, { basename, dirname, join } from 'node:path'
 
 import { copy } from 'fs-extra'
 import { rimraf } from 'rimraf'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, it } from 'vitest'
 
-import {
-  Database,
-  Entry,
-  Identities,
-  KeyStore,
-  LevelStorage,
-  MemoryStorage,
-} from '../src'
+import { Database, type DatabaseInstance } from '../src/database'
+import { Identities, type IdentitiesInstance } from '../src/identities'
+import { KeyStore, type KeyStoreInstance } from '../src/key-store'
+import { Entry, type EntryInstance } from '../src/oplog'
+import { LevelStorage, MemoryStorage } from '../src/storage'
 
 import testKeysPath from './fixtures/test-keys-path'
 import createHelia from './utils/create-helia'
 
-import type { DatabaseInstance } from '../src/database'
 import type { IdentityInstance } from '../src/identities/identity'
-import type { EntryInstance } from '../src/oplog'
 import type { HeliaInstance } from '../src/vendor'
 
-const keysPath = './.orbitdb/keystore'
-
+const testsPath = join(
+  dirname(__filename),
+  '.orbitdb/tests',
+  basename(__filename, 'test.ts'),
+)
 describe('database', () => {
   // this.timeout(30000)
 
   let ipfs: HeliaInstance
-  let keystore: KeyStore
-  let identities: Identities
+  let keystore: KeyStoreInstance
+  let identities: IdentitiesInstance
   let testIdentity: IdentityInstance
-  let db: DatabaseInstance<EntryInstance, any>
+  let db: DatabaseInstance<EntryInstance>
 
   const databaseId = 'database-AAA'
 
@@ -51,15 +49,15 @@ describe('database', () => {
   }
 
   beforeAll(async () => {
-    ipfs = await createHelia() as unknown as HeliaInstance
-    await copy(testKeysPath, keysPath)
-    keystore = await KeyStore.create({ path: keysPath })
+    ipfs = await createHelia({ directory: join(testsPath, 'ipfs') })
+    await copy(testKeysPath, join(testsPath, 'keystore'))
+    keystore = await KeyStore.create({ path: join(testsPath, 'keystore') })
     identities = await Identities.create({ keystore, ipfs })
     testIdentity = await identities.createIdentity({ id: 'userA' })
   })
 
   afterEach(async () => {
-    await rimraf('./.orbitdb')
+    await rimraf(testsPath)
   })
 
   afterAll(async () => {
@@ -71,8 +69,7 @@ describe('database', () => {
       await keystore.close()
     }
 
-    await rimraf(keysPath)
-    await rimraf('./ipfs1')
+    await rimraf(testsPath)
   })
 
   it('adds an operation', async () => {
@@ -81,7 +78,7 @@ describe('database', () => {
       identity: testIdentity,
       address: databaseId,
       accessController,
-      directory: './.orbitdb',
+      directory: join(testsPath, 'orbitdb'),
     })
     const expected = 'zdpuB2YZc3bvZDu8kW6f6rb5JjKeMrNogyPhncci82hLCScdN'
     const op = { op: 'PUT' as const, key: '1', value: 'record 1 on db 1' }
@@ -99,18 +96,19 @@ describe('database', () => {
         identity: testIdentity,
         address: databaseId,
         accessController,
+        directory: join(testsPath, 'orbitdb'),
       })
       const op = { op: 'PUT' as const, key: '1', value: 'record 1 on db 1' }
       const hash = await db.addOperation(op)
 
       const headsPath = Path.join(
-        './.orbitdb/databases/',
+        join(testsPath, 'orbitdb'),
         `${databaseId}/`,
         '/log/_heads/',
       )
 
       console.log('headsPath', headsPath)
-      console.log('process.cwd', readdirSync('./.orbitdb'))
+      console.log('process.cwd', readdirSync(join(testsPath, 'orbitdb')))
 
       strictEqual(await existsSync(headsPath), true)
 
@@ -134,13 +132,13 @@ describe('database', () => {
         identity: testIdentity,
         address: databaseId,
         accessController,
-        directory: './custom-directory',
+        directory: join(testsPath, 'custom-directory'),
       })
       const op = { op: 'PUT' as const, key: '1', value: 'record 1 on db 1' }
       const hash = await db.addOperation(op)
 
       const headsPath = Path.join(
-        './custom-directory/',
+        join(testsPath, 'custom-directory'),
         `${databaseId}/`,
         '/log/_heads/',
       )
@@ -159,7 +157,7 @@ describe('database', () => {
       await headsStorage.close()
 
       await rimraf(headsPath)
-      await rimraf('./custom-directory')
+      await rimraf(join(testsPath, 'custom-directory'))
     })
 
     it('uses given MemoryStorage for headsStorage', async () => {
@@ -169,7 +167,7 @@ describe('database', () => {
         identity: testIdentity,
         address: databaseId,
         accessController,
-        directory: './.orbitdb',
+        directory: join(testsPath, 'orbitdb'),
         headsStorage,
       })
       const op = { op: 'PUT' as const, key: '1', value: 'record 1 on db 1' }
@@ -190,7 +188,7 @@ describe('database', () => {
         identity: testIdentity,
         address: databaseId,
         accessController,
-        directory: './.orbitdb',
+        directory: join(testsPath, 'orbitdb'),
         entryStorage,
       })
       const op = { op: 'PUT' as const, key: '1', value: 'record 1 on db 1' }
@@ -212,7 +210,7 @@ describe('database', () => {
         identity: testIdentity,
         address: databaseId,
         accessController,
-        directory: './.orbitdb',
+        directory: join(testsPath, 'orbitdb'),
       })
     })
 

@@ -26,7 +26,7 @@ export class LevelStorage<T = unknown> implements StorageInstance<T> {
     options: LevelStorageOptions = {},
   ): Promise<LevelStorage<T>> {
     const storage = new LevelStorage<T>(options.path, options.valueEncoding)
-    await storage.level.open() // async
+    await storage.level.open()
 
     return storage
   }
