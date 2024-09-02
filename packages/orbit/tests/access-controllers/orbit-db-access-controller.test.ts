@@ -176,11 +176,11 @@ describe('orbitDBAccessController', () => {
 
       const mockEntry1 = {
         identity: testIdentity1.hash,
-      } as Entry.Instance
+      } as EntryInstance
 
       const mockEntry2 = {
         identity: testIdentity2.hash,
-      } as Entry.Instance
+      } as EntryInstance
 
       const canAppend1 = await accessController.canAppend(mockEntry1)
 
@@ -197,7 +197,7 @@ describe('orbitDBAccessController', () => {
   })
 
   describe('revoke', () => {
-    let accessController: OrbitDBAccessController
+    let accessController: OrbitDBAccessControllerInstance
 
     beforeAll(async () => {
       accessController = await OrbitDBAccessController.create({
@@ -287,8 +287,8 @@ describe('orbitDBAccessController', () => {
       const mockEntry2 = {
         identity: testIdentity2.hash,
       }
-      const canAppend = await accessController.canAppend(mockEntry1)
-      const noAppend = await accessController.canAppend(mockEntry2)
+      const canAppend = await accessController.canAppend(mockEntry1 as EntryInstance)
+      const noAppend = await accessController.canAppend(mockEntry2 as EntryInstance)
       strictEqual(canAppend, true)
       strictEqual(noAppend, false)
     })
