@@ -33,6 +33,8 @@ describe('database - Replication', () => {
   const databaseId = 'documents-AAA'
 
   const accessController = {
+    type: 'basic',
+    write: ['*'],
     canAppend: async (entry: EntryInstance) => {
       const identity1 = entry.identity && await identities.getIdentity(entry.identity)
       const identity2 = entry.identity && await identities2.getIdentity(entry.identity)
@@ -108,16 +110,14 @@ describe('database - Replication', () => {
       let replicated = false
       let expectedEntryHash: null | string = null
       const onConnected = (customEvent: CustomEvent) => {
-        const { peerId, heads } = customEvent.detail
-        console.log('onConnected', peerId)
+        const { heads } = customEvent.detail
         replicated = expectedEntryHash !== null
-        && heads.map(e => e.hash)
+        && heads.map((e: EntryInstance) => e.hash)
           .includes(expectedEntryHash)
       }
 
       const onUpdate = (customEvent: CustomEvent) => {
         const { entry } = customEvent.detail
-        console.log('onUpdate: entry', entry)
         replicated = expectedEntryHash !== null
         && entry.hash === expectedEntryHash
       }
@@ -149,7 +149,6 @@ describe('database - Replication', () => {
         () => true,
       )
 
-      console.log('added record 1 on db 1')
       const all1: EntryInstance[] = []
       for await (const item of db1.log.iterator()) {
         all1.unshift(item)
@@ -168,10 +167,9 @@ describe('database - Replication', () => {
       let expectedEntryHash: null | string = null
 
       const onConnected = (event: CustomEvent) => {
-        const { peerId, heads } = event.detail
-        console.log('peerId', peerId)
+        const { heads } = event.detail
         replicated = expectedEntryHash
-        && heads.map(e => e.hash)
+        && heads.map((e: EntryInstance) => e.hash)
           .includes(expectedEntryHash)
       }
 
@@ -191,14 +189,14 @@ describe('database - Replication', () => {
       db2.sync.events.addEventListener('join', onConnected)
       db2.events.addEventListener('update', onUpdate)
 
-      await db1.addOperation({ op: 'PUT', key: 1, value: 'record 1 on db 1' })
+      await db1.addOperation({ op: 'PUT', key: '1', value: 'record 1 on db 1' })
 
       await new Promise<void>((resolve) => {
         setTimeout(() => resolve(), 1000)
       })
 
-      await db1.addOperation({ op: 'PUT', key: 2, value: 'record 2 on db 1' })
-      await db1.addOperation({ op: 'PUT', key: 3, value: 'record 3 on db 1' })
+      await db1.addOperation({ op: 'PUT', key: '2', value: 'record 2 on db 1' })
+      await db1.addOperation({ op: 'PUT', key: '3', value: 'record 3 on db 1' })
 
       await new Promise<void>((resolve) => {
         setTimeout(() => resolve(), 1000)
@@ -206,7 +204,7 @@ describe('database - Replication', () => {
 
       expectedEntryHash = await db1.addOperation({
         op: 'PUT',
-        key: 4,
+        key: '4',
         value: 'record 4 on db 1',
       })
 
@@ -232,11 +230,10 @@ describe('database - Replication', () => {
       let connected = false
 
       const onConnected = () => {
-        console.log('connected')
         connected = true
       }
 
-      await db1.addOperation({ op: 'PUT', key: String(1), value: 'record 1 on db 1' })
+      await db1.addOperation({ op: 'PUT', key: '1', value: 'record 1 on db 1' })
 
       db2 = await Database.create({
         ipfs: ipfs2,
@@ -274,14 +271,14 @@ describe('database - Replication', () => {
 
   describe('options', () => {
     it('uses given ComposedStorage with MemoryStorage/IPFSBlockStorage for entryStorage', async () => {
-      const storage1 = await ComposedStorage.create({
-        storage1: await MemoryStorage.create(),
-        storage2: await IPFSBlockStorage.create({ ipfs: ipfs1, pin: true }),
+      const storage1 = ComposedStorage.create<Uint8Array>({
+        storage1: MemoryStorage.create(),
+        storage2: IPFSBlockStorage.create({ ipfs: ipfs1, pin: true }),
       },
       )
-      const storage2 = await ComposedStorage.create({
-        storage1: await MemoryStorage.create(),
-        storage2: await IPFSBlockStorage.create({ ipfs: ipfs2, pin: true }),
+      const storage2 = ComposedStorage.create<Uint8Array>({
+        storage1: MemoryStorage.create(),
+        storage2: IPFSBlockStorage.create({ ipfs: ipfs2, pin: true }),
       })
       db1 = await Database.create({
         ipfs: ipfs1,
@@ -395,7 +392,7 @@ describe('database - Replication', () => {
         () => true,
       )
 
-      await db1.addOperation({ op: 'PUT', key: 1, value: 'record 1 on db 1' })
+      await db1.addOperation({ op: 'PUT', key: '1', value: 'record 1 on db 1' })
 
       await waitFor(
         () => updateCount1 >= expected,
@@ -447,10 +444,10 @@ describe('database - Replication', () => {
         () => true,
       )
 
-      await db1.addOperation({ op: 'PUT', key: String(1), value: '11' })
-      await db1.addOperation({ op: 'PUT', key: String(2), value: '22' })
-      await db1.addOperation({ op: 'PUT', key: String(3), value: '33' })
-      await db1.addOperation({ op: 'PUT', key: String(4), value: '44' })
+      await db1.addOperation({ op: 'PUT', key: '1', value: '11' })
+      await db1.addOperation({ op: 'PUT', key: '2', value: '22' })
+      await db1.addOperation({ op: 'PUT', key: '3', value: '33' })
+      await db1.addOperation({ op: 'PUT', key: '4', value: '44' })
 
       await waitFor(
         () => updateCount1 >= expected,
