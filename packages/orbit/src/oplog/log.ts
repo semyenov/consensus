@@ -63,7 +63,7 @@ export interface LogInstance<T> {
   ) => AsyncGenerator<EntryInstance<T>>
   iterator: <D = T>(
     options?: LogIteratorOptions,
-  ) => AsyncIterable<EntryInstance<D>>
+  ) => AsyncGenerator<EntryInstance<D>>
   clear: () => Promise<void>
   close: () => Promise<void>
 }
@@ -114,9 +114,9 @@ export class Log<T> implements LogInstance<T> {
 
   public static defaultAccessController(): AccessControllerInstance {
     return {
-      write: [],
-      type: 'allow-all',
-      canAppend: async (entry: EntryInstance<any>) => true,
+      write: ['*'],
+      type: 'basic',
+      canAppend: async () => true,
     }
   }
 
@@ -230,22 +230,23 @@ export class Log<T> implements LogInstance<T> {
   }
 
   async joinEntry<D = T>(entry: EntryInstance<D>): Promise<boolean> {
-    return this.joinQueue.add(async () => {
+    const task = async () => {
       const isAlreadyInTheLog = await this.has(entry.hash!)
       if (isAlreadyInTheLog) {
         return false
       }
-      await this.verifyEntry(entry)
 
+      await this.verifyEntry(entry)
+      const connectedHeads = new Set<string>()
       const headsHashes = (await this.heads())
         .map(e => e.hash)
         .filter(e => e !== undefined)
+
       const hashesToAdd = new Set([entry.hash!])
       const hashesToGet = new Set([
         ...(entry.next ?? []),
         ...(entry.refs ?? []),
       ])
-      const connectedHeads = new Set<string>()
 
       await this.traverseAndVerify(
         hashesToAdd,
@@ -265,7 +266,9 @@ export class Log<T> implements LogInstance<T> {
       await this.heads_.add(entry)
 
       return true
-    }) as Promise<boolean>
+    }
+
+    return this.joinQueue.add(task) as Promise<boolean>
   }
 
   async *traverse<D = T>(
@@ -329,21 +332,102 @@ export class Log<T> implements LogInstance<T> {
     }
   }
 
+  // async *iterator<D = T>(options: LogIteratorOptions<D> = { amount: -1 }): AsyncGenerator<EntryInstance<D>> {
+  //   // TODO: write comments on how the iterator algorithm works
+  //   const nexts: EntryInstance<D>[] = []
+
+  //   if (options.amount === 0) {
+  //     return
+  //   }
+
+  //   if (typeof options.lte === 'string') {
+  //     options.lte = await this.get(options.lte) ?? undefined
+  //   }
+
+  //   if (typeof options.lt === 'string') {
+  //     const entry = await this.get<D>(options.lt)
+  //     const nexts = await Promise.all(entry!.next.map(n => this.get<D>(n)))
+  //     options.lt = nexts.filter(e => e != null)[0] ?? undefined
+  //   }
+
+  //   if (options.lt != null && !Array.isArray(options.lt)) {
+  //     throw new Error('lt must be a string or an array of Entries')
+  //   }
+  //   if (options.lte != null && !Array.isArray(options.lte)) {
+  //     throw new Error('lte must be a string or an array of Entries')
+  //   }
+
+  //   const start: EntryInstance<D> | null = (options.lt || (options.lte || await this.heads())).filter(i => i != null)[0]
+  //   const end: EntryInstance<D> | null = typeof options.gt === 'string' ? await this.get(options.gt) : (typeof options.gte === 'string' ? await this.get(options.gte) : null)
+
+  //   const amountToIterate = (end || options.amount === -1) ? -1 : options.amount
+
+  //   let count = 0
+  //   const shouldStopTraversal = async (entry: EntryInstance<D>) => {
+  //     count++
+  //     if (!entry) {
+  //       return false
+  //     }
+  //     if (count >= amountToIterate && amountToIterate !== -1) {
+  //       return true
+  //     }
+  //     if (end && Entry.isEqual(entry, end)) {
+  //       return true
+  //     }
+
+  //     return false
+  //   }
+
+  //   const useBuffer = end && options.amount !== -1 && !options.lt && !options.lte
+  //   const buffer = useBuffer ? new LRU<number, string>(options.amount + 2) : null
+  //   let index = 0
+
+  //   const it = this.traverse<D>(start ? [start] : undefined, shouldStopTraversal)
+
+  //   for await (const entry of it) {
+  //     const skipFirst = (options.lt && Entry.isEqual(entry, start))
+  //     const skipLast = (options.gt && Entry.isEqual(entry, end))
+  //     const skip = skipFirst || skipLast
+  //     if (!skip) {
+  //       if (useBuffer) {
+  //         buffer.set(index++, entry.hash)
+  //       }
+  //       else {
+  //         yield entry
+  //       }
+  //     }
+  //   }
+
+  //   if (useBuffer) {
+  //     const endIndex = buffer.keys.length
+  //     const startIndex = endIndex > options.amount ? endIndex - options.amount : 0
+  //     const keys = buffer.keys.slice(startIndex, endIndex)
+  //     for (const key of keys) {
+  //       const hash = buffer.get(key)
+  //       const entry = await this.get<D>(hash)
+  //       if (entry) {
+  //         yield entry
+  //       }
+  //     }
+  //   }
+  // }
+
   async *iterator<D = T>(
     options: LogIteratorOptions = { amount: -1 },
-  ): AsyncIterable<EntryInstance<D>> {
+  ): AsyncGenerator<EntryInstance<D>> {
     const { amount = -1, lte, lt, gt, gte } = options
     if (amount === 0) {
       return
     }
 
     const start = await this.getStartEntries<D>(lt, lte)
-    const end = gt || gte ? await this.get<D>((gt || gte)!) : null
-    const amountToIterate = end || amount === -1 ? -1 : amount
+    const end = gt || gte ? await this.get<D>(gt || gte!) : null
+    const amountToIterate = Boolean(end) || amount === -1 ? -1 : amount
 
     let count = 0
     const shouldStopTraversal = async (entry: EntryInstance<D>) => {
       count++
+
       if (!entry) {
         return false
       }
@@ -359,7 +443,7 @@ export class Log<T> implements LogInstance<T> {
 
     let index = 0
     const useBuffer = (end || false) && amount !== -1 && !lt && !lte
-    const buffer = useBuffer ? new LRU(amount + 2) : null
+    const buffer = useBuffer ? new LRU(amount! + 2) : null
 
     const it = this.traverse<D>(start, shouldStopTraversal)
 
@@ -378,7 +462,7 @@ export class Log<T> implements LogInstance<T> {
     }
 
     if (useBuffer) {
-      const endIndex = buffer!.keys.length
+      const endIndex = buffer.keys.length
       const startIndex = endIndex > amount ? endIndex - amount : 0
       const keys = buffer!.keys.slice(startIndex, endIndex)
       for (const key of keys) {
@@ -403,10 +487,7 @@ export class Log<T> implements LogInstance<T> {
     await this.storage.close()
   }
 
-  private defaultStopFn = async <D = T>(
-    entry: EntryInstance<D>,
-    useRefs: boolean,
-  ): Promise<boolean> => false
+  private defaultStopFn = async (): Promise<boolean> => false
 
   private async getStartEntries<D = T>(
     lt?: string,

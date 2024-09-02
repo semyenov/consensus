@@ -15,7 +15,6 @@ function waitForPeers(ipfs, peersToWait, topic) {
 
         // FIXME: Does not fail on timeout, not easily fixable
         if (hasAllPeers) {
-          console.log('Found peers!')
           clearInterval(interval)
           resolve(true)
         }

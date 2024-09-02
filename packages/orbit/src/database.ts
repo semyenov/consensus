@@ -162,7 +162,7 @@ export class Database<
       || ComposedStorage.create({
         storage1: LRUStorage.create({ size: DATABASE_CACHE_SIZE }),
         storage2: await LevelStorage.create({
-          path: join(path, '/log/_heads/'),
+          path: join(path, 'log/_heads'),
         }),
       })
 
@@ -171,7 +171,7 @@ export class Database<
       || ComposedStorage.create({
         storage1: LRUStorage.create({ size: DATABASE_CACHE_SIZE }),
         storage2: await LevelStorage.create({
-          path: join(path, '/log/_index/'),
+          path: join(path, 'log/_index'),
         }),
       })
 
@@ -210,11 +210,9 @@ export class Database<
         }
 
         await queue.add(task)
+        await queue.onIdle()
       },
     })
-
-    await queue.onIdle()
-    await writeQueue.onIdle()
 
     return new Database(
       log,

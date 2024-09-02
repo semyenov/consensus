@@ -1,6 +1,3 @@
-// eslint-disable-next-line ts/ban-ts-comment
-// @ts-nocheck
-
 import { deepStrictEqual, strictEqual } from 'node:assert'
 
 import { copy } from 'fs-extra'
@@ -15,32 +12,44 @@ import {
 import testKeysPath from '../fixtures/test-keys-path'
 import createHelia from '../utils/create-helia'
 
-import type {
-  AccessControllerInstance,
-  EventsDoc,
-  EventsInstance,
-  IPFS,
-  IdentitiesInstance,
-  IdentityInstance,
-  KeyStoreInstance,
-} from '@orbitdb/core'
+import type { AccessControllerInstance } from '../../src/access-controllers'
+import type { EventsDoc, EventsInstance } from '../../src/databases/events'
+import type { IdentitiesInstance, IdentityInstance } from '../../src/identities'
+import type { KeyStoreInstance } from '../../src/key-store'
+import type { EntryInstance } from '../../src/oplog'
+import type { HeliaInstance } from '../../src/vendor'
 
 const keysPath = './.orbitdb/keystore'
 
 describe('events Database', () => {
-  let ipfs: IPFS
+  let ipfs: HeliaInstance
   let keystore: KeyStoreInstance
   let accessController: AccessControllerInstance
   let identities: IdentitiesInstance
   let testIdentity1: IdentityInstance
   let db: EventsInstance
+  const hashes: string[] = []
 
   const databaseId = 'events-AAA'
 
   beforeAll(async () => {
     ipfs = await createHelia()
 
+    accessController = {
+      type: 'basic',
+      write: ['*'],
+      canAppend: async (entry: EntryInstance) => {
+        const identity = await identities.getIdentity(entry.identity!)
+        if (!identity) {
+          throw new Error('Identity not found')
+        }
+
+        return identity.id === testIdentity1.id
+      },
+    }
+
     await copy(testKeysPath, keysPath)
+
     keystore = await KeyStore.create({ path: keysPath })
     identities = await Identities.create({ keystore, ipfs })
     testIdentity1 = await identities.createIdentity({ id: 'userA' })
@@ -112,266 +121,305 @@ describe('events Database', () => {
       await db.add(record)
     }
 
-    const all = await db.all()
+    const all = await db.all<EventsDoc>()
 
     deepStrictEqual(all.map(e => e.value), events)
   })
 
-  describe('iterator Options', () => {
-    let hashes: string[] = []
-    const last = arr => arr[arr.length - 1]
-    const first = arr => arr[0]
+  it('amount: returns one item', async () => {
+    const expected: any[] = ['hello4']
 
-    beforeEach(async () => {
-      hashes = await Promise.all(
-        [0, 1, 2, 3, 4].map(i => db.add(`hello${i}`)),
-      )
-    })
+    for (const i of [0, 1, 2, 3, 4]) {
+      await db.add(`hello${i}`)
+    }
 
-    describe('amount', () => {
-      it('returns one item', async () => {
-        const expected = ['hello4']
+    const all: EventsDoc[] = []
+    for await (const record of db.iterator<EventsDoc>({ amount: 1 })) {
+      all.unshift(record)
+    }
 
-        const all: EventsDoc[] = []
-        for await (const record of db.iterator({ amount: 1 })) {
-          all.unshift(record)
-        }
+    strictEqual(all.length, 1)
+    deepStrictEqual(all.map(e => e.value), expected)
+  })
 
-        strictEqual(all.length, 1)
-        deepStrictEqual(all.map(e => e.value), expected)
-      })
+  it('amount: returns two items', async () => {
+    const expected: any[] = ['hello3', 'hello4']
+    for (const i of [0, 1, 2, 3, 4]) {
+      await db.add(`hello${i}`)
+    }
 
-      it('returns two items', async () => {
-        const expected = ['hello3', 'hello4']
+    const all: EventsDoc[] = []
+    for await (const record of db.iterator<EventsDoc>({ amount: 2 })) {
+      all.unshift(record)
+    }
 
-        const all: EventsDoc[] = []
-        for await (const record of db.iterator({ amount: 2 })) {
-          all.unshift(record)
-        }
+    strictEqual(all.length, 2)
+    deepStrictEqual(all.map(e => e.value), expected)
+  })
 
-        strictEqual(all.length, 2)
-        deepStrictEqual(all.map(e => e.value), expected)
-      })
+  it('amount: returns three items', async () => {
+    const expected: any[] = ['hello2', 'hello3', 'hello4']
+    for (const i of [0, 1, 2, 3, 4]) {
+      await db.add(`hello${i}`)
+    }
 
-      it('returns three items', async () => {
-        const expected = ['hello2', 'hello3', 'hello4']
+    const all: EventsDoc[] = []
+    for await (const record of db.iterator<EventsDoc>({ amount: 3 })) {
+      all.unshift(record)
+    }
 
-        const all: EventsDoc[] = []
-        for await (const record of db.iterator({ amount: 3 })) {
-          all.unshift(record)
-        }
+    strictEqual(all.length, 3)
+    deepStrictEqual(all.map(e => e.value), expected)
+  })
 
-        strictEqual(all.length, 3)
-        deepStrictEqual(all.map(e => e.value), expected)
-      })
+  it('amount: sets \'amount\' greater than items available', async () => {
+    const expected: any[] = ['hello0', 'hello1', 'hello2', 'hello3', 'hello4']
+    for (const i of [0, 1, 2, 3, 4]) {
+      await db.add(`hello${i}`)
+    }
 
-      it('sets \'amount\' greater than items available', async () => {
-        const expected = ['hello0', 'hello1', 'hello2', 'hello3', 'hello4']
+    const all: EventsDoc[] = []
+    for await (const record of db.iterator<EventsDoc>({ amount: 100 })) {
+      all.unshift(record)
+    }
 
-        const all: EventsDoc[] = []
-        for await (const record of db.iterator({ amount: 100 })) {
-          all.unshift(record)
-        }
+    strictEqual(all.length, 5)
+    deepStrictEqual(all.map(e => e.value), expected)
+  })
 
-        strictEqual(all.length, 5)
-        deepStrictEqual(all.map(e => e.value), expected)
-      })
+  it('amount: sets \'amount\' to 0', async () => {
+    const expected: any[] = []
+    for (const i of [0, 1, 2, 3, 4]) {
+      await db.add(`hello${i}`)
+    }
 
-      it('sets \'amount\' to 0', async () => {
-        const expected = []
+    const all: EventsDoc[] = []
+    for await (const record of db.iterator<EventsDoc>({ amount: 0 })) {
+      all.unshift(record)
+    }
 
-        const all: EventsDoc[] = []
-        for await (const record of db.iterator({ amount: 0 })) {
-          all.unshift(record)
-        }
+    strictEqual(all.length, 0)
+    deepStrictEqual(all.map(e => e.value), expected)
+  })
 
-        strictEqual(all.length, 0)
-        deepStrictEqual(all.map(e => e.value), expected)
-      })
-    })
+  it('lt: returns all items less than head', async () => {
+    const expected: any[] = ['hello0', 'hello1', 'hello2', 'hello3']
+    for (const i of [0, 1, 2, 3, 4]) {
+      await db.add(`hello${i}`)
+    }
 
-    describe('lt', () => {
-      it('returns all items less than head', async () => {
-        const expected = ['hello0', 'hello1', 'hello2', 'hello3']
+    const all: EventsDoc[] = []
+    for await (const record of db.iterator<EventsDoc>({ lt: last(hashes), amount: 100 })) {
+      all.unshift(record)
+    }
 
-        const all: EventsDoc[] = []
-        for await (const record of db.iterator({ lt: last(hashes) })) {
-          all.unshift(record)
-        }
+    strictEqual(all.length, 4)
+    deepStrictEqual(all.map(e => e.value), expected)
+  })
 
-        strictEqual(all.length, 4)
-        deepStrictEqual(all.map(e => e.value), expected)
-      })
+  it('lt: returns one item less than head', async () => {
+    const expected: any[] = ['hello3']
+    for (const i of [0, 1, 2, 3, 4]) {
+      await db.add(`hello${i}`)
+    }
 
-      it('returns one item less than head', async () => {
-        const expected = ['hello3']
+    const all: EventsDoc[] = []
+    for await (
+      const record of db.iterator<EventsDoc>({ lt: last(hashes), amount: 1 })
+    ) {
+      all.unshift(record)
+    }
 
-        const all: EventsDoc[] = []
-        for await (
-          const record of db.iterator({ lt: last(hashes), amount: 1 })
-        ) {
-          all.unshift(record)
-        }
+    strictEqual(all.length, 1)
+    deepStrictEqual(all.map(e => e.value), expected)
+  })
 
-        strictEqual(all.length, 1)
-        deepStrictEqual(all.map(e => e.value), expected)
-      })
+  it('lt: returns two items less than head', async () => {
+    const expected: any[] = ['hello2', 'hello3']
+    for (const i of [0, 1, 2, 3, 4]) {
+      await db.add(`hello${i}`)
+    }
 
-      it('returns two items less than head', async () => {
-        const expected = ['hello2', 'hello3']
+    const all: EventsDoc[] = []
+    for await (
+      const record of db.iterator<EventsDoc>({ lt: last(hashes), amount: 2 })
+    ) {
+      all.unshift(record)
+    }
 
-        const all: EventsDoc[] = []
-        for await (
-          const record of db.iterator({ lt: last(hashes), amount: 2 })
-        ) {
-          all.unshift(record)
-        }
+    strictEqual(all.length, 2)
+    deepStrictEqual(all.map(e => e.value), expected)
+  })
 
-        strictEqual(all.length, 2)
-        deepStrictEqual(all.map(e => e.value), expected)
-      })
-    })
+  it('lte: returns all items less or equal to head', async () => {
+    const expected: any[] = ['hello0', 'hello1', 'hello2', 'hello3', 'hello4']
+    for (const i of [0, 1, 2, 3, 4]) {
+      await db.add(`hello${i}`)
+    }
 
-    describe('lte', () => {
-      it('returns all items less or equal to head', async () => {
-        const expected = ['hello0', 'hello1', 'hello2', 'hello3', 'hello4']
+    const all: EventsDoc[] = []
+    for await (const record of db.iterator<EventsDoc>({ lte: last(hashes), amount: 100 })) {
+      all.unshift(record)
+    }
 
-        const all: EventsDoc[] = []
-        for await (const record of db.iterator({ lte: last(hashes) })) {
-          all.unshift(record)
-        }
+    strictEqual(all.length, 5)
+    deepStrictEqual(all.map(e => e.value), expected)
+  })
 
-        strictEqual(all.length, 5)
-        deepStrictEqual(all.map(e => e.value), expected)
-      })
+  it('lte: returns one item less than or equal to head', async () => {
+    const expected: any[] = ['hello4']
+    for (const i of [0, 1, 2, 3, 4]) {
+      await db.add(`hello${i}`)
+    }
 
-      it('returns one item less than or equal to head', async () => {
-        const expected = ['hello4']
+    const all: EventsDoc[] = []
+    for await (
+      const record of db.iterator<EventsDoc>({ lte: last(hashes), amount: 1 })
+    ) {
+      all.unshift(record)
+    }
 
-        const all: EventsDoc[] = []
-        for await (
-          const record of db.iterator({ lte: last(hashes), amount: 1 })
-        ) {
-          all.unshift(record)
-        }
+    strictEqual(all.length, 1)
+    deepStrictEqual(all.map(e => e.value), expected)
+  })
 
-        strictEqual(all.length, 1)
-        deepStrictEqual(all.map(e => e.value), expected)
-      })
+  it('lte: returns two items less than or equal to head', async () => {
+    const expected: any[] = ['hello3', 'hello4']
+    for (const i of [0, 1, 2, 3, 4]) {
+      await db.add(`hello${i}`)
+    }
 
-      it('returns two items less than or equal to head', async () => {
-        const expected = ['hello3', 'hello4']
+    const all: EventsDoc[] = []
+    for await (
+      const record of db.iterator<EventsDoc>({ lte: last(hashes), amount: 2 })
+    ) {
+      all.unshift(record)
+    }
 
-        const all: EventsDoc[] = []
-        for await (
-          const record of db.iterator({ lte: last(hashes), amount: 2 })
-        ) {
-          all.unshift(record)
-        }
+    strictEqual(all.length, 2)
+    deepStrictEqual(all.map(e => e.value), expected)
+  })
 
-        strictEqual(all.length, 2)
-        deepStrictEqual(all.map(e => e.value), expected)
-      })
-    })
+  it('gt: returns all items greater than root', async () => {
+    const expected: any[] = ['hello1', 'hello2', 'hello3', 'hello4']
+    for (const i of [0, 1, 2, 3, 4]) {
+      await db.add(`hello${i}`)
+    }
 
-    describe('gt', () => {
-      it('returns all items greater than root', async () => {
-        const expected = ['hello1', 'hello2', 'hello3', 'hello4']
+    const all: EventsDoc[] = []
+    for await (const record of db.iterator<EventsDoc>({ gt: first(hashes), amount: 100 })) {
+      all.unshift(record)
+    }
 
-        const all: EventsDoc[] = []
-        for await (const record of db.iterator({ gt: first(hashes) })) {
-          all.unshift(record)
-        }
+    strictEqual(all.length, 4)
+    deepStrictEqual(all.map(e => e.value), expected)
+  })
 
-        strictEqual(all.length, 4)
-        deepStrictEqual(all.map(e => e.value), expected)
-      })
+  it('gt: returns one item greater than root', async () => {
+    const expected: any[] = ['hello1']
+    for (const i of [0, 1, 2, 3, 4]) {
+      await db.add(`hello${i}`)
+    }
 
-      it('returns one item greater than root', async () => {
-        const expected = ['hello1']
+    const all: EventsDoc[] = []
+    for await (
+      const record of db.iterator<EventsDoc>({ gt: first(hashes), amount: 1 })
+    ) {
+      all.unshift(record)
+    }
 
-        const all: EventsDoc[] = []
-        for await (
-          const record of db.iterator({ gt: first(hashes), amount: 1 })
-        ) {
-          all.unshift(record)
-        }
+    strictEqual(all.length, 1)
+    deepStrictEqual(all.map(e => e.value), expected)
+  })
 
-        strictEqual(all.length, 1)
-        deepStrictEqual(all.map(e => e.value), expected)
-      })
+  it('gt: returns two items greater than root', async () => {
+    const expected: any[] = ['hello1', 'hello2']
+    for (const i of [0, 1, 2, 3, 4]) {
+      await db.add(`hello${i}`)
+    }
 
-      it('returns two items greater than root', async () => {
-        const expected = ['hello1', 'hello2']
+    const all: EventsDoc[] = []
+    for await (
+      const record of db.iterator<EventsDoc>({ gt: first(hashes), amount: 2 })
+    ) {
+      all.unshift(record)
+    }
 
-        const all: EventsDoc[] = []
-        for await (
-          const record of db.iterator({ gt: first(hashes), amount: 2 })
-        ) {
-          all.unshift(record)
-        }
+    strictEqual(all.length, 2)
+    deepStrictEqual(all.map(e => e.value), expected)
+  })
 
-        strictEqual(all.length, 2)
-        deepStrictEqual(all.map(e => e.value), expected)
-      })
-    })
+  it('gte: returns all items greater than or equal to root', async () => {
+    const expected: any[] = ['hello0', 'hello1', 'hello2', 'hello3', 'hello4']
+    for (const i of [0, 1, 2, 3, 4]) {
+      await db.add(`hello${i}`)
+    }
 
-    describe('gte', () => {
-      it('returns all items greater than or equal to root', async () => {
-        const expected = ['hello0', 'hello1', 'hello2', 'hello3', 'hello4']
+    const all: EventsDoc[] = []
+    for await (const record of db.iterator<EventsDoc>({ gte: first(hashes), amount: 100 })) {
+      all.unshift(record)
+    }
 
-        const all: EventsDoc[] = []
-        for await (const record of db.iterator({ gte: first(hashes) })) {
-          all.unshift(record)
-        }
+    strictEqual(all.length, 5)
+    deepStrictEqual(all.map(e => e.value), expected)
+  })
 
-        strictEqual(all.length, 5)
-        deepStrictEqual(all.map(e => e.value), expected)
-      })
+  it('gte: returns one item greater than or equal to root', async () => {
+    const expected: any[] = ['hello0']
+    for (const i of [0, 1, 2, 3, 4]) {
+      await db.add(`hello${i}`)
+    }
 
-      it('returns one item greater than or equal to root', async () => {
-        const expected = ['hello0']
+    const all: EventsDoc[] = []
+    for await (
+      const record of db.iterator<EventsDoc>({ gte: first(hashes), amount: 1 })
+    ) {
+      all.unshift(record)
+    }
 
-        const all: EventsDoc[] = []
-        for await (
-          const record of db.iterator({ gte: first(hashes), amount: 1 })
-        ) {
-          all.unshift(record)
-        }
+    strictEqual(all.length, 1)
+    deepStrictEqual(all.map(e => e.value), expected)
+  })
 
-        strictEqual(all.length, 1)
-        deepStrictEqual(all.map(e => e.value), expected)
-      })
+  it('gte: returns two items greater than or equal to root', async () => {
+    const expected: any[] = ['hello0', 'hello1']
+    for (const i of [0, 1, 2, 3, 4]) {
+      await db.add(`hello${i}`)
+    }
 
-      it('returns two items greater than or equal to root', async () => {
-        const expected = ['hello0', 'hello1']
+    const all: EventsDoc[] = []
+    for await (
+      const record of db.iterator<EventsDoc>({ gte: first(hashes), amount: 2 })
+    ) {
+      all.unshift(record)
+    }
 
-        const all: EventsDoc[] = []
-        for await (
-          const record of db.iterator({ gte: first(hashes), amount: 2 })
-        ) {
-          all.unshift(record)
-        }
+    strictEqual(all.length, 2)
+    deepStrictEqual(all.map(e => e.value), expected)
+  })
 
-        strictEqual(all.length, 2)
-        deepStrictEqual(all.map(e => e.value), expected)
-      })
-    })
+  it('range: returns all items greater than root and less than head', async () => {
+    const expected: any[] = ['hello1', 'hello2', 'hello3']
+    for (const i of [0, 1, 2, 3, 4]) {
+      await db.add(`hello${i}`)
+    }
 
-    describe('range', async () => {
-      it('returns all items greater than root and less than head', async () => {
-        const expected = ['hello1', 'hello2', 'hello3']
+    const all: EventsDoc[] = []
+    for await (
+      const record of db.iterator<EventsDoc>({ gt: first(hashes), lt: last(hashes), amount: 100 })
+    ) {
+      all.unshift(record)
+    }
 
-        const all: EventsDoc[] = []
-        for await (
-          const record of db.iterator({ gt: first(hashes), lt: last(hashes) })
-        ) {
-          all.unshift(record)
-        }
-
-        strictEqual(all.length, 3)
-        deepStrictEqual(all.map(e => e.value), expected)
-      })
-    })
+    strictEqual(all.length, 3)
+    deepStrictEqual(all.map(e => e.value), expected)
   })
 })
+
+function last(arr: any[]) {
+  return arr[arr.length - 1]
+}
+
+function first(arr: any[]) {
+  return arr[0]
+}

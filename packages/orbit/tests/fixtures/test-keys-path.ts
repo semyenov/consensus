@@ -1,3 +1,3 @@
 import { resolve } from 'pathe'
 
-export default resolve('./tests/fixtures/newtestkeys2')
+export default resolve(__dirname, './newtestkeys2')

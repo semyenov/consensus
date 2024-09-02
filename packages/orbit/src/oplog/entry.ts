@@ -120,8 +120,8 @@ export const Entry = {
     )
   },
 
-  isEqual<T>(a: EntryInstance<T>, b: EntryInstance<T>): boolean {
-    return a && b && a.hash === b.hash
+  isEqual<T>(a: EntryInstance<T>, b: EntryInstance<T> | null): boolean {
+    return Boolean(a) && Boolean(b) && a.hash === b?.hash
   },
 
   async decode<T>(bytes: Uint8Array): Promise<EntryInstance<T>> {

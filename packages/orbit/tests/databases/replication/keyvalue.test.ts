@@ -10,6 +10,7 @@ import connectPeers from '../../utils/connect-nodes'
 import createHelia from '../../utils/create-helia'
 import waitFor from '../../utils/wait-for'
 
+import type { AccessControllerInstance } from '../../../src/access-controllers'
 import type { KeyValueDatabase } from '../../../src/databases/keyvalue'
 import type { IdentitiesInstance } from '../../../src/identities'
 import type { IdentityInstance } from '../../../src/identities/identity'
@@ -23,26 +24,29 @@ describe('keyValue Database Replication', () => {
   let ipfs1: HeliaInstance, ipfs2: HeliaInstance
   let keystore: KeyStoreInstance
   let identities: IdentitiesInstance
+  let accessController: AccessControllerInstance
   let identities2: IdentitiesInstance
   let testIdentity1: IdentityInstance, testIdentity2: IdentityInstance
   let kv1: KeyValueDatabase, kv2: KeyValueDatabase
 
   const databaseId = 'kv-AAA'
 
-  const accessController = {
-    canAppend: async (entry: EntryInstance) => {
-      const identity = await identities.getIdentity(entry.identity!)
-      if (!identity) {
-        throw new Error('Identity not found')
-      }
-
-      return identity.id === testIdentity1.id
-    },
-  }
-
   beforeAll(async () => {
     [ipfs1, ipfs2] = await Promise.all([createHelia(), createHelia()])
     await connectPeers(ipfs1, ipfs2)
+
+    accessController = {
+      type: 'basic',
+      write: ['*'],
+      canAppend: async (entry: EntryInstance) => {
+        const identity = await identities.getIdentity(entry.identity!)
+        if (!identity) {
+          throw new Error('Identity not found')
+        }
+
+        return identity.id === testIdentity1.id
+      },
+    }
 
     await copy(testKeysPath, keysPath)
     keystore = await KeyStore.create({ path: keysPath })

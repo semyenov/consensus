@@ -66,10 +66,6 @@ export default defineNitroPlugin((app) => {
         filter: 'all',
       })
 
-      const { result } = await runTask('edgedb:generate')
-      // eslint-disable-next-line no-console
-      console.log(result)
-
       await Promise.all(
         issuesData.map(async (issue) => {
           await e

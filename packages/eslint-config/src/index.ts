@@ -142,6 +142,7 @@ function config(
           'unicorn/no-unnecessary-await': 'error',
           'unicorn/no-useless-undefined': 'error',
 
+          'unicorn/consistent-function-scoping': 'warn',
           'unicorn/template-indent': ['warn', { indent: 2 }],
         },
       },

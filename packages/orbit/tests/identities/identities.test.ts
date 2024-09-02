@@ -12,8 +12,8 @@ import {
   KeyStore,
   PublicKeyIdentityProvider,
 } from '../../src'
-import { Identity } from '../../src/identities'
-import { signMessage, verifyMessage } from '../../src/key-store'
+import { type IdentitiesInstance, Identity, type IdentityInstance, type IdentityProviderInstance, type IdentityProviderStatic } from '../../src/identities'
+import { type KeyStoreInstance, signMessage, verifyMessage } from '../../src/key-store'
 import CustomIdentityProvider from '../fixtures/providers/custom'
 import FakeIdentityProvider from '../fixtures/providers/fake'
 import NoTypeIdentityProvider from '../fixtures/providers/no-type'
@@ -22,7 +22,7 @@ import testKeysPath from '../fixtures/test-keys-path'
 import createHelia from '../utils/create-helia'
 
 const type = 'publickey'
-const keysPath = './testkeys'
+const keysPath = './.orbit/keystore'
 
 describe('identities', () => {
   let ipfs: any
@@ -38,8 +38,8 @@ describe('identities', () => {
   describe('creating Identities', () => {
     const id = 'userA'
 
-    let identities: Identities
-    let identity: Identity
+    let identities: IdentitiesInstance
+    let identity: IdentityInstance
 
     afterEach(async () => {
       if (identities) {
@@ -59,8 +59,8 @@ describe('identities', () => {
   describe('get Identity', () => {
     const id = 'userA'
 
-    let identities: Identities
-    let identity: Identity
+    let identities: IdentitiesInstance
+    let identity: IdentityInstance
 
     afterEach(async () => {
       if (identities) {
@@ -100,9 +100,9 @@ describe('identities', () => {
   describe('passing in custom keystore', () => {
     const id = 'userB'
 
-    let identities: Identities
-    let identity: Identity
-    let keystore: KeyStore
+    let identities: IdentitiesInstance
+    let identity: IdentityInstance
+    let keystore: KeyStoreInstance
 
     beforeAll(async () => {
       keystore = await KeyStore.create({ path: keysPath })
@@ -177,9 +177,9 @@ describe('identities', () => {
     const expectedPkIdSignature
       = '30440220464cd4a6202dae2d2fb75b47afc7cceafa6b13c310efabbbdaaf38e67f74188b02201bbef8c97b741b4bb9e3e5362edfcd2eb6fe3b93f4e68e5870fcc345a850f366'
 
-    let identities: Identities
-    let identity: Identity
-    let savedKeysKeyStore: KeyStore
+    let identities: IdentitiesInstance
+    let identity: IdentityInstance
+    let savedKeysKeyStore: KeyStoreInstance
 
     beforeAll(async () => {
       savedKeysKeyStore = await KeyStore.create({ path: keysPath })
@@ -221,9 +221,9 @@ describe('identities', () => {
     it('has the correct signatures', async () => {
       const internalSigningKey = await savedKeysKeyStore.getKey(identity.id)
       const externalSigningKey = await savedKeysKeyStore.getKey(id)
-      const idSignature = await signMessage(internalSigningKey, identity.id)
+      const idSignature = await signMessage(internalSigningKey!, identity.id)
       const publicKeyAndIdSignature = await signMessage(
-        externalSigningKey,
+        externalSigningKey!,
         identity.publicKey + idSignature,
       )
       const expectedSignature = {
@@ -237,9 +237,9 @@ describe('identities', () => {
   describe('verify identity\'s signature', () => {
     const id = 'QmFoo'
 
-    let identities: Identities
-    let identity: Identity
-    let keystore: KeyStore
+    let identities: IdentitiesInstance
+    let identity: IdentityInstance
+    let keystore: KeyStoreInstance
 
     beforeAll(async () => {
       keystore = await KeyStore.create({ path: keysPath })
@@ -275,9 +275,9 @@ describe('identities', () => {
 
     it('false signature doesn\'t verify', async () => {
       const provider = new FakeIdentityProvider()
-      IdentityProviderRegistry.useIdentityProvider(provider)
+      IdentityProviderRegistry.useIdentityProvider(provider as unknown as IdentityProviderStatic<string, any>)
       identity = await identities.createIdentity(
-        { provider },
+        { provider: provider as unknown as IdentityProviderInstance },
       )
       const verified = await identities.verifyIdentity(identity)
       assert.strictEqual(verified, false)
@@ -287,9 +287,9 @@ describe('identities', () => {
   describe('verify identity', () => {
     const id = 'QmFoo'
 
-    let identities: Identities
-    let identity: Identity
-    let keystore: KeyStore
+    let identities: IdentitiesInstance
+    let identity: IdentityInstance
+    let keystore: KeyStoreInstance
 
     beforeAll(async () => {
       keystore = await KeyStore.create({ path: keysPath })
@@ -304,7 +304,6 @@ describe('identities', () => {
 
     it('identity verifies', async () => {
       identity = await identities.createIdentity({ id })
-      console.log('IDENTITY', identity)
       const verified = await identities.verifyIdentity(identity)
       assert.strictEqual(verified, true)
     })
@@ -314,9 +313,9 @@ describe('identities', () => {
     const id = '0x01234567890abcdefghijklmnopqrstuvwxyz'
     const data = 'hello friend'
 
-    let identities: Identities
-    let identity: Identity
-    let keystore: KeyStore
+    let identities: IdentitiesInstance
+    let identity: IdentityInstance
+    let keystore: KeyStoreInstance
 
     beforeAll(async () => {
       keystore = await KeyStore.create({ path: keysPath })
@@ -424,7 +423,7 @@ describe('identities', () => {
 
       try {
         IdentityProviderRegistry.useIdentityProvider(
-          NoTypeIdentityProvider as unknown as IdentityProvider,
+          NoTypeIdentityProvider as unknown as IdentityProviderStatic<string, any>,
         )
       }
       catch (error) {
@@ -442,7 +441,7 @@ describe('identities', () => {
 
       try {
         IdentityProviderRegistry.useIdentityProvider(
-          NoVerifyIdentityIdentityProvider as unknown as IdentityProvider,
+          NoVerifyIdentityIdentityProvider as unknown as IdentityProviderStatic<string, any>,
         )
       }
       catch (error) {

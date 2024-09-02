@@ -123,31 +123,29 @@ describe('documents Database Replication', () => {
     let connected2 = false
 
     db1.sync.events.addEventListener('join', (event) => {
-      console.log('db1 joined', event)
+      console.log('db1 joined', event.detail)
       connected1 = true
     })
     db2.sync.events.addEventListener('join', (event) => {
-      console.log('db2 joined', event)
+      console.log('db2 joined', event.detail)
       connected2 = true
     })
 
-    db1.events.addEventListener('error', (err) => {
-      console.error(err)
+    db1.events.addEventListener('error', (err: any) => {
+      console.error(err.detail)
     })
 
-    db2.events.addEventListener('error', (err) => {
-      console.error(err)
+    db2.events.addEventListener('error', (err: any) => {
+      console.error(err.detail)
     })
 
     await db1.put({ _id: 1, msg: 'record 1 on db 1' })
-    await db2.put({ _id: 2, msg: 'record 2 on db 2' })
     await db1.put({ _id: 3, msg: 'record 3 on db 1' })
+    await waitFor(() => connected1, () => true)
+
+    await db2.put({ _id: 2, msg: 'record 2 on db 2' })
     await db2.put({ _id: 4, msg: 'record 4 on db 2' })
-
-    await new Promise(resolve => setTimeout(resolve, 2000))
-
-    // await waitFor(() => connected1, () => true)
-    // await waitFor(() => connected2, () => true)
+    await waitFor(() => connected2, () => true)
 
     const all1: DocumentsDoc[] = []
     for await (const item of db1.iterator()) {
@@ -159,8 +157,6 @@ describe('documents Database Replication', () => {
       all2.unshift(item)
     }
 
-    console.log('all1:', all1)
-    console.log('all2:', all2)
     deepStrictEqual(all1, all2)
   })
 })

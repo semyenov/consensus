@@ -22,7 +22,7 @@ export interface KeyValueDatabaseOptions<T = unknown>
   address?: string
   name?: string
   access?: AccessControllerInstance
-  directory: string
+  directory?: string
   meta: any
   headsStorage?: StorageInstance<Uint8Array>
   entryStorage?: StorageInstance<Uint8Array>

@@ -31,11 +31,11 @@ class Index<T> {
     const index = await LevelStorage.create<
       EntryInstance<DatabaseOperation<T>>
     >({
-      path: directory,
+      path: join(directory || './.orbitdb', `_index`),
       valueEncoding: DATABASE_KEYVALUE_INDEXED_VALUE_ENCODING,
     })
     const indexedEntries = await LevelStorage.create<boolean>({
-      path: join(directory || './.orbitdb', `/_indexedEntries/`),
+      path: join(directory || './.orbitdb', `_indexedEntries`),
       valueEncoding: DATABASE_KEYVALUE_INDEXED_VALUE_ENCODING,
     })
 

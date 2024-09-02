@@ -19,7 +19,7 @@ import type { EntryInstance } from './oplog/entry'
 import type { LogInstance } from './oplog/log'
 import type { HeliaInstance, PeerId } from './vendor'
 import type { GossipsubEvents } from '@chainsafe/libp2p-gossipsub'
-import type { Sink, Source } from 'it-stream-types'
+import type { Source } from 'it-stream-types'
 import type { Uint8ArrayList } from 'uint8arraylist'
 
 export interface SyncEvents<T> {
@@ -106,25 +106,14 @@ implements SyncInstance<T, E> {
     }
   }
 
-  private async *sendHeads(): AsyncGenerator<Uint8Array> {
-    const headsIterator = this.headsIterator()
-
-    return async function* () {
-      for await (const bytes of headsIterator) {
-        yield bytes
-      }
-    }
-  }
-
-  private async *receiveHeads(
+  private async receiveHeads(
     peerId: PeerId,
     source: Source<Uint8ArrayList>,
-  ): AsyncGenerator<Uint8Array> {
+  ) {
     for await (const value of source) {
       const headBytes = value.subarray()
       if (headBytes && this.onSynced) {
-        this.onSynced(headBytes)
-        yield headBytes
+        await this.onSynced(headBytes)
       }
     }
 
@@ -140,10 +129,11 @@ implements SyncInstance<T, E> {
     const peerId = connection.remotePeer
     try {
       this.peers.add(peerId)
+
       await pipe(
         stream,
         source => this.receiveHeads(peerId, source),
-        () => this.sendHeads(),
+        () => this.headsIterator(),
         stream,
       )
     }
@@ -185,7 +175,7 @@ implements SyncInstance<T, E> {
             )
 
             pipe(
-              this.sendHeads(),
+              () => this.headsIterator(),
               stream,
               source => this.receiveHeads(peerId, source),
             )
@@ -210,7 +200,7 @@ implements SyncInstance<T, E> {
         }
       }
 
-      this.queue.add(task)
+      await this.queue.add(task)
     }
 
   private handleUpdateMessage: EventHandler<CustomEvent<Message>> = async (
