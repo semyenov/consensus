@@ -447,7 +447,10 @@ describe('keyValueIndexed Database Replication', () => {
       deepStrictEqual(err, null)
     })
 
-    await waitFor(() => replicated, () => true)
+    await waitFor(
+      async () => replicated,
+      async () => true,
+    )
 
     const all1: { key: string, value: any }[] = []
     for await (const keyValue of kv1.iterator()) {

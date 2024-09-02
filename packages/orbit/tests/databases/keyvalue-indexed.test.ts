@@ -92,7 +92,7 @@ describe('keyValueIndexed Database', () => {
     })
 
     it('creates a directory for the persisted index', async () => {
-      const expectedPath = join(testsPath, '.orbitdb', databaseId, '/_index')
+      const expectedPath = join(testsPath, 'orbitdb', databaseId, '/_index')
       const directoryExists = fs.existsSync(expectedPath)
       strictEqual(directoryExists, true)
     })

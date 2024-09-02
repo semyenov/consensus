@@ -116,9 +116,10 @@ describe('database', () => {
       const hash = await db.addOperation(op)
       // console.log('Database', db)
       const headsPath = join(
-        './.orbitdb/databases',
-        `${databaseId}/`,
-        '/log/_heads/',
+        testsPath,
+        'orbitdb',
+        databaseId,
+        'log/_heads',
       )
 
       strictEqual(existsSync(headsPath), true)
@@ -149,9 +150,10 @@ describe('database', () => {
       const hash = await db.addOperation(op)
 
       const headsPath = join(
-        join(testsPath, 'orbitdb'),
-        `${databaseId}/`,
-        '/log/_heads/',
+        testsPath, 
+        'orbitdb',
+        databaseId,
+        'log/_heads',
       )
 
       strictEqual(existsSync(headsPath), true)
