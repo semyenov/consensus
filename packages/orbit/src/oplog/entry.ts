@@ -3,7 +3,7 @@ import { base58btc } from 'multiformats/bases/base58'
 import * as Block from 'multiformats/block'
 import { sha256 } from 'multiformats/hashes/sha2'
 
-import { Clock, type ClockInstance } from './clock.js'
+import { Clock, type ClockInstance } from './clock'
 
 import type { IdentityInstance } from '../identities'
 
@@ -56,7 +56,7 @@ export const Entry = {
       v: 2,
     }
 
-    const { bytes, cid } = await Block.encode({ value: entry, codec, hasher })
+    const { bytes } = await Block.encode({ value: entry, codec, hasher })
 
     const signature = await identity.sign!(bytes)
 
@@ -120,8 +120,8 @@ export const Entry = {
     )
   },
 
-  isEqual<T>(a: EntryInstance<T>, b: EntryInstance<T>): boolean {
-    return a && b && a.hash === b.hash
+  isEqual<T>(a: EntryInstance<T>, b: EntryInstance<T> | null): boolean {
+    return Boolean(a) && Boolean(b) && a.hash === b?.hash
   },
 
   async decode<T>(bytes: Uint8Array): Promise<EntryInstance<T>> {

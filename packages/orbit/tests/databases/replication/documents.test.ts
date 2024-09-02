@@ -1,8 +1,8 @@
+/* eslint-disable no-console */
 import { deepStrictEqual, strictEqual } from 'node:assert'
 
 import { copy } from 'fs-extra'
 import { rimraf } from 'rimraf'
-import { toString as uint8ArrayToString } from 'uint8arrays'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, it } from 'vitest'
 
 import {
@@ -10,42 +10,40 @@ import {
   Identities,
   KeyStore,
 } from '../../../src'
-import testKeysPath from '../../fixtures/test-keys-path.js'
-import connectPeers from '../../utils/connect-nodes.js'
-import createHelia from '../../utils/create-helia.js'
-import waitFor from '../../utils/wait-for.js'
+import testKeysPath from '../../fixtures/test-keys-path'
+import connectPeers from '../../utils/connect-nodes'
+import createHelia from '../../utils/create-helia'
+import waitFor from '../../utils/wait-for'
 
-import type {
-  Database,
-} from '../../../src'
-import type { Identity } from '../../../src/identities/identity'
+import type { AccessControllerInstance } from '../../../src/access-controllers'
+import type { DocumentsDoc, DocumentsInstance } from '../../../src/databases/documents'
+import type { IdentitiesInstance } from '../../../src/identities'
+import type { IdentityInstance } from '../../../src/identities/identity'
+import type { KeyStoreInstance } from '../../../src/key-store'
 import type { HeliaInstance } from '../../../src/vendor'
 
-// import type {
-//   DocumentsDoc,
-//   DocumentsInstance,
-//   IPFS,
-//   IdentitiesInstance,
-//   IdentityInstance,
-//   KeyStoreInstance,
-// } from '@orbitdb/core'
-
-const keysPath = './testkeys'
+const keysPath = './.orbitdb/keystore'
 
 describe('documents Database Replication', () => {
   let ipfs1: HeliaInstance, ipfs2: HeliaInstance
-  let keystore: KeyStore
-  let identities: Identities
-  let identities2: Identities
-  let testIdentity1: Identity, testIdentity2: Identity
-  let db1: DocumentsDatabase, db2: DocumentsDatabase
+  let keystore: KeyStoreInstance
+  let identities: IdentitiesInstance
+  let identities2: IdentitiesInstance
+  let testIdentity1: IdentityInstance, testIdentity2: IdentityInstance
+  let db1: DocumentsInstance, db2: DocumentsInstance
 
   const databaseId = 'documents-AAA'
 
-  const accessController = {
+  const accessController: AccessControllerInstance = {
+    type: 'basic',
+    write: ['*'],
     canAppend: async (entry) => {
-      const identity1 = await identities.getIdentity(entry.identity)
-      const identity2 = await identities.getIdentity(entry.identity)
+      const identity1 = await identities.getIdentity(entry.identity!)
+      const identity2 = await identities.getIdentity(entry.identity!)
+
+      if (!identity1 || !identity2) {
+        throw new Error('Identity not found')
+      }
 
       return identity1.id === testIdentity1.id
         || identity2.id === testIdentity2.id
@@ -71,7 +69,7 @@ describe('documents Database Replication', () => {
       address: databaseId,
       accessController,
       name: 'testdb1',
-      directory: './orbitdb1',
+      directory: './.orbitdb/documents-1',
     })
     db2 = await Documents.create({
       ipfs: ipfs2,
@@ -79,7 +77,7 @@ describe('documents Database Replication', () => {
       address: databaseId,
       name: 'testdb2',
       accessController,
-      directory: './orbitdb2',
+      directory: './.orbitdb/documents-2',
     })
   })
   afterEach(async () => {
@@ -107,16 +105,16 @@ describe('documents Database Replication', () => {
     }
 
     await rimraf(keysPath)
-    await rimraf('./orbitdb1')
-    await rimraf('./orbitdb2')
-    await rimraf('./ipfs1')
-    await rimraf('./ipfs2')
+    await rimraf('./.orbitdb/documents-1')
+    await rimraf('./.orbitdb/documents-2')
+    await rimraf('./.ipfs-1')
+    await rimraf('./.ipfs-2')
   })
 
   it('basic Verification', async () => {
     const msg = new Uint8Array([1, 2, 3, 4, 5])
-    const sig = await testIdentity1.sign(msg)
-    const verified = await testIdentity2.verify(sig, testIdentity1.publicKey, msg)
+    const sig = await testIdentity1.sign!(msg)
+    const verified = await testIdentity2.verify!(sig, testIdentity1.publicKey, msg)
     strictEqual(verified, true)
   })
 
@@ -124,30 +122,30 @@ describe('documents Database Replication', () => {
     let connected1 = false
     let connected2 = false
 
-    db1.sync.events.addEventListener('join', async (_peerId, _heads) => {
-      console.log('db1 joined')
+    db1.sync.events.addEventListener('join', (event) => {
+      console.log('db1 joined', event.detail)
       connected1 = true
     })
-    db2.sync.events.addEventListener('join', async (_peerId, _heads) => {
-      console.log('db1 joined')
+    db2.sync.events.addEventListener('join', (event) => {
+      console.log('db2 joined', event.detail)
       connected2 = true
     })
 
-    await db1.put({ _id: 1, msg: 'record 1 on db 1' })
-    await db2.put({ _id: 2, msg: 'record 2 on db 2' })
-    await db1.put({ _id: 3, msg: 'record 3 on db 1' })
-    await db2.put({ _id: 4, msg: 'record 4 on db 2' })
+    db1.events.addEventListener('error', (err: any) => {
+      console.error(err.detail)
+    })
 
-    await waitFor(() => {
-      return connected1
-    }, () => {
-      return true
+    db2.events.addEventListener('error', (err: any) => {
+      console.error(err.detail)
     })
-    await waitFor(() => {
-      return connected2
-    }, () => {
-      return true
-    })
+
+    await db1.put({ _id: 1, msg: 'record 1 on db 1' })
+    await db1.put({ _id: 3, msg: 'record 3 on db 1' })
+    await waitFor(() => connected1, () => true)
+
+    await db2.put({ _id: 2, msg: 'record 2 on db 2' })
+    await db2.put({ _id: 4, msg: 'record 4 on db 2' })
+    await waitFor(() => connected2, () => true)
 
     const all1: DocumentsDoc[] = []
     for await (const item of db1.iterator()) {
@@ -158,8 +156,7 @@ describe('documents Database Replication', () => {
     for await (const item of db2.iterator()) {
       all2.unshift(item)
     }
-    console.log('all1:', all1)
-    console.log('all2:', all2)
+
     deepStrictEqual(all1, all2)
   })
 })

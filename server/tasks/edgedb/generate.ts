@@ -10,6 +10,7 @@ export default defineTask({
   },
   async run({ payload, context }) {
     const controller = new AbortController()
+
     setTimeout(() => {
       controller.abort()
     }, 5000)
@@ -19,12 +20,12 @@ export default defineTask({
       preferLocal: true,
     })`edgedb instance credentials --json`
 
-    logger.log({ payload, context, stdout })
+    const data = JSON.parse(stdout)
+    logger.log(JSON.stringify({ payload, context, data }, null, 2))
 
     return {
       result: {
-        payload: JSON.parse(stdout.split('\n')
-          .join('')),
+        payload: data,
         context: {
           previousExecutionTime: payload?.scheduledTime,
         },

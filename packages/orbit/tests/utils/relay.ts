@@ -53,5 +53,6 @@ server.addEventListener('peer:disconnect', async (event) => {
 })
 
 console.log(server.peerId.toString())
-console.log('p2p addr: ', server.getMultiaddrs().map(ma => ma.toString()))
+console.log('p2p addr: ', server.getMultiaddrs()
+  .map(ma => ma.toString()))
 // generates a deterministic address: /ip4/127.0.0.1/tcp/33519/ws/p2p/12D3KooWAJjbRkp8FPF5MKgMU53aUTxWkqvDrs4zc1VMbwRwfsbE

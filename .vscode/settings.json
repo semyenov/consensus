@@ -1,4 +1,18 @@
 {
+  // "workbench.colorTheme": "Rockstar",
+  // "workbench.sideBar.location": "right",
+  // "workbench.statusBar.visible": true,
+  // "workbench.editor.editorActionsLocation": "titleBar",
+  // "workbench.editor.showIcons": true,
+  // "workbench.editor.tabSizing": "fixed",
+  // "workbench.editor.tabActionLocation": "right",
+  // "workbench.activityBar.orientation": "vertical",
+  // "workbench.activityBar.location": "default",
+  // "workbench.panel.defaultLocation": "right",
+  // "workbench.commandPalette.experimental.askChatLocation": "chatView",
+
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
   "editor.formatOnSave": false,
   "editor.defaultFormatter": "dbaeumer.vscode-eslint",
 
@@ -29,12 +43,13 @@
 
   "i18n-ally.localesPaths": ["languages"],
   "i18n-ally.displayLanguage": "ru",
+  "i18n-ally.sourceLanguage": "ru",
   "i18n-ally.keystyle": "nested",
+
   "[vue]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint"
   },
   "[typescript]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint"
-  },
-  "i18n-ally.sourceLanguage": "ru"
+  }
 }

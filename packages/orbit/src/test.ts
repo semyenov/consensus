@@ -1,8 +1,10 @@
-import { type GossipSub, gossipsub } from '@chainsafe/libp2p-gossipsub'
+import { mkdir } from 'node:fs/promises'
+import process from 'node:process'
+
+import { gossipsub } from '@chainsafe/libp2p-gossipsub'
 import { noise } from '@chainsafe/libp2p-noise'
 import { yamux } from '@chainsafe/libp2p-yamux'
 import { bitswap } from '@helia/block-brokers'
-import { bootstrap } from '@libp2p/bootstrap'
 import {
   circuitRelayServer,
   circuitRelayTransport,
@@ -13,50 +15,39 @@ import { tcp } from '@libp2p/tcp'
 import { webRTC } from '@libp2p/webrtc'
 import { webSockets } from '@libp2p/websockets'
 import { all } from '@libp2p/websockets/filters'
-import { createLogger } from '@regioni/lib-logger'
 import { LevelBlockstore } from 'blockstore-level'
+import { createConsola } from 'consola'
 import { createHelia } from 'helia'
-import { type Libp2pOptions, createLibp2p } from 'libp2p'
+import { createLibp2p } from 'libp2p'
+import { omit } from 'remeda'
 
-import { OrbitDB } from './index.js'
+import { ComposedStorage, LRUStorage, RocksDBStorage } from './storage'
+import { join } from './utils'
 
-const logger = createLogger({
-  defaultMeta: {
-    service: 'orbitdb',
-    label: 'test',
+import { OrbitDB } from './index'
+
+import type { Libp2pOptions } from './vendor'
+
+interface Entry {
+  _id: string
+  payload: string
+}
+
+const logger = createConsola({
+  defaults: {
+    tag: 'orbitdb',
+    level: 5,
   },
 })
 
-const directory = './orbitdb'
-const options: Libp2pOptions<{
-  pubsub: GossipSub
-}> = {
+const directory = '.orbitdb'
+const address = 'new'
+
+const options: Libp2pOptions = {
   addresses: {
     listen: ['/ip4/127.0.0.1/tcp/0/ws'],
   },
-  // logger: {
-  //   forComponent(name: string) {
-  //     const l = (formatter: string, ...args: []) => {
-  //       logger.info(formatter, { label: name, ...args })
-  //     }
-
-  //     l.enabled = true
-  //     l.error = (formatter: string, ...args: []) => {
-  //       logger.error(formatter, { label: name, ...args })
-  //     }
-  //     l.trace = (formatter: string, ...args: []) => {
-  //       logger.debug(formatter, { label: name, ...args })
-  //     }
-
-  //     return l
-  //   },
-  // },
-  peerDiscovery: [
-    mdns(),
-    bootstrap({
-      list: ['/ip4/192.168.10.53/tcp/41613/ws/p2p/12D3KooWHrQf4KmPEJEwY53NdzQ5woniNq6Jt7So8fEYScjUWeQQ'],
-    }),
-  ],
+  peerDiscovery: [mdns()],
   transports: [
     tcp(),
     webRTC(),
@@ -69,20 +60,22 @@ const options: Libp2pOptions<{
     maxPeerAddrsToDial: 1000,
   },
   connectionGater: {
-    denyDialMultiaddr: () => {
-      return false
-    },
+    denyDialMultiaddr: () => false,
   },
   services: {
     identify: identify(),
     circuitRelay: circuitRelayServer(),
     pubsub: gossipsub({
       allowPublishToZeroTopicPeers: true,
-    }) as unknown as GossipSub,
+      globalSignaturePolicy: 'StrictNoSign',
+    }),
   },
 }
 
 async function main() {
+  const dbPath = join(directory, 'orbitdb', address)
+  await mkdir(dbPath, { recursive: true, mode: 0o777 })
+
   const ipfs = await createHelia({
     libp2p: await createLibp2p({ ...options }),
     blockstore: new LevelBlockstore(`${directory}/ipfs/blocks`),
@@ -90,24 +83,100 @@ async function main() {
   })
   const orbit = await OrbitDB.create({
     id: 'test',
-    directory: './orbitdb',
+    directory,
     ipfs,
   })
 
-  const db = await orbit.open<{ _id: string, test: string }, 'documents'>(
-    'documents',
-    '/orbitdb/zdpuAqDgvEBDFh2xdNMwzAYJXg17J46Z25yMYHsMuiZpJcbT6',
-  )
-
-  db.events.addEventListener('update', (entry) => {
-    console.log(entry)
+  const db = await orbit.open<'documents', Entry>('documents', address, {
+    entryStorage: ComposedStorage.create({
+      storage1: LRUStorage.create<Uint8Array>({
+        size: 1000,
+      }),
+      storage2: await RocksDBStorage.create<Uint8Array>({
+        path: join(dbPath, 'entries'),
+      }),
+    }),
+    headsStorage: ComposedStorage.create({
+      storage1: LRUStorage.create<Uint8Array>({
+        size: 1000,
+      }),
+      storage2: await RocksDBStorage.create<Uint8Array>({
+        path: join(dbPath, 'heads'),
+      }),
+    }),
+    indexStorage: ComposedStorage.create({
+      storage1: LRUStorage.create<boolean>({
+        size: 1000,
+      }),
+      storage2: await RocksDBStorage.create<boolean>({
+        path: join(dbPath, 'indexes'),
+      }),
+    }),
   })
 
-  console.log(db)
-  // db.put({ _id: 'test', test: 'test' })
+  db.events.addEventListener('update', (event) => {
+    logger.log(JSON.stringify(omit(event.detail.entry, ['bytes']), null, 2))
+  })
 
-  // const result = await db.get('test')
-  // console.log(result)
+  while (true) {
+    const command = await logger.prompt('Enter a command: ', {
+      type: 'select',
+      options: [
+        'get',
+        'put',
+        'del',
+        'close',
+      ],
+    })
+    if (command === 'close') {
+      await db.close()
+      process.exit(0)
+    }
+
+    const id = await logger.prompt('Enter an ID: ', {
+      type: 'text',
+    })
+
+    switch (command) {
+      case 'put':
+        await db.put<Entry>({
+          _id: id,
+          payload: await logger.prompt('Enter a payload: ', {
+            type: 'text',
+          }),
+        })
+        logger.log('Put', id)
+        break
+      case 'del':
+        await db.del(id)
+        logger.log('Deleted', id)
+        break
+      case 'get':
+        await db
+          .get(id)
+          .then((result) => {
+            if (result) {
+              logger.log(JSON.stringify(result.value, null, 2))
+            }
+            else {
+              logger.log('Not found')
+            }
+          })
+          .catch((error) => {
+            logger.error(error)
+          })
+        break
+      default:
+        logger.log('Unknown command')
+        break
+    }
+  }
 }
 
 main()
+  .catch((error) => {
+    logger.error(error)
+  })
+  .finally(() => {
+    logger.info('Done')
+  })

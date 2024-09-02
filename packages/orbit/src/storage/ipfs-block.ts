@@ -1,4 +1,3 @@
-/* eslint-disable unused-imports/no-unused-vars */
 import drain from 'it-drain'
 import { base58btc } from 'multiformats/bases/base58'
 import { CID } from 'multiformats/cid'
@@ -46,7 +45,7 @@ implements StorageInstance<T> {
     }
   }
 
-  async del(hash: string): Promise<void> {
+  async del(): Promise<void> {
     // No-op for IPFS Block Storage
   }
 

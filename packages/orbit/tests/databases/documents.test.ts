@@ -1,9 +1,7 @@
-// eslint-disable-next-line ts/ban-ts-comment
-// @ts-nocheck
+/* eslint-disable no-console */
 import { deepStrictEqual, notStrictEqual, strictEqual } from 'node:assert'
 
 import { copy } from 'fs-extra'
-import { indexBy } from 'remeda'
 import { rimraf } from 'rimraf'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, it } from 'vitest'
 
@@ -12,23 +10,20 @@ import {
   Identities,
   KeyStore,
 } from '../../src'
-import testKeysPath from '../fixtures/test-keys-path.js'
-import createHelia from '../utils/create-helia.js'
+import testKeysPath from '../fixtures/test-keys-path'
+import createHelia from '../utils/create-helia'
 
-import type {
-  AccessControllerInstance,
-  DocumentsDoc,
-  DocumentsInstance,
-  IPFS,
-  IdentitiesInstance,
-  IdentityInstance,
-  KeyStoreInstance,
-} from '@orbitdb/core'
+import type { AccessControllerInstance } from '../../src/access-controllers'
+import type { DocumentsDoc, DocumentsInstance } from '../../src/databases/documents'
+import type { IdentitiesInstance, IdentityInstance } from '../../src/identities'
+import type { KeyStoreInstance } from '../../src/key-store'
+import type { EntryInstance } from '../../src/oplog'
+import type { HeliaInstance } from '../../src/vendor'
 
-const keysPath = './testkeys'
+const keysPath = './.orbitdb/keystore'
 
 describe('documents Database', () => {
-  let ipfs: IPFS
+  let ipfs: HeliaInstance
   let keystore: KeyStoreInstance
   let accessController: AccessControllerInstance
   let identities: IdentitiesInstance
@@ -39,6 +34,19 @@ describe('documents Database', () => {
 
   beforeAll(async () => {
     ipfs = await createHelia()
+
+    accessController = {
+      type: 'basic',
+      write: ['*'],
+      canAppend: async (entry: EntryInstance) => {
+        const identity = await identities.getIdentity(entry.identity!)
+        if (!identity) {
+          throw new Error('Identity not found')
+        }
+
+        return identity.id === testIdentity1.id
+      },
+    }
 
     await copy(testKeysPath, keysPath)
     keystore = await KeyStore.create({ path: keysPath })
@@ -103,7 +111,7 @@ describe('documents Database', () => {
       try {
         await db.put(expected)
       }
-      catch (error) {
+      catch (error: any) {
         err = error
       }
       strictEqual(
@@ -121,7 +129,7 @@ describe('documents Database', () => {
       try {
         await db.put(expected)
       }
-      catch (error) {
+      catch (error: any) {
         err = error
       }
       strictEqual(
@@ -147,7 +155,7 @@ describe('documents Database', () => {
       try {
         await db.del(key)
       }
-      catch (error) {
+      catch (error: any) {
         err = error
       }
 
@@ -167,9 +175,7 @@ describe('documents Database', () => {
       await db.del('hello world 3')
       await db.put(expected)
 
-      const findFn = (doc) => {
-        return doc.views > 5
-      }
+      const findFn = (doc: any) => doc.views > 5
 
       deepStrictEqual(await db.query(findFn), [expected])
     })
@@ -178,9 +184,7 @@ describe('documents Database', () => {
       await db.put({ _id: 'hello world 1', msg: 'writing 1 to db', views: 10 })
       await db.del('hello world 1')
 
-      const findFn = (doc) => {
-        return doc.views > 5
-      }
+      const findFn = (doc: any) => doc.views > 5
 
       deepStrictEqual(await db.query(findFn), [])
     })
@@ -188,13 +192,13 @@ describe('documents Database', () => {
 
   describe('custom index doc', () => {
     beforeEach(async () => {
-      db = await Documents.create<{ doc: string, msg: string }>({
+      db = await Documents.create({
         ipfs,
         identity: testIdentity1,
         address: databaseId,
         accessController,
         indexBy: 'doc',
-      }) as DocumentsInstance<{ doc: string, msg: string }>
+      })
     })
 
     afterEach(async () => {
@@ -239,7 +243,7 @@ describe('documents Database', () => {
       try {
         await db.put(expected)
       }
-      catch (error) {
+      catch (error: any) {
         err = error
       }
       strictEqual(
@@ -257,7 +261,7 @@ describe('documents Database', () => {
       try {
         await db.put(expected)
       }
-      catch (error) {
+      catch (error: any) {
         err = error
       }
       strictEqual(
@@ -273,7 +277,7 @@ describe('documents Database', () => {
       try {
         await db.del(key)
       }
-      catch (error) {
+      catch (error: any) {
         err = error
       }
 
@@ -293,9 +297,7 @@ describe('documents Database', () => {
       await db.del('hello world 3')
       await db.put(expected)
 
-      const findFn = (doc) => {
-        return doc.views > 5
-      }
+      const findFn = (doc: any) => doc.views > 5
 
       deepStrictEqual(await db.query(findFn), [expected])
     })
@@ -304,9 +306,7 @@ describe('documents Database', () => {
       await db.put({ doc: 'hello world 1', msg: 'writing 1 to db', views: 10 })
       await db.del('hello world 1')
 
-      const findFn = (doc) => {
-        return doc.views > 5
-      }
+      const findFn = (doc: any) => doc.views > 5
 
       deepStrictEqual(await db.query(findFn), [])
     })
@@ -475,7 +475,7 @@ describe('documents Database', () => {
       try {
         await db.put({ _id, value })
       }
-      catch (error) {
+      catch (error: any) {
         err = error
       }
 

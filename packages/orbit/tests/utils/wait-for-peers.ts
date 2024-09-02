@@ -10,18 +10,18 @@ function waitForPeers(ipfs, peersToWait, topic) {
 
         const hasAllPeers = peerIdsToWait.map(e =>
           peerIds.includes(e),
-        ).filter(e => e === false).length === 0
+        )
+          .filter(e => e === false).length === 0
 
         // FIXME: Does not fail on timeout, not easily fixable
         if (hasAllPeers) {
-          console.log('Found peers!')
           clearInterval(interval)
           resolve(true)
         }
       }
-      catch (e) {
+      catch (error) {
         clearInterval(interval)
-        reject(e)
+        reject(error)
       }
     }, 200)
   })

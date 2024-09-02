@@ -1,6 +1,5 @@
 function NoTypeIdentityProvider() {
-  return async () => {
-  }
+  return async () => {}
 }
 
 export default NoTypeIdentityProvider

@@ -1,23 +1,15 @@
 function customIdentityProvider() {
-  const verifyIdentity = async (_data) => {
-    return true
-  }
+  const verifyIdentity = async _data => true
 
-  const CustomIdentityProvider = () => {
-    return () => {
-      const getId = () => {
-        return 'custom'
-      }
+  const CustomIdentityProvider = () => () => {
+    const getId = () => 'custom'
 
-      const signIdentity = (data) => {
-        return `signature '${data}'`
-      }
+    const signIdentity = data => `signature '${data}'`
 
-      return {
-        getId,
-        signIdentity,
-        type: 'custom',
-      }
+    return {
+      getId,
+      signIdentity,
+      type: 'custom',
     }
   }
 
@@ -29,25 +21,17 @@ function customIdentityProvider() {
 }
 
 function fakeIdentityProvider() {
-  const verifyIdentity = async (_data) => {
-    return false
-  }
+  const verifyIdentity = async _data => false
 
-  const FakeIdentityProvider = () => {
-    return () => {
-      const getId = () => {
-        return 'pubKey'
-      }
+  const FakeIdentityProvider = () => () => {
+    const getId = () => 'pubKey'
 
-      const signIdentity = (data) => {
-        return `false signature '${data}'`
-      }
+    const signIdentity = data => `false signature '${data}'`
 
-      return {
-        getId,
-        signIdentity,
-        type: 'fake',
-      }
+    return {
+      getId,
+      signIdentity,
+      type: 'fake',
     }
   }
 

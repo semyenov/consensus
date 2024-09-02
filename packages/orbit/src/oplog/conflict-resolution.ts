@@ -1,7 +1,7 @@
 /* eslint-disable unused-imports/no-unused-vars */
-import { Clock } from './clock.js'
+import { Clock } from './clock'
 
-import type { EntryInstance } from './entry.js'
+import type { EntryInstance } from './entry'
 
 export class ConflictResolution {
   private static sortById<T>(a: EntryInstance<T>, b: EntryInstance<T>): number {
@@ -13,9 +13,7 @@ export class ConflictResolution {
   }
 
   static LastWriteWins<T>(a: EntryInstance<T>, b: EntryInstance<T>): number {
-    const sortByEntryClocks = (a: EntryInstance<T>, b: EntryInstance<T>) => {
-      return ConflictResolution.SortByClocks(a, b, ConflictResolution.sortById)
-    }
+    const sortByEntryClocks = (a: EntryInstance<T>, b: EntryInstance<T>) => ConflictResolution.SortByClocks(a, b, ConflictResolution.sortById)
 
     return sortByEntryClocks(a, b)
   }

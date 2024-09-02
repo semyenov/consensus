@@ -16,8 +16,9 @@ function config(
     [
       {
         rules: {
-          
+
           'no-empty-function': 'off',
+          'no-unused-vars': 'off',
           'arrow-body-style': ['error', 'as-needed'],
 
           'eol-last': ['error', 'always'],
@@ -28,7 +29,6 @@ function config(
           'prefer-destructuring': 'warn',
           'prefer-object-has-own': 'warn',
           'no-console': ['warn', { allow: ['debug'] }],
-          'no-unused-vars': ['error', { ignoreRestSiblings: true }],
           'no-use-before-define': ['error', { functions: false }],
           'no-param-reassign': ['error', { props: false }],
           'no-underscore-dangle': 'off',
@@ -142,6 +142,7 @@ function config(
           'unicorn/no-unnecessary-await': 'error',
           'unicorn/no-useless-undefined': 'error',
 
+          'unicorn/consistent-function-scoping': 'warn',
           'unicorn/template-indent': ['warn', { indent: 2 }],
         },
       },

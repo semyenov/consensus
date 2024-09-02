@@ -3,7 +3,7 @@ import {
   type KeyStoreInstance,
   signMessage,
   verifyMessage,
-} from '../key-store.js'
+} from '../key-store'
 import {
   ComposedStorage,
   IPFSBlockStorage,
@@ -12,10 +12,10 @@ import {
 } from '../storage'
 import { join } from '../utils'
 
-import { Identity, type IdentityInstance } from './identity.js'
+import { Identity, type IdentityInstance } from './identity'
 import { type IdentityProviderInstance, IdentityProviders } from './providers'
 
-import type { HeliaInstance } from '../vendor.js'
+import type { HeliaInstance } from '../vendor'
 
 interface IdentitiesCreateIdentityOptions {
   id?: string
@@ -217,7 +217,5 @@ function verifyFactory() {
     signature: string,
     publicKey: string,
     data: string | Uint8Array,
-  ): Promise<boolean> => {
-    return await verifyMessage(signature, publicKey, data)
-  }
+  ): Promise<boolean> => await verifyMessage(signature, publicKey, data)
 }

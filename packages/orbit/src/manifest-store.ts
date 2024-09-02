@@ -8,10 +8,10 @@ import {
   IPFSBlockStorage,
   LRUStorage,
   type StorageInstance,
-} from './storage/index.js'
+} from './storage/index'
 
-import type { DatabaseTypeMap } from './databases/index.js'
-import type { HeliaInstance } from './vendor.js'
+import type { DatabaseTypeMap } from './databases/index'
+import type { HeliaInstance } from './vendor'
 
 export interface Manifest {
   name: string
@@ -27,7 +27,7 @@ export interface ManifestStoreOptions {
 
 export interface ManifestStoreInstance {
   get: (address: string) => Promise<Manifest | null>
-  create: (manifest: Manifest) => Promise<{ hash: string; manifest: Manifest }>
+  create: (manifest: Manifest) => Promise<{ hash: string, manifest: Manifest }>
   close: () => Promise<void>
 }
 
@@ -43,9 +43,9 @@ export class ManifestStore implements ManifestStoreInstance {
   }
 
   static create({ ipfs, storage }: ManifestStoreOptions): ManifestStore {
-    const storage_ =
-      storage ||
-      ComposedStorage.create<Uint8Array>({
+    const storage_
+      = storage
+      || ComposedStorage.create<Uint8Array>({
         storage1: LRUStorage.create({ size: 1000 }),
         storage2: IPFSBlockStorage.create({ ipfs, pin: true }),
       })
@@ -64,6 +64,7 @@ export class ManifestStore implements ManifestStoreInstance {
       codec,
       hasher,
     })
+
     return value
   }
 
@@ -72,7 +73,7 @@ export class ManifestStore implements ManifestStoreInstance {
     type,
     accessController,
     meta,
-  }: Manifest): Promise<{ hash: string; manifest: Manifest }> {
+  }: Manifest): Promise<{ hash: string, manifest: Manifest }> {
     if (!name) {
       throw new Error('name is required')
     }

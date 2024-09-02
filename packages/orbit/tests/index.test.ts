@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { deepStrictEqual, strictEqual } from 'node:assert'
 import { existsSync, readdirSync } from 'node:fs'
 import Path from 'node:path'
@@ -15,13 +16,15 @@ import {
   MemoryStorage,
 } from '../src'
 
-import testKeysPath from './fixtures/test-keys-path.js'
-import createHelia from './utils/create-helia.js'
+import testKeysPath from './fixtures/test-keys-path'
+import createHelia from './utils/create-helia'
 
+import type { DatabaseInstance } from '../src/database'
 import type { IdentityInstance } from '../src/identities/identity'
+import type { EntryInstance } from '../src/oplog'
 import type { HeliaInstance } from '../src/vendor'
 
-const keysPath = './testkeys'
+const keysPath = './.orbitdb/keystore'
 
 describe('database', () => {
   // this.timeout(30000)
@@ -30,13 +33,18 @@ describe('database', () => {
   let keystore: KeyStore
   let identities: Identities
   let testIdentity: IdentityInstance
-  let db: Database
+  let db: DatabaseInstance<EntryInstance, any>
 
   const databaseId = 'database-AAA'
 
   const accessController = {
-    canAppend: async (entry) => {
-      const identity1 = await identities.getIdentity(entry.identity)
+    type: 'basic',
+    write: [],
+    canAppend: async (entry: EntryInstance) => {
+      const identity1 = await identities.getIdentity(entry.identity!)
+      if (!identity1) {
+        throw new Error('identity not found')
+      }
 
       return identity1.id === testIdentity.id
     },
@@ -75,8 +83,8 @@ describe('database', () => {
       accessController,
       directory: './.orbitdb',
     })
-    const expected = 'zdpuAwhx6xVpnMPUA7Q4JrvZsyoti5wZ18iDeFwBjPAwsRNof'
-    const op = { op: 'PUT', key: 1, value: 'record 1 on db 1' }
+    const expected = 'zdpuB2YZc3bvZDu8kW6f6rb5JjKeMrNogyPhncci82hLCScdN'
+    const op = { op: 'PUT' as const, key: '1', value: 'record 1 on db 1' }
     const actual = await db.addOperation(op)
 
     deepStrictEqual(actual, expected)
@@ -92,7 +100,7 @@ describe('database', () => {
         address: databaseId,
         accessController,
       })
-      const op = { op: 'PUT', key: 1, value: 'record 1 on db 1' }
+      const op = { op: 'PUT' as const, key: '1', value: 'record 1 on db 1' }
       const hash = await db.addOperation(op)
 
       const headsPath = Path.join(
@@ -111,7 +119,7 @@ describe('database', () => {
       const headsStorage = await LevelStorage.create({ path: headsPath })
 
       deepStrictEqual(
-        (await Entry.decode(await headsStorage.get(hash))).payload,
+        (await Entry.decode(await headsStorage.get(hash) as Uint8Array)).payload,
         op,
       )
 
@@ -128,7 +136,7 @@ describe('database', () => {
         accessController,
         directory: './custom-directory',
       })
-      const op = { op: 'PUT', key: 1, value: 'record 1 on db 1' }
+      const op = { op: 'PUT' as const, key: '1', value: 'record 1 on db 1' }
       const hash = await db.addOperation(op)
 
       const headsPath = Path.join(
@@ -144,7 +152,7 @@ describe('database', () => {
       const headsStorage = await LevelStorage.create({ path: headsPath })
 
       deepStrictEqual(
-        (await Entry.decode(await headsStorage.get(hash))).payload,
+        (await Entry.decode(await headsStorage.get(hash) as Uint8Array)).payload,
         op,
       )
 
@@ -155,7 +163,7 @@ describe('database', () => {
     })
 
     it('uses given MemoryStorage for headsStorage', async () => {
-      const headsStorage = await MemoryStorage.create()
+      const headsStorage = MemoryStorage.create<Uint8Array>()
       db = await Database.create({
         ipfs,
         identity: testIdentity,
@@ -164,11 +172,11 @@ describe('database', () => {
         directory: './.orbitdb',
         headsStorage,
       })
-      const op = { op: 'PUT', key: 1, value: 'record 1 on db 1' }
+      const op = { op: 'PUT' as const, key: '1', value: 'record 1 on db 1' }
       const hash = await db.addOperation(op)
 
       deepStrictEqual(
-        (await Entry.decode(await headsStorage.get(hash))).payload,
+        (await Entry.decode(await headsStorage.get(hash) as Uint8Array)).payload,
         op,
       )
 
@@ -176,7 +184,7 @@ describe('database', () => {
     })
 
     it('uses given MemoryStorage for entryStorage', async () => {
-      const entryStorage = await MemoryStorage.create()
+      const entryStorage = MemoryStorage.create<Uint8Array>()
       db = await Database.create({
         ipfs,
         identity: testIdentity,
@@ -185,11 +193,11 @@ describe('database', () => {
         directory: './.orbitdb',
         entryStorage,
       })
-      const op = { op: 'PUT', key: 1, value: 'record 1 on db 1' }
+      const op = { op: 'PUT' as const, key: '1', value: 'record 1 on db 1' }
       const hash = await db.addOperation(op)
 
       deepStrictEqual(
-        (await Entry.decode(await entryStorage.get(hash))).payload,
+        (await Entry.decode(await entryStorage.get(hash) as Uint8Array)).payload,
         op,
       )
 

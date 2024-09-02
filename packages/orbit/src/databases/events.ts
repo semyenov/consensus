@@ -6,7 +6,7 @@ import {
 } from '../database.js'
 
 import type { DatabaseOperation, DatabaseType } from '.'
-import type { LogInstance } from '../oplog/log.js'
+import type { LogInstance, LogIteratorOptions } from '../oplog/log.js'
 import type { SyncEvents, SyncInstance } from '../sync.js'
 import type { PeerSet } from '@libp2p/peer-collections'
 
@@ -28,10 +28,12 @@ export type EventsOptions<T = unknown> = DatabaseOptions<T>
 export interface EventsInstance<T = unknown> extends DatabaseInstance<T> {
   type: 'events'
 
-  add: (value: T) => Promise<string>
-  all: () => Promise<Omit<EventsDoc<T>, 'key'>[]>
-  get: (hash: string) => Promise<T | null>
-  iterator: (options: EventsIteratorOptions) => AsyncIterable<EventsDoc<T>>
+  add: <D = T>(value: D) => Promise<string>
+  all: <D = T>() => Promise<D[]>
+  get: <D = T>(hash: string) => Promise<D | null>
+  iterator: <D = T>(
+    options?: LogIteratorOptions,
+  ) => AsyncIterable<D>
 }
 
 export class EventsDatabase<T = unknown> implements EventsInstance<T> {
@@ -54,7 +56,7 @@ export class EventsDatabase<T = unknown> implements EventsInstance<T> {
   ): Promise<EventsDatabase<T>> {
     const database = await Database.create<T>(options)
 
-    return new EventsDatabase<T>(database)
+    return new EventsDatabase<T>(database as DatabaseInstance<T>)
   }
 
   get name(): string | undefined {
@@ -96,38 +98,31 @@ export class EventsDatabase<T = unknown> implements EventsInstance<T> {
     return this.database.sync
   }
 
-  async addOperation(operation: DatabaseOperation<T>): Promise<string> {
+  async addOperation<D = T>(operation: DatabaseOperation<D>): Promise<string> {
     return this.database.addOperation(operation)
   }
 
-  async add(value: T): Promise<string> {
+  async add<D = T>(value: D): Promise<string> {
     return this.database.addOperation({ op: 'ADD', key: null, value })
   }
 
-  async get(hash: string): Promise<T | null> {
-    const entry = await this.database.log.get(hash)
+  async get<D = T>(hash: string): Promise<D | null> {
+    const entry = await this.database.log.get<DatabaseOperation<D>>(hash)
 
     return entry ? entry.payload.value : null
   }
 
-  async *iterator({
-    gt,
-    gte,
-    lt,
-    lte,
-    amount,
-  }: EventsIteratorOptions = {}): AsyncIterable<EventsDoc<T>> {
-    const it = this.database.log.iterator({ gt, gte, lt, lte, amount })
-    for await (const event of it) {
-      const hash = event.hash!
-      const { value } = event.payload
-      yield { hash, value }
+  async *iterator<D = T>(
+    options: LogIteratorOptions = { amount: -1 },
+  ): AsyncIterable<D> {
+    for await (const entry of this.database.log.iterator<D>(options)) {
+      yield entry.payload
     }
   }
 
-  async all(): Promise<Omit<EventsDoc<T>, 'key'>[]> {
+  async all<D = T>(): Promise<D[]> {
     const values = []
-    for await (const entry of this.iterator()) {
+    for await (const entry of this.iterator<D>()) {
       values.unshift(entry)
     }
 

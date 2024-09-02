@@ -1,24 +1,23 @@
-// eslint-disable-next-line ts/ban-ts-comment
-// @ts-nocheck
 import { deepStrictEqual, notStrictEqual, strictEqual } from 'node:assert'
 
 import { rimraf } from 'rimraf'
 import { afterAll, beforeAll, describe, it } from 'vitest'
 
-import {
-  Identities,
-  KeyStore,
-  OrbitDB,
-  OrbitDBAccessController,
-} from '../../src'
-import connectPeers from '../utils/connect-nodes.js'
-import createHelia from '../utils/create-helia.js'
+import { OrbitDB, OrbitDBAccessController, type OrbitDBInstance } from '../../src'
+import { Identities, type IdentitiesInstance, type IdentityInstance } from '../../src/identities'
+import { KeyStore, type KeyStoreInstance } from '../../src/key-store'
+import connectPeers from '../utils/connect-nodes'
+import createHelia from '../utils/create-helia'
+
+import type { AccessControllerInstance, OrbitDBAccessControllerInstance } from '../../src/access-controllers'
+import type { EntryInstance } from '../../src/oplog'
+import type { HeliaInstance } from '../../src/vendor'
 
 const dbPath1 = './orbitdb/tests/orbitdb-access-controller/1'
 const dbPath2 = './orbitdb/tests/orbitdb-access-controller/2'
 
 describe('orbitDBAccessController', () => {
-  let ipfs1: IPFS, ipfs2: IPFS
+  let ipfs1: HeliaInstance, ipfs2: HeliaInstance
   let orbitdb1: OrbitDBInstance, orbitdb2: OrbitDBInstance
   let identities1: IdentitiesInstance,
     identities2: IdentitiesInstance,
@@ -75,7 +74,7 @@ describe('orbitDBAccessController', () => {
   })
 
   describe('default write access', () => {
-    let accessController: OrbitDBAccessController
+    let accessController: OrbitDBAccessControllerInstance
 
     beforeAll(async () => {
       accessController = await OrbitDBAccessController.create({
@@ -106,13 +105,13 @@ describe('orbitDBAccessController', () => {
         // ...
         // doesn't matter what we put here, only identity is used for the check
       }
-      const canAppend = await accessController.canAppend(mockEntry)
+      const canAppend = await accessController.canAppend(mockEntry as EntryInstance)
       strictEqual(canAppend, true)
     })
   })
 
   describe('grant', () => {
-    let accessController: OrbitDBAccessController
+    let accessController: OrbitDBAccessControllerInstance
 
     beforeAll(async () => {
       accessController = await OrbitDBAccessController.create({
@@ -177,11 +176,11 @@ describe('orbitDBAccessController', () => {
 
       const mockEntry1 = {
         identity: testIdentity1.hash,
-      } as Entry.Instance
+      } as EntryInstance
 
       const mockEntry2 = {
         identity: testIdentity2.hash,
-      } as Entry.Instance
+      } as EntryInstance
 
       const canAppend1 = await accessController.canAppend(mockEntry1)
 
@@ -198,7 +197,7 @@ describe('orbitDBAccessController', () => {
   })
 
   describe('revoke', () => {
-    let accessController: OrbitDBAccessController
+    let accessController: OrbitDBAccessControllerInstance
 
     beforeAll(async () => {
       accessController = await OrbitDBAccessController.create({
@@ -270,7 +269,6 @@ describe('orbitDBAccessController', () => {
       expected.write = new Set([testIdentity1.id])
       expected.read = new Set(['ABCD'])
       expected.delete = new Set(['ABCD'])
-      console.log('expected!!', expected)
 
       deepStrictEqual(await accessController.capabilities(), expected)
     })
@@ -289,8 +287,8 @@ describe('orbitDBAccessController', () => {
       const mockEntry2 = {
         identity: testIdentity2.hash,
       }
-      const canAppend = await accessController.canAppend(mockEntry1)
-      const noAppend = await accessController.canAppend(mockEntry2)
+      const canAppend = await accessController.canAppend(mockEntry1 as EntryInstance)
+      const noAppend = await accessController.canAppend(mockEntry2 as EntryInstance)
       strictEqual(canAppend, true)
       strictEqual(noAppend, false)
     })

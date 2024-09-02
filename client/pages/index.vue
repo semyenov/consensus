@@ -11,7 +11,7 @@ const router = useRouter()
 <template>
   <div
     v-if="isLoggedIn"
-    class="flex flex-col items-center justify-center w-full h-full"
+    class="flex flex-col items-center justify-center w-full h-full px-4 py-8"
   >
     <Avatar
       v-if="user.identity.subject"
@@ -80,7 +80,7 @@ const router = useRouter()
     </div>
   </div>
 
-  <div v-else class="flex flex-col items-center justify-center py-8">
+  <div v-else class="flex flex-col items-center justify-center w-full h-full px-4 py-8">
     <h1
       class="mb-4 text-4xl font-extrabold tracking-tight text-center scroll-m-20 lg:text-5xl"
     >

@@ -1,4 +1,4 @@
-// @ts-ignore: lru is not typed
+// @ts-expect-error: lru is not typed
 import LRU from 'lru'
 
 import { STORAGE_LRU_SIZE } from '../constants'

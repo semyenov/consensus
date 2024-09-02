@@ -2,11 +2,12 @@ export type {
   OrbitDBInstance,
   OrbitDBOptions,
   OrbitDBOpenOptions,
-} from './orbitdb.js'
-export { OrbitDB, OrbitDBAddress } from './orbitdb.js'
+} from './orbitdb'
+export { OrbitDB, OrbitDBAddress } from './orbitdb'
 
 export {
   Documents,
+  EdgeDB,
   Events,
   KeyValue,
   KeyValueIndexed,
@@ -14,8 +15,8 @@ export {
 } from './databases'
 
 export { Log, Entry } from './oplog'
-export { Database } from './database.js'
-export { KeyStore } from './key-store.js'
+export { Database } from './database'
+export { KeyStore } from './key-store'
 
 export {
   useAccessController,
@@ -31,5 +32,6 @@ export {
   LevelStorage,
   LRUStorage,
   MemoryStorage,
+  RocksDBStorage,
   ComposedStorage,
 } from './storage'

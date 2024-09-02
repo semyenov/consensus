@@ -33,6 +33,8 @@ describe('database - Replication', () => {
   const databaseId = 'documents-AAA'
 
   const accessController = {
+    type: 'basic',
+    write: ['*'],
     canAppend: async (entry: EntryInstance) => {
       const identity1 = entry.identity && await identities.getIdentity(entry.identity)
       const identity2 = entry.identity && await identities2.getIdentity(entry.identity)
@@ -100,7 +102,7 @@ describe('database - Replication', () => {
         address: databaseId,
         name: 'test',
         accessController,
-        directory: './.out/orbitdb1',
+        directory: './.orbitdb/orbitdb1',
       })
     })
 
@@ -108,18 +110,14 @@ describe('database - Replication', () => {
       let replicated = false
       let expectedEntryHash: null | string = null
       const onConnected = (customEvent: CustomEvent) => {
-        const { peerId, heads } = customEvent.detail
-        console.log('onConnected', peerId)
+        const { heads } = customEvent.detail
         replicated = expectedEntryHash !== null
-        && heads.map((e) => {
-          return e.hash
-        })
+        && heads.map((e: EntryInstance) => e.hash)
           .includes(expectedEntryHash)
       }
 
       const onUpdate = (customEvent: CustomEvent) => {
         const { entry } = customEvent.detail
-        console.log('onUpdate: entry', entry)
         replicated = expectedEntryHash !== null
         && entry.hash === expectedEntryHash
       }
@@ -130,7 +128,7 @@ describe('database - Replication', () => {
         address: databaseId,
         name: 'test2',
         accessController,
-        directory: './.out/orbitdb2',
+        directory: './.orbitdb/orbitdb2',
       })
 
       db2.sync.events.addEventListener('join', onConnected)
@@ -147,15 +145,10 @@ describe('database - Replication', () => {
       })
 
       await waitFor(
-        () => {
-          return replicated
-        },
-        () => {
-          return true
-        },
+        () => replicated,
+        () => true,
       )
 
-      console.log('added record 1 on db 1')
       const all1: EntryInstance[] = []
       for await (const item of db1.log.iterator()) {
         all1.unshift(item)
@@ -174,12 +167,9 @@ describe('database - Replication', () => {
       let expectedEntryHash: null | string = null
 
       const onConnected = (event: CustomEvent) => {
-        const { peerId, heads } = event.detail
-        console.log('peerId', peerId)
+        const { heads } = event.detail
         replicated = expectedEntryHash
-        && heads.map((e) => {
-          return e.hash
-        })
+        && heads.map((e: EntryInstance) => e.hash)
           .includes(expectedEntryHash)
       }
 
@@ -193,42 +183,34 @@ describe('database - Replication', () => {
         identity: testIdentity2,
         address: databaseId,
         accessController,
-        directory: './.out/orbitdb2',
+        directory: './.orbitdb/orbitdb2',
       })
 
       db2.sync.events.addEventListener('join', onConnected)
       db2.events.addEventListener('update', onUpdate)
 
-      await db1.addOperation({ op: 'PUT', key: 1, value: 'record 1 on db 1' })
+      await db1.addOperation({ op: 'PUT', key: '1', value: 'record 1 on db 1' })
 
       await new Promise<void>((resolve) => {
-        setTimeout(() => {
-          return resolve()
-        }, 1000)
+        setTimeout(() => resolve(), 1000)
       })
 
-      await db1.addOperation({ op: 'PUT', key: 2, value: 'record 2 on db 1' })
-      await db1.addOperation({ op: 'PUT', key: 3, value: 'record 3 on db 1' })
+      await db1.addOperation({ op: 'PUT', key: '2', value: 'record 2 on db 1' })
+      await db1.addOperation({ op: 'PUT', key: '3', value: 'record 3 on db 1' })
 
       await new Promise<void>((resolve) => {
-        setTimeout(() => {
-          return resolve()
-        }, 1000)
+        setTimeout(() => resolve(), 1000)
       })
 
       expectedEntryHash = await db1.addOperation({
         op: 'PUT',
-        key: 4,
+        key: '4',
         value: 'record 4 on db 1',
       })
 
       await waitFor(
-        () => {
-          return replicated
-        },
-        () => {
-          return true
-        },
+        () => replicated,
+        () => true,
       )
 
       const all1: EntryInstance[] = []
@@ -251,25 +233,26 @@ describe('database - Replication', () => {
         connected = true
       }
 
-      await db1.addOperation({ op: 'PUT', key: 1, value: 'record 1 on db 1' })
+      await db1.addOperation({ op: 'PUT', key: '1', value: 'record 1 on db 1' })
 
       db2 = await Database.create({
         ipfs: ipfs2,
         identity: testIdentity2,
         address: databaseId,
-        accessController,
-        directory: './.out/orbitdb2',
+        accessController: {
+          type: 'test',
+          write: [] as any,
+          canAppend: async () => true,
+        },
+        meta: {},
+        directory: './.orbitdb/orbitdb2',
       })
 
       db2.sync.events.addEventListener('join', onConnected)
 
       await waitFor(
-        () => {
-          return connected
-        },
-        () => {
-          return true
-        },
+        () => connected,
+        () => true,
       )
 
       const all1: EntryInstance[] = []
@@ -288,21 +271,21 @@ describe('database - Replication', () => {
 
   describe('options', () => {
     it('uses given ComposedStorage with MemoryStorage/IPFSBlockStorage for entryStorage', async () => {
-      const storage1 = await ComposedStorage.create({
-        storage1: await MemoryStorage.create(),
-        storage2: await IPFSBlockStorage.create({ ipfs: ipfs1, pin: true }),
+      const storage1 = ComposedStorage.create<Uint8Array>({
+        storage1: MemoryStorage.create(),
+        storage2: IPFSBlockStorage.create({ ipfs: ipfs1, pin: true }),
       },
       )
-      const storage2 = await ComposedStorage.create({
-        storage1: await MemoryStorage.create(),
-        storage2: await IPFSBlockStorage.create({ ipfs: ipfs2, pin: true }),
+      const storage2 = ComposedStorage.create<Uint8Array>({
+        storage1: MemoryStorage.create(),
+        storage2: IPFSBlockStorage.create({ ipfs: ipfs2, pin: true }),
       })
       db1 = await Database.create({
         ipfs: ipfs1,
         identity: testIdentity1,
         address: databaseId,
         accessController,
-        directory: './.out/orbitdb1',
+        directory: './.orbitdb/orbitdb1',
         entryStorage: storage1,
       })
       db2 = await Database.create({
@@ -310,7 +293,7 @@ describe('database - Replication', () => {
         identity: testIdentity2,
         address: databaseId,
         accessController,
-        directory: './.out/orbitdb2',
+        directory: './.orbitdb/orbitdb2',
         entryStorage: storage2,
       })
 
@@ -334,20 +317,12 @@ describe('database - Replication', () => {
       await db1.addOperation({ op: 'PUT', key: String(4), value: 'record 4 on db 1' })
 
       await waitFor(
-        () => {
-          return connected1
-        },
-        () => {
-          return true
-        },
+        () => connected1,
+        () => true,
       )
       await waitFor(
-        () => {
-          return connected2
-        },
-        () => {
-          return true
-        },
+        () => connected2,
+        () => true,
       )
 
       const all1: EntryInstance[] = []
@@ -371,14 +346,14 @@ describe('database - Replication', () => {
         identity: testIdentity1,
         address: databaseId,
         accessController,
-        directory: './.out/orbitdb1',
+        directory: './.orbitdb/orbitdb1',
       })
       db2 = await Database.create({
         ipfs: ipfs2,
         identity: testIdentity2,
         address: databaseId,
         accessController,
-        directory: './.out/orbitdb2',
+        directory: './.orbitdb/orbitdb2',
       })
     })
 
@@ -409,39 +384,23 @@ describe('database - Replication', () => {
       db2.events.addEventListener('update', onUpdate2)
 
       await waitFor(
-        () => {
-          return connected1
-        },
-        () => {
-          return true
-        },
+        () => connected1,
+        () => true,
       )
       await waitFor(
-        () => {
-          return connected2
-        },
-        () => {
-          return true
-        },
+        () => connected2,
+        () => true,
       )
 
-      await db1.addOperation({ op: 'PUT', key: 1, value: 'record 1 on db 1' })
+      await db1.addOperation({ op: 'PUT', key: '1', value: 'record 1 on db 1' })
 
       await waitFor(
-        () => {
-          return updateCount1 >= expected
-        },
-        () => {
-          return true
-        },
+        () => updateCount1 >= expected,
+        () => true,
       )
       await waitFor(
-        () => {
-          return updateCount2 >= expected
-        },
-        () => {
-          return true
-        },
+        () => updateCount2 >= expected,
+        () => true,
       )
 
       strictEqual(updateCount1, expected)
@@ -477,42 +436,26 @@ describe('database - Replication', () => {
       db2.events.addEventListener('update', onUpdate2)
 
       await waitFor(
-        () => {
-          return connected1
-        },
-        () => {
-          return true
-        },
+        () => connected1,
+        () => true,
       )
       await waitFor(
-        () => {
-          return connected2
-        },
-        () => {
-          return true
-        },
+        () => connected2,
+        () => true,
       )
 
-      await db1.addOperation({ op: 'PUT', key: String(1), value: '11' })
-      await db1.addOperation({ op: 'PUT', key: String(2), value: '22' })
-      await db1.addOperation({ op: 'PUT', key: String(3), value: '33' })
-      await db1.addOperation({ op: 'PUT', key: String(4), value: '44' })
+      await db1.addOperation({ op: 'PUT', key: '1', value: '11' })
+      await db1.addOperation({ op: 'PUT', key: '2', value: '22' })
+      await db1.addOperation({ op: 'PUT', key: '3', value: '33' })
+      await db1.addOperation({ op: 'PUT', key: '4', value: '44' })
 
       await waitFor(
-        () => {
-          return updateCount1 >= expected
-        },
-        () => {
-          return true
-        },
+        () => updateCount1 >= expected,
+        () => true,
       )
       await waitFor(
-        () => {
-          return updateCount2 >= expected
-        },
-        () => {
-          return true
-        },
+        () => updateCount2 >= expected,
+        () => true,
       )
 
       strictEqual(updateCount1, expected)

@@ -1,10 +1,17 @@
 import { deepEqual, strictEqual } from 'node:assert'
-import { existsSync, readdir } from 'node:fs'
+import { existsSync } from 'node:fs'
 import path from 'node:path'
 
 import { copy } from 'fs-extra'
 import { rimraf } from 'rimraf'
-import { afterAll, afterEach, beforeAll, beforeEach, describe, it } from 'vitest'
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  it,
+} from 'vitest'
 
 import {
   Database,
@@ -15,27 +22,36 @@ import {
   MemoryStorage,
 } from '../src'
 
-import testKeysPath from './fixtures/test-keys-path.js'
+import testKeysPath from './fixtures/test-keys-path'
 import createHelia from './utils/create-helia'
 
+import type { AccessControllerInstance } from '../src/access-controllers'
+import type { IdentitiesInstance, IdentityInstance } from '../src/identities'
+import type { KeyStoreInstance } from '../src/key-store'
 import type { EntryInstance } from '../src/oplog'
+import type { HeliaInstance } from '../src/vendor'
 
-const keysPath = './testkeys'
+const keysPath = './.orbitdb/keystore'
 
 describe('database', () => {
   // this.timeout(30000)
 
-  let ipfs: any
-  let keystore: KeyStore
-  let identities: Identities
-  let testIdentity: Identity
+  let ipfs: HeliaInstance
+  let keystore: KeyStoreInstance
+  let identities: IdentitiesInstance
+  let testIdentity: IdentityInstance
   let db: Database
 
   const databaseId = 'database-AAA'
 
-  const accessController = {
+  const accessController: AccessControllerInstance = {
+    type: 'basic',
+    write: [],
     canAppend: async (entry: EntryInstance) => {
       const identity1 = await identities.getIdentity(entry.identity!)
+      if (!identity1) {
+        throw new Error('identity not found')
+      }
 
       return identity1.id === testIdentity.id
     },
@@ -73,10 +89,10 @@ describe('database', () => {
       identity: testIdentity,
       address: databaseId,
       accessController,
-      directory: './.orbitdb',
+      directory: './.orbitdb/databases/test-database',
     })
-    const expected = 'zdpuAwhx6xVpnMPUA7Q4JrvZsyoti5wZ18iDeFwBjPAwsRNof'
-    const op = { op: 'PUT', key: 1, value: 'record 1 on db 1' }
+    const expected = 'zdpuB2YZc3bvZDu8kW6f6rb5JjKeMrNogyPhncci82hLCScdN'
+    const op = { op: 'PUT' as const, key: '1', value: 'record 1 on db 1' }
     const actual = await db.addOperation(op)
 
     deepEqual(actual, expected)
@@ -92,23 +108,23 @@ describe('database', () => {
         address: databaseId,
         accessController,
       })
-      const op = { op: 'PUT', key: 1, value: 'record 1 on db 1' }
+      const op = { op: 'PUT' as const, key: '1', value: 'record 1 on db 1' }
       const hash = await db.addOperation(op)
       // console.log('Database', db)
       const headsPath = path.join(
-        './.orbitdb/databases/',
+        './.orbitdb/databases',
         `${databaseId}/`,
         '/log/_heads/',
       )
 
-      strictEqual(await existsSync(headsPath), true)
-
+      strictEqual(existsSync(headsPath), true)
       await db.close()
 
       const headsStorage = await LevelStorage.create({ path: headsPath })
 
       deepEqual(
-        (await Entry.decode(await headsStorage.get(hash))).payload,
+        (await Entry.decode((await headsStorage.get(hash)) as Uint8Array))
+          .payload,
         op,
       )
 
@@ -123,13 +139,13 @@ describe('database', () => {
         identity: testIdentity,
         address: databaseId,
         accessController,
-        directory: './custom-directory',
+        directory: './.orbitdb/databases/custom-directory',
       })
-      const op = { op: 'PUT', key: 1, value: 'record 1 on db 1' }
+      const op = { op: 'PUT' as const, key: '1', value: 'record 1 on db 1' }
       const hash = await db.addOperation(op)
 
       const headsPath = path.join(
-        './custom-directory/',
+        './.orbitdb/databases/custom-directory',
         `${databaseId}/`,
         '/log/_heads/',
       )
@@ -141,18 +157,19 @@ describe('database', () => {
       const headsStorage = await LevelStorage.create({ path: headsPath })
 
       deepEqual(
-        (await Entry.decode(await headsStorage.get(hash))).payload,
+        (await Entry.decode((await headsStorage.get(hash)) as Uint8Array))
+          .payload,
         op,
       )
 
       await headsStorage.close()
 
       await rimraf(headsPath)
-      await rimraf('./custom-directory')
+      await rimraf('./.orbitdb/databases/custom-directory')
     })
 
     it('uses given MemoryStorage for headsStorage', async () => {
-      const headsStorage = new MemoryStorage()
+      const headsStorage = new MemoryStorage<Uint8Array>()
       db = await Database.create({
         ipfs,
         identity: testIdentity,
@@ -161,11 +178,12 @@ describe('database', () => {
         directory: './.orbitdb',
         headsStorage,
       })
-      const op = { op: 'PUT', key: 1, value: 'record 1 on db 1' }
+      const op = { op: 'PUT' as const, key: '1', value: 'record 1 on db 1' }
       const hash = await db.addOperation(op)
 
       deepEqual(
-        (await Entry.decode(await headsStorage.get(hash))).payload,
+        (await Entry.decode((await headsStorage.get(hash)) as Uint8Array))
+          .payload,
         op,
       )
 
@@ -173,7 +191,7 @@ describe('database', () => {
     })
 
     it('uses given MemoryStorage for entryStorage', async () => {
-      const entryStorage = new MemoryStorage()
+      const entryStorage = new MemoryStorage<Uint8Array>()
       db = await Database.create({
         ipfs,
         identity: testIdentity,
@@ -182,11 +200,12 @@ describe('database', () => {
         directory: './orbitdb',
         entryStorage,
       })
-      const op = { op: 'PUT', key: 1, value: 'record 1 on db 1' }
+      const op = { op: 'PUT' as const, key: '1', value: 'record 1 on db 1' }
       const hash = await db.addOperation(op)
 
       deepEqual(
-        (await Entry.decode(await entryStorage.get(hash))).payload,
+        (await Entry.decode((await entryStorage.get(hash)) as Uint8Array))
+          .payload,
         op,
       )
 

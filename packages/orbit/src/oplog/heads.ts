@@ -14,27 +14,26 @@ export class Heads<T> {
     this.storage = storage || new MemoryStorage<Uint8Array>()
     if (heads) {
       this.put(heads)
+        // eslint-disable-next-line no-console
         .catch(console.error)
     }
   }
 
-  async put(heads: EntryInstance<T>[]): Promise<void> {
+  async put<D = T>(heads: EntryInstance<D>[]): Promise<void> {
     const heads_ = Heads.findHeads(heads)
     for (const head of heads_) {
       await this.storage.put(head.hash!, head.bytes!)
     }
   }
 
-  async set(heads: EntryInstance<T>[]): Promise<void> {
+  async set<D = T>(heads: EntryInstance<D>[]): Promise<void> {
     await this.storage.clear()
     await this.put(heads)
   }
 
-  async add(head: EntryInstance<T>): Promise<EntryInstance<T>[] | undefined> {
-    const currentHeads = await this.all()
-    if (currentHeads.some((e) => {
-      return Entry.isEqual(e, head)
-    })) {
+  async add<D = T>(head: EntryInstance<D>): Promise<EntryInstance<D>[] | undefined> {
+    const currentHeads = await this.all<D>()
+    if (currentHeads.some(e => Entry.isEqual(e, head))) {
       return
     }
     const newHeads = Heads.findHeads([...currentHeads, head])
@@ -45,23 +44,21 @@ export class Heads<T> {
 
   async remove(hash: string): Promise<void> {
     const currentHeads = await this.all()
-    const newHeads = currentHeads.filter((e) => {
-      return e.hash !== hash
-    })
+    const newHeads = currentHeads.filter(e => e.hash !== hash)
     await this.set(newHeads)
   }
 
-  async *iterator(): AsyncGenerator<EntryInstance<T>> {
+  async *iterator<D = T>(): AsyncGenerator<EntryInstance<D>> {
     const it = this.storage.iterator()
     for await (const [, bytes] of it) {
-      const head = await Entry.decode<T>(bytes)
+      const head = await Entry.decode<D>(bytes)
       yield head
     }
   }
 
-  async all(): Promise<EntryInstance<T>[]> {
-    const values: EntryInstance<T>[] = []
-    for await (const head of this.iterator()) {
+  async all<D = T>(): Promise<EntryInstance<D>[]> {
+    const values: EntryInstance<D>[] = []
+    for await (const head of this.iterator<D>()) {
       values.push(head)
     }
 

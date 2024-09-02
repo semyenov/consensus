@@ -1,9 +1,9 @@
 import { toString as uint8ArrayToString } from 'uint8arrays/to-string'
 
-import { IDENTITIES_PROVIDER_PUBLICKEY } from '../../constants.js'
-import { signMessage, verifyMessage } from '../../key-store.js'
+import { IDENTITIES_PROVIDER_PUBLICKEY } from '../../constants'
+import { signMessage, verifyMessage } from '../../key-store'
 
-import type { IdentityInstance } from '../identity.js'
+import type { IdentityInstance } from '../identity'
 import type {
   IdentityProviderInstance,
   IdentityProviderOptions,

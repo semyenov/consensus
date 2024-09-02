@@ -9,7 +9,7 @@ export interface ClockInstance {
 export class Clock implements ClockInstance {
   constructor(
     public id: string,
-    public time: number = 0,
+    public time = 0,
   ) {}
 
   static create(id: string, time?: number): Clock {

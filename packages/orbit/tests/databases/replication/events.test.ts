@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { deepStrictEqual } from 'node:assert'
 
 import { copy } from 'fs-extra'
@@ -9,25 +10,21 @@ import {
   Identities,
   KeyStore,
 } from '../../../src'
-import testKeysPath from '../../fixtures/test-keys-path.js'
-import connectPeers from '../../utils/connect-nodes.js'
-import createHelia from '../../utils/create-helia.js'
-import waitFor from '../../utils/wait-for.js'
+import testKeysPath from '../../fixtures/test-keys-path'
+import connectPeers from '../../utils/connect-nodes'
+import createHelia from '../../utils/create-helia'
+import waitFor from '../../utils/wait-for'
 
-import type {
-  Entry,
-  EventsDoc,
-  EventsInstance,
-  IPFS,
-  IdentitiesInstance,
-  IdentityInstance,
-  KeyStoreInstance,
-} from '@orbitdb/core'
+import type { EventsInstance } from '../../../src/databases/events'
+import type { IdentitiesInstance, IdentityInstance } from '../../../src/identities'
+import type { KeyStoreInstance } from '../../../src/key-store'
+import type { EntryInstance } from '../../../src/oplog'
+import type { HeliaInstance } from '../../../src/vendor'
 
-const keysPath = './testkeys'
+const keysPath = './.orbitdb/keystore'
 
 describe('events Database Replication', () => {
-  let ipfs1: IPFS, ipfs2: IPFS
+  let ipfs1: HeliaInstance, ipfs2: HeliaInstance
   let keystore: KeyStoreInstance
   let identities: IdentitiesInstance
   let identities2: IdentitiesInstance
@@ -37,8 +34,11 @@ describe('events Database Replication', () => {
   const databaseId = 'events-AAA'
 
   const accessController = {
-    canAppend: async (entry: Entry.Instance) => {
-      const identity = await identities.getIdentity(entry.identity)
+    canAppend: async (entry: EntryInstance) => {
+      const identity = await identities.getIdentity(entry.identity!)
+      if (!identity) {
+        throw new Error('Identity not found')
+      }
 
       return identity.id === testIdentity1.id
     },
@@ -93,49 +93,40 @@ describe('events Database Replication', () => {
     }
 
     await rimraf(keysPath)
-    await rimraf('./orbitdb1')
-    await rimraf('./orbitdb2')
-    await rimraf('./ipfs1')
-    await rimraf('./ipfs2')
+    await rimraf('./.orbitdb/orbitdb1')
+    await rimraf('./.orbitdb/orbitdb2')
+    await rimraf('./.ipfs1')
+    await rimraf('./.ipfs2')
   })
 
   it('replicates a database', async () => {
     let replicated = false
     let expectedEntryHash: string | null = null
 
-    const onError = (err) => {
-      console.error(err)
-    }
-
     db1 = await Events.create({
       ipfs: ipfs1,
       identity: testIdentity1,
       address: databaseId,
       accessController,
-      directory: './orbitdb1',
+      directory: './.orbitdb/orbitdb1',
     })
     db2 = await Events.create({
       ipfs: ipfs2,
       identity: testIdentity2,
       address: databaseId,
       accessController,
-      directory: './orbitdb2',
+      directory: './.orbitdb/orbitdb2',
     })
 
     db2.sync.events.addEventListener('join', (event: CustomEvent) => {
       const { heads } = event.detail
-      replicated = expectedEntryHash !== null && heads.map((e) => {
-        return e.hash
-      })
+      replicated = expectedEntryHash !== null && heads.map((e: EntryInstance) => e.hash)
         .includes(expectedEntryHash)
     })
     db2.events.addEventListener('update', (event: CustomEvent) => {
       const { entry } = event.detail
       replicated = expectedEntryHash !== null && entry.hash === expectedEntryHash
     })
-
-    db2.events.addEventListener('error', onError)
-    db1.events.addEventListener('error', onError)
 
     await db1.add(expected[0])
     await db1.add(expected[1])
@@ -146,24 +137,16 @@ describe('events Database Replication', () => {
     await db1.add(expected[6])
     expectedEntryHash = await db1.add(expected[7])
 
-    await waitFor(() => {
-      return replicated
-    }, () => {
-      return true
-    })
+    await waitFor(() => replicated, () => true)
 
-    const all2: EventsDoc[] = []
+    const all2: { key?: string, value: any }[] = []
     for await (const event of db2.iterator()) {
-      all2.unshift(event)
+      all2.unshift(event as { key?: string, value: any })
     }
-    deepStrictEqual(all2.map((e) => {
-      return e.value
-    }), expected)
+    deepStrictEqual(all2.map(e => e.value), expected)
 
     const all1 = await db2.all()
-    deepStrictEqual(all1.map((e) => {
-      return e.value
-    }), expected)
+    deepStrictEqual(all1.map((e: any) => e.value), expected)
   })
 
   it('loads the database after replication', async () => {
@@ -175,21 +158,19 @@ describe('events Database Replication', () => {
       identity: testIdentity1,
       address: databaseId,
       accessController,
-      directory: './orbitdb1',
+      directory: './.orbitdb/orbitdb1',
     })
     db2 = await Events.create({
       ipfs: ipfs2,
       identity: testIdentity2,
       address: databaseId,
       accessController,
-      directory: './orbitdb2',
+      directory: './.orbitdb/orbitdb2',
     })
 
     db2.sync.events.addEventListener('join', (event: CustomEvent) => {
       const { heads } = event.detail
-      replicated = expectedEntryHash !== null && heads.map((e) => {
-        return e.hash
-      })
+      replicated = expectedEntryHash !== null && heads.map((e: EntryInstance) => e.hash)
         .includes(expectedEntryHash)
     })
     db2.events.addEventListener('update', (event: CustomEvent) => {
@@ -213,11 +194,7 @@ describe('events Database Replication', () => {
     await db1.add(expected[6])
     expectedEntryHash = await db1.add(expected[7])
 
-    await waitFor(() => {
-      return replicated
-    }, () => {
-      return true
-    })
+    await waitFor(() => replicated, () => true)
 
     await db1.drop()
     await db1.close()
@@ -230,20 +207,16 @@ describe('events Database Replication', () => {
       identity: testIdentity2,
       address: databaseId,
       accessController,
-      directory: './orbitdb2',
+      directory: './.orbitdb/orbitdb2',
     })
 
-    const all2: EventsDoc[] = []
+    const all2: { key?: string, value: any }[] = []
     for await (const event of db2.iterator()) {
-      all2.unshift(event)
+      all2.unshift(event as { key?: string, value: any })
     }
-    deepStrictEqual(all2.map((e) => {
-      return e.value
-    }), expected)
+    deepStrictEqual(all2.map(e => e.value), expected)
 
     const all1 = await db2.all()
-    deepStrictEqual(all1.map((e) => {
-      return e.value
-    }), expected)
+    deepStrictEqual(all1.map((e: any) => e.value), expected)
   })
 })

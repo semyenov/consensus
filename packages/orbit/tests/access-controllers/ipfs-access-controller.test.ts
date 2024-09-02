@@ -1,5 +1,3 @@
-// eslint-disable-next-line ts/ban-ts-comment
-// @ts-nocheck
 import { deepStrictEqual, notStrictEqual, strictEqual } from 'node:assert'
 
 import { rimraf } from 'rimraf'
@@ -9,23 +7,21 @@ import {
   IPFSAccessController,
   Identities,
   KeyStore,
+  type OrbitDBInstance,
 } from '../../src'
 import connectPeers from '../utils/connect-nodes'
 import createHelia from '../utils/create-helia'
 
-// import type {
-//   IPFS,
-//   IdentitiesInstance,
-//   IdentityInstance,
-//   KeyStoreInstance,
-//   OrbitDBInstance,
-// } from '@orbitdb/core'
+import type { AccessControllerInstance } from '../../src/access-controllers'
+import type { IdentitiesInstance, IdentityInstance } from '../../src/identities'
+import type { KeyStoreInstance } from '../../src/key-store'
+import type { HeliaInstance } from '../../src/vendor'
 
 describe('iPFSAccessController', () => {
-  const dbPath1 = './orbitdb/tests/ipfs-access-controller/1'
-  const dbPath2 = './orbitdb/tests/ipfs-access-controller/2'
+  const dbPath1 = './.orbitdb/tests/ipfs-access-controller/1'
+  const dbPath2 = './.orbitdb/tests/ipfs-access-controller/2'
 
-  let ipfs1: IPFS, ipfs2: IPFS
+  let ipfs1: HeliaInstance, ipfs2: HeliaInstance
   let keystore1: KeyStoreInstance, keystore2: KeyStoreInstance
   let identities1: IdentitiesInstance, identities2: IdentitiesInstance
   let testIdentity1: IdentityInstance, testIdentity2: IdentityInstance
@@ -70,7 +66,7 @@ describe('iPFSAccessController', () => {
     await rimraf('./ipfs2')
   })
 
-  let accessController: IPFSAccessController
+  let accessController: AccessControllerInstance
 
   describe('default write access', () => {
     beforeAll(async () => {
@@ -100,7 +96,7 @@ describe('iPFSAccessController', () => {
         // ...
         // doesn't matter what we put here, only identity is used for the check
       }
-      const canAppend = await accessController.canAppend(mockEntry)
+      const canAppend = await accessController.canAppend(mockEntry as any)
       strictEqual(canAppend, true)
     })
 
@@ -111,7 +107,7 @@ describe('iPFSAccessController', () => {
         // ...
         // doesn't matter what we put here, only identity is used for the check
       }
-      const canAppend = await accessController.canAppend(mockEntry)
+      const canAppend = await accessController.canAppend(mockEntry as any)
       strictEqual(canAppend, false)
     })
 

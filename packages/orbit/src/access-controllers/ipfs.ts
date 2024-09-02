@@ -3,19 +3,19 @@ import { base58btc } from 'multiformats/bases/base58'
 import * as Block from 'multiformats/block'
 import { sha256 } from 'multiformats/hashes/sha2'
 
-import { ACCESS_CONTROLLER_IPFS_TYPE } from '../constants.js'
+import { ACCESS_CONTROLLER_IPFS_TYPE } from '../constants'
 import {
   ComposedStorage,
   IPFSBlockStorage,
   LRUStorage,
   type StorageInstance,
-} from '../storage/index.js'
+} from '../storage/index'
 import { join } from '../utils'
 
-import type { AccessControllerInstance } from './index.js'
-import type { IdentitiesInstance } from '../identities/index.js'
-import type { EntryInstance } from '../oplog/entry.js'
-import type { OrbitDBInstance } from '../orbitdb.js'
+import type { AccessControllerInstance } from './index'
+import type { IdentitiesInstance } from '../identities/index'
+import type { EntryInstance } from '../oplog/entry'
+import type { OrbitDBInstance } from '../orbitdb'
 
 const codec = dagCbor
 const hasher = sha256

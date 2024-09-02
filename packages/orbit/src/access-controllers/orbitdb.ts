@@ -1,14 +1,14 @@
-import { ACCESS_CONTROLLER_ORBITDB_TYPE } from '../constants.js'
-import { createId } from '../utils/index.js'
+import { ACCESS_CONTROLLER_ORBITDB_TYPE } from '../constants'
+import { createId } from '../utils/index'
 
-import { IPFSAccessController } from './ipfs.js'
+import { IPFSAccessController } from './ipfs'
 
-import type { AccessControllerInstance } from './index.js'
-import type { DatabaseEvents } from '../database.js'
-import type { DatabaseTypeMap } from '../databases/index.js'
-import type { IdentitiesInstance } from '../identities/index.js'
-import type { EntryInstance } from '../oplog/entry.js'
-import type { OrbitDBInstance } from '../orbitdb.js'
+import type { AccessControllerInstance } from './index'
+import type { DatabaseEvents } from '../database'
+import type { DatabaseTypeMap } from '../databases/index'
+import type { IdentitiesInstance } from '../identities/index'
+import type { EntryInstance } from '../oplog/entry'
+import type { OrbitDBInstance } from '../orbitdb'
 import type { TypedEventEmitter } from '@libp2p/interface'
 
 export interface OrbitDBAccessControllerInstance<
@@ -73,7 +73,7 @@ implements OrbitDBAccessControllerInstance<DatabaseEvents<string[]>> {
     const { orbitdb, identities, name, write } = options
     const address = options.address || name || (await createId(64))
 
-    const database = await orbitdb.open<string[], 'keyvalue'>(
+    const database = await orbitdb.open<'keyvalue', string[]>(
       'keyvalue',
       address,
       {
@@ -115,8 +115,8 @@ implements OrbitDBAccessControllerInstance<DatabaseEvents<string[]>> {
     }
 
     const toSet = (e: [string, Set<string>]) => {
-      const key = e[0]
-      caps[key!] = new Set([...(caps[key!] || []), ...e[1]])
+      const [key, value] = e
+      caps[key!] = new Set([...(caps[key] || []), ...value])
     }
 
     Object.entries({
@@ -128,7 +128,18 @@ implements OrbitDBAccessControllerInstance<DatabaseEvents<string[]>> {
         ]),
       },
     })
-      .forEach(toSet)
+
+    for (const entry of Object.entries({
+      ...caps,
+      ...{
+        admin: new Set([
+          ...(caps.admin || []),
+          ...this.database.accessController.write,
+        ]),
+      },
+    })) {
+      toSet(entry)
+    }
 
     return caps
   }

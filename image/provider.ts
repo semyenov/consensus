@@ -2,20 +2,16 @@ import { joinURL } from 'ufo'
 
 import type { ProviderGetImage } from '@nuxt/image'
 
-import { createOperationsGenerator } from '#image'
-
-const operationsGenerator = createOperationsGenerator()
-
 export const getImage: ProviderGetImage = (src, options) => {
-  let { baseURL, modifiers } = options
-  const operations = operationsGenerator(modifiers)
+  let { baseURL } = options
 
   if (!baseURL) {
     baseURL = 'https://avatars.githubusercontent.com/u/'
   }
 
   return {
-    url: joinURL(baseURL, src + (operations ? `?${operations}` : '')),
+    format: 'webp',
+    url: joinURL(baseURL, src),
   }
 }
 

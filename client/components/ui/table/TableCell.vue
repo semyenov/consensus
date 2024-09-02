@@ -5,6 +5,7 @@ import type { HTMLAttributes } from 'vue'
 
 const props = defineProps<{
   class?: HTMLAttributes['class']
+  pinned?: boolean | 'left' | 'right'
 }>()
 </script>
 
@@ -13,9 +14,15 @@ const props = defineProps<{
     :class="
       cn(
         'align-middle',
+        {
+          'sticky': !!props.pinned,
+          'left-0': props.pinned === 'left',
+          'right-0': props.pinned === 'right',
+        },
         props.class,
       )
     "
+    :data-pinned="props.pinned"
   >
     <slot />
   </td>

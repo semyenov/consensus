@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { MoonIcon, SunIcon } from "@radix-icons/vue";
+import { MoonIcon, SunIcon } from '@radix-icons/vue'
 
-const { isLoggedIn } = useEdgeDbIdentity();
+const { isLoggedIn } = useEdgeDbIdentity()
 
-const isDark = useDark();
-const toggleDark = useToggle(isDark);
-const { identity: user } = useEdgeDbIdentity();
+const isDark = useDark()
+const toggleDark = useToggle(isDark)
+const { identity: user } = useEdgeDbIdentity()
 </script>
 
 <template>
@@ -13,8 +13,22 @@ const { identity: user } = useEdgeDbIdentity();
     <ResizablePanelGroup
       id="__layout"
       direction="horizontal"
-      class="max-w-full h-full"
+      class="w-full h-full max-w-full max-h-screen min-h-screen"
     >
+      <ResizablePanel id="demo-panel-2" class="shadow-xl" :default-size="70">
+        <ResizablePanelGroup id="demo-group-3" direction="vertical">
+          <ResizablePanel id="demo-panel-3" class="shadow-md" :default-size="25">
+            <div class="flex items-center justify-center h-full p-6">
+              <span class="font-semibold">Two</span>
+            </div>
+          </ResizablePanel>
+          <ResizableHandle id="demo-handle-2" />
+          <ResizablePanel v-if="isLoggedIn" :default-size="75">
+            <IssueView :issues="user.assigned_issues" />
+          </ResizablePanel>
+        </ResizablePanelGroup>
+      </ResizablePanel>
+      <ResizableHandle id="demo-handle-1" />
       <ResizablePanel
         id="__layout"
         direction="horizontal"
@@ -36,20 +50,6 @@ const { identity: user } = useEdgeDbIdentity();
               <MoonIcon v-else />
             </Button>
           </ClientOnly>
-        </ResizablePanelGroup>
-      </ResizablePanel>
-      <ResizableHandle id="demo-handle-1" />
-      <ResizablePanel id="demo-panel-2" :default-size="50">
-        <ResizablePanelGroup id="demo-group-3" direction="vertical">
-          <ResizablePanel id="demo-panel-3" :default-size="25">
-            <div class="flex items-center justify-center h-full p-6">
-              <span class="font-semibold">Two</span>
-            </div>
-          </ResizablePanel>
-          <ResizableHandle id="demo-handle-2" />
-          <ResizablePanel v-if="isLoggedIn" :default-size="75">
-            <IssueView :issues="user.assigned_issues" />
-          </ResizablePanel>
         </ResizablePanelGroup>
       </ResizablePanel>
     </ResizablePanelGroup>
