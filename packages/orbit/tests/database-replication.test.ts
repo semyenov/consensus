@@ -1,4 +1,5 @@
 import { deepEqual, strictEqual } from 'node:assert'
+import { basename, dirname, join } from 'node:path'
 
 import { copy } from 'fs-extra'
 import { rimraf } from 'rimraf'
@@ -18,17 +19,25 @@ import connectPeers from './utils/connect-nodes'
 import createHelia from './utils/create-helia'
 import waitFor from './utils/wait-for'
 
+import type { DatabaseInstance } from '../src/database'
+import type { IdentitiesInstance, IdentityInstance } from '../src/identities'
+import type { KeyStoreInstance } from '../src/key-store'
 import type { EntryInstance } from '../src/oplog/index'
+import type { HeliaInstance } from '../src/vendor'
 
-const keysPath = './.out/testkeys'
+const testsPath = join(
+  dirname(__filename),
+  '.orbitdb/tests',
+  basename(__filename, 'test.ts'),
+)
 
 describe('database - Replication', () => {
-  let ipfs1: any, ipfs2: any
-  let keystore: KeyStore
-  let identities: Identities
-  let identities2: Identities
-  let testIdentity1: any, testIdentity2: any
-  let db1: Database, db2: Database
+  let ipfs1: HeliaInstance, ipfs2: HeliaInstance
+  let keystore: KeyStoreInstance
+  let identities: IdentitiesInstance
+  let identities2: IdentitiesInstance
+  let testIdentity1: IdentityInstance, testIdentity2: IdentityInstance
+  let db1: DatabaseInstance<Uint8Array>, db2: DatabaseInstance<Uint8Array>
 
   const databaseId = 'documents-AAA'
 
@@ -50,11 +59,18 @@ describe('database - Replication', () => {
   }
 
   beforeEach(async () => {
-    [ipfs1, ipfs2] = await Promise.all([createHelia(), createHelia()])
+    [ipfs1, ipfs2] = await Promise.all([
+      createHelia({
+        directory: join(testsPath, '1', 'ipfs'),
+      }),
+      createHelia({
+        directory: join(testsPath, '2', 'ipfs'),
+      }),
+    ])
     await connectPeers(ipfs1, ipfs2)
 
-    await copy(testKeysPath, keysPath)
-    keystore = await KeyStore.create({ path: keysPath })
+    await copy(testKeysPath, join(testsPath, '1', 'keystore'))
+    keystore = await KeyStore.create({ path: join(testsPath, '1', 'keystore') })
     identities = await Identities.create({ keystore, ipfs: ipfs1 })
     identities2 = await Identities.create({ keystore, ipfs: ipfs2 })
     testIdentity1 = await identities.createIdentity({ id: 'userA' })
@@ -65,17 +81,11 @@ describe('database - Replication', () => {
     if (db1) {
       await db1.drop()
       await db1.close()
-
-      await rimraf('./.out/orbitdb1')
     }
     if (db2) {
       await db2.drop()
       await db2.close()
-
-      await rimraf('./.out/orbitdb2')
     }
-
-    await rimraf('./.out')
 
     if (ipfs1) {
       await ipfs1.stop()
@@ -89,9 +99,7 @@ describe('database - Replication', () => {
       await keystore.close()
     }
 
-    await rimraf(keysPath)
-    await rimraf('./ipfs1')
-    await rimraf('./ipfs2')
+    await rimraf(testsPath)
   })
 
   describe('replicate across peers', () => {
@@ -102,7 +110,7 @@ describe('database - Replication', () => {
         address: databaseId,
         name: 'test',
         accessController,
-        directory: './.orbitdb/orbitdb1',
+        directory: join(testsPath, '1', 'orbitdb'),
       })
     })
 
@@ -128,7 +136,7 @@ describe('database - Replication', () => {
         address: databaseId,
         name: 'test2',
         accessController,
-        directory: './.orbitdb/orbitdb2',
+        directory: join(testsPath, '2', 'orbitdb'),
       })
 
       db2.sync.events.addEventListener('join', onConnected)
@@ -145,8 +153,8 @@ describe('database - Replication', () => {
       })
 
       await waitFor(
-        () => replicated,
-        () => true,
+        async () => replicated,
+        async () => true,
       )
 
       const all1: EntryInstance[] = []
@@ -183,7 +191,7 @@ describe('database - Replication', () => {
         identity: testIdentity2,
         address: databaseId,
         accessController,
-        directory: './.orbitdb/orbitdb2',
+        directory: join(testsPath, '2', 'orbitdb'),
       })
 
       db2.sync.events.addEventListener('join', onConnected)
@@ -209,8 +217,8 @@ describe('database - Replication', () => {
       })
 
       await waitFor(
-        () => replicated,
-        () => true,
+        async () => replicated as boolean,
+        async () => true,
       )
 
       const all1: EntryInstance[] = []
@@ -244,15 +252,14 @@ describe('database - Replication', () => {
           write: [] as any,
           canAppend: async () => true,
         },
-        meta: {},
-        directory: './.orbitdb/orbitdb2',
+        directory: join(testsPath, '2', 'orbitdb'),
       })
 
       db2.sync.events.addEventListener('join', onConnected)
 
       await waitFor(
-        () => connected,
-        () => true,
+        async () => connected,
+        async () => true,
       )
 
       const all1: EntryInstance[] = []
@@ -285,7 +292,7 @@ describe('database - Replication', () => {
         identity: testIdentity1,
         address: databaseId,
         accessController,
-        directory: './.orbitdb/orbitdb1',
+        directory: join(testsPath, '1', 'orbitdb'),
         entryStorage: storage1,
       })
       db2 = await Database.create({
@@ -293,7 +300,7 @@ describe('database - Replication', () => {
         identity: testIdentity2,
         address: databaseId,
         accessController,
-        directory: './.orbitdb/orbitdb2',
+        directory: join(testsPath, '2', 'orbitdb'),
         entryStorage: storage2,
       })
 
@@ -317,12 +324,12 @@ describe('database - Replication', () => {
       await db1.addOperation({ op: 'PUT', key: String(4), value: 'record 4 on db 1' })
 
       await waitFor(
-        () => connected1,
-        () => true,
+        async () => connected1,
+        async () => true,
       )
       await waitFor(
-        () => connected2,
-        () => true,
+        async () => connected2,
+        async () => true,
       )
 
       const all1: EntryInstance[] = []
@@ -346,14 +353,14 @@ describe('database - Replication', () => {
         identity: testIdentity1,
         address: databaseId,
         accessController,
-        directory: './.orbitdb/orbitdb1',
+        directory: join(testsPath, '1', 'orbitdb'),
       })
       db2 = await Database.create({
         ipfs: ipfs2,
         identity: testIdentity2,
         address: databaseId,
         accessController,
-        directory: './.orbitdb/orbitdb2',
+        directory: join(testsPath, '2', 'orbitdb'),
       })
     })
 
@@ -384,23 +391,23 @@ describe('database - Replication', () => {
       db2.events.addEventListener('update', onUpdate2)
 
       await waitFor(
-        () => connected1,
-        () => true,
+        async () => connected1,
+        async () => true,
       )
       await waitFor(
-        () => connected2,
-        () => true,
+        async () => connected2,
+        async () => true,
       )
 
       await db1.addOperation({ op: 'PUT', key: '1', value: 'record 1 on db 1' })
 
       await waitFor(
-        () => updateCount1 >= expected,
-        () => true,
+        async () => updateCount1 >= expected,
+        async () => true,
       )
       await waitFor(
-        () => updateCount2 >= expected,
-        () => true,
+        async () => updateCount2 >= expected,
+        async () => true,
       )
 
       strictEqual(updateCount1, expected)
@@ -436,12 +443,12 @@ describe('database - Replication', () => {
       db2.events.addEventListener('update', onUpdate2)
 
       await waitFor(
-        () => connected1,
-        () => true,
+        async () => connected1,
+        async () => true,
       )
       await waitFor(
-        () => connected2,
-        () => true,
+        async () => connected2,
+        async () => true,
       )
 
       await db1.addOperation({ op: 'PUT', key: '1', value: '11' })
@@ -450,12 +457,12 @@ describe('database - Replication', () => {
       await db1.addOperation({ op: 'PUT', key: '4', value: '44' })
 
       await waitFor(
-        () => updateCount1 >= expected,
-        () => true,
+        async () => updateCount1 >= expected,
+        async () => true,
       )
       await waitFor(
-        () => updateCount2 >= expected,
-        () => true,
+        async () => updateCount2 >= expected,
+        async () => true,
       )
 
       strictEqual(updateCount1, expected)

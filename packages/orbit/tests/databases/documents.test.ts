@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import { deepStrictEqual, notStrictEqual, strictEqual } from 'node:assert'
+import { basename, dirname, join } from 'node:path'
 
 import { copy } from 'fs-extra'
 import { rimraf } from 'rimraf'
@@ -20,7 +21,11 @@ import type { KeyStoreInstance } from '../../src/key-store'
 import type { EntryInstance } from '../../src/oplog'
 import type { HeliaInstance } from '../../src/vendor'
 
-const keysPath = './.orbitdb/keystore'
+const testsPath = join(
+  dirname(__filename),
+  '.orbitdb/tests',
+  basename(__filename, 'test.ts'),
+)
 
 describe('documents Database', () => {
   let ipfs: HeliaInstance
@@ -33,7 +38,7 @@ describe('documents Database', () => {
   const databaseId = 'documents-AAA'
 
   beforeAll(async () => {
-    ipfs = await createHelia()
+    ipfs = await createHelia({ directory: join(testsPath, 'ipfs') })
 
     accessController = {
       type: 'basic',
@@ -48,8 +53,8 @@ describe('documents Database', () => {
       },
     }
 
-    await copy(testKeysPath, keysPath)
-    keystore = await KeyStore.create({ path: keysPath })
+    await copy(testKeysPath, join(testsPath, 'keystore'))
+    keystore = await KeyStore.create({ path: join(testsPath, 'keystore') })
     identities = await Identities.create({ keystore, ipfs })
     testIdentity1 = await identities.createIdentity({ id: 'userA' })
   })
@@ -63,9 +68,7 @@ describe('documents Database', () => {
       await keystore.close()
     }
 
-    await rimraf(keysPath)
-    await rimraf('./.orbitdb')
-    await rimraf('./ipfs1')
+    await rimraf(testsPath)
   })
 
   describe('default index _id:', () => {
@@ -75,6 +78,7 @@ describe('documents Database', () => {
         identity: testIdentity1,
         address: databaseId,
         accessController,
+        directory: join(testsPath, 'orbitdb'),
       })
     })
 
@@ -93,7 +97,6 @@ describe('documents Database', () => {
 
     it('gets a document', async () => {
       const key = 'hello world 1'
-
       const expected = { _id: key, msg: 'writing 1 to db' }
 
       await db.put(expected)
@@ -198,6 +201,7 @@ describe('documents Database', () => {
         address: databaseId,
         accessController,
         indexBy: 'doc',
+        directory: join(testsPath, 'orbitdb'),
       })
     })
 
@@ -413,6 +417,7 @@ describe('documents Database', () => {
         identity: testIdentity1,
         address: databaseId,
         accessController,
+        directory: join(testsPath, 'orbitdb'),
       })
       for (const doc of Object.values(data)) {
         await db.put(doc)
@@ -423,6 +428,7 @@ describe('documents Database', () => {
         identity: testIdentity1,
         address: databaseId,
         accessController,
+        directory: join(testsPath, 'orbitdb'),
       })
     })
 

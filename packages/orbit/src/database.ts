@@ -5,6 +5,8 @@ import {
   DATABASE_CACHE_SIZE,
   DATABASE_PATH,
   DATABASE_REFERENCES_COUNT,
+  HEADS_PATH,
+  INDEX_PATH,
 } from './constants'
 import { Entry, Log } from './oplog/index'
 import {
@@ -162,7 +164,7 @@ export class Database<
       || ComposedStorage.create({
         storage1: LRUStorage.create({ size: DATABASE_CACHE_SIZE }),
         storage2: await LevelStorage.create({
-          path: join(path, 'log/_heads'),
+          path: join(path, HEADS_PATH),
         }),
       })
 
@@ -171,7 +173,7 @@ export class Database<
       || ComposedStorage.create({
         storage1: LRUStorage.create({ size: DATABASE_CACHE_SIZE }),
         storage2: await LevelStorage.create({
-          path: join(path, 'log/_index'),
+          path: join(path, INDEX_PATH),
         }),
       })
 

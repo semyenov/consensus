@@ -1,6 +1,6 @@
 import { deepEqual, strictEqual } from 'node:assert'
 import { existsSync } from 'node:fs'
-import path from 'node:path'
+import { basename, dirname, join } from 'node:path'
 
 import { copy } from 'fs-extra'
 import { rimraf } from 'rimraf'
@@ -31,7 +31,11 @@ import type { KeyStoreInstance } from '../src/key-store'
 import type { EntryInstance } from '../src/oplog'
 import type { HeliaInstance } from '../src/vendor'
 
-const keysPath = './.orbitdb/keystore'
+const testsPath = join(
+  dirname(__filename),
+  '.orbitdb/tests',
+  basename(__filename, 'test.ts'),
+)
 
 describe('database', () => {
   // this.timeout(30000)
@@ -58,16 +62,16 @@ describe('database', () => {
   }
 
   beforeAll(async () => {
-    ipfs = await createHelia()
+    ipfs = await createHelia({ directory: join(testsPath, 'ipfs') })
 
-    await copy(testKeysPath, keysPath)
-    keystore = await KeyStore.create({ path: keysPath })
+    await copy(testKeysPath, join(testsPath, 'keystore'))
+    keystore = await KeyStore.create({ path: join(testsPath, 'keystore') })
     identities = await Identities.create({ keystore, ipfs })
     testIdentity = await identities.createIdentity({ id: 'userA' })
   })
 
   afterEach(async () => {
-    await rimraf('./.orbitdb')
+    await rimraf(join(testsPath, 'orbitdb'))
   })
 
   afterAll(async () => {
@@ -79,8 +83,7 @@ describe('database', () => {
       await keystore.close()
     }
 
-    await rimraf(keysPath)
-    await rimraf('./ipfs1')
+    await rimraf(testsPath)
   })
 
   it('adds an operation', async () => {
@@ -89,7 +92,7 @@ describe('database', () => {
       identity: testIdentity,
       address: databaseId,
       accessController,
-      directory: './.orbitdb/databases/test-database',
+      directory: join(testsPath, 'orbitdb'),
     })
     const expected = 'zdpuB2YZc3bvZDu8kW6f6rb5JjKeMrNogyPhncci82hLCScdN'
     const op = { op: 'PUT' as const, key: '1', value: 'record 1 on db 1' }
@@ -107,14 +110,16 @@ describe('database', () => {
         identity: testIdentity,
         address: databaseId,
         accessController,
+        directory: join(testsPath, 'orbitdb'),
       })
       const op = { op: 'PUT' as const, key: '1', value: 'record 1 on db 1' }
       const hash = await db.addOperation(op)
       // console.log('Database', db)
-      const headsPath = path.join(
-        './.orbitdb/databases',
-        `${databaseId}/`,
-        '/log/_heads/',
+      const headsPath = join(
+        testsPath,
+        'orbitdb',
+        databaseId,
+        'log/_heads',
       )
 
       strictEqual(existsSync(headsPath), true)
@@ -139,15 +144,16 @@ describe('database', () => {
         identity: testIdentity,
         address: databaseId,
         accessController,
-        directory: './.orbitdb/databases/custom-directory',
+        directory: join(testsPath, 'orbitdb'),
       })
       const op = { op: 'PUT' as const, key: '1', value: 'record 1 on db 1' }
       const hash = await db.addOperation(op)
 
-      const headsPath = path.join(
-        './.orbitdb/databases/custom-directory',
-        `${databaseId}/`,
-        '/log/_heads/',
+      const headsPath = join(
+        testsPath, 
+        'orbitdb',
+        databaseId,
+        'log/_heads',
       )
 
       strictEqual(existsSync(headsPath), true)
@@ -165,7 +171,7 @@ describe('database', () => {
       await headsStorage.close()
 
       await rimraf(headsPath)
-      await rimraf('./.orbitdb/databases/custom-directory')
+      await rimraf(join(testsPath, 'orbitdb'))
     })
 
     it('uses given MemoryStorage for headsStorage', async () => {
@@ -175,7 +181,7 @@ describe('database', () => {
         identity: testIdentity,
         address: databaseId,
         accessController,
-        directory: './.orbitdb',
+        directory: join(testsPath, 'orbitdb'),
         headsStorage,
       })
       const op = { op: 'PUT' as const, key: '1', value: 'record 1 on db 1' }
@@ -197,7 +203,7 @@ describe('database', () => {
         identity: testIdentity,
         address: databaseId,
         accessController,
-        directory: './orbitdb',
+        directory: join(testsPath, 'orbitdb'),
         entryStorage,
       })
       const op = { op: 'PUT' as const, key: '1', value: 'record 1 on db 1' }
@@ -220,7 +226,7 @@ describe('database', () => {
         identity: testIdentity,
         address: databaseId,
         accessController,
-        directory: './orbitdb',
+        directory: join(testsPath, 'orbitdb'),
       })
     })
 

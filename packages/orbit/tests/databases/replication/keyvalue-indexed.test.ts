@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import { deepStrictEqual } from 'node:assert'
+import { basename, dirname, join } from 'node:path'
 
 import { copy } from 'fs-extra'
 import { rimraf } from 'rimraf'
@@ -21,7 +22,11 @@ import type { IdentityInstance } from '../../../src/identities/identity'
 import type { EntryInstance } from '../../../src/oplog'
 import type { HeliaInstance } from '../../../src/vendor'
 
-const keysPath = './.orbitdb/keystore'
+const testsPath = join(
+  dirname(__filename),
+  '.orbitdb/tests',
+  basename(__filename, 'test.ts'),
+)
 
 describe('keyValueIndexed Database Replication', () => {
   let ipfs1: HeliaInstance, ipfs2: HeliaInstance
@@ -48,17 +53,16 @@ describe('keyValueIndexed Database Replication', () => {
   }
 
   beforeAll(async () => {
-    [ipfs1, ipfs2] = await Promise.all([createHelia(), createHelia()])
+    [ipfs1, ipfs2] = await Promise.all([
+      createHelia({ directory: join(testsPath, '1', 'ipfs') }),
+      createHelia({ directory: join(testsPath, '2', 'ipfs') }),
+    ])
     await connectPeers(ipfs1, ipfs2)
 
-    await rimraf(keysPath)
-    await rimraf('./.orbitdb/orbitdb1')
-    await rimraf('./.orbitdb/orbitdb2')
-    await rimraf('./.ipfs1')
-    await rimraf('./.ipfs2')
+    await rimraf(testsPath)
 
-    await copy(testKeysPath, keysPath)
-    keystore = await KeyStore.create({ path: keysPath })
+    await copy(testKeysPath, join(testsPath, 'keystore'))
+    keystore = await KeyStore.create({ path: join(testsPath, 'keystore') })
     identities = await Identities.create({ keystore, ipfs: ipfs1 })
     identities2 = await Identities.create({ keystore, ipfs: ipfs2 })
     testIdentity1 = await identities.createIdentity({ id: 'userA' })
@@ -88,11 +92,7 @@ describe('keyValueIndexed Database Replication', () => {
       await keystore.close()
     }
 
-    await rimraf(keysPath)
-    await rimraf('./.orbitdb/orbitdb1')
-    await rimraf('./.orbitdb/orbitdb2')
-    await rimraf('./.ipfs1')
-    await rimraf('./.ipfs2')
+    await rimraf(testsPath)
   })
 
   it('replicates a database', async () => {
@@ -104,14 +104,14 @@ describe('keyValueIndexed Database Replication', () => {
       identity: testIdentity1,
       address: databaseId,
       accessController,
-      directory: './.orbitdb/orbitdb1',
+      directory: join(testsPath, '1', 'orbitdb'),
     })
     kv2 = await KeyValueIndexed.create({
       ipfs: ipfs2,
       identity: testIdentity2,
       address: databaseId,
       accessController,
-      directory: './.orbitdb/orbitdb2',
+      directory: join(testsPath, '2', 'orbitdb'),
     })
 
     kv2.sync.events.addEventListener('join', (event: CustomEvent) => {
@@ -182,14 +182,14 @@ describe('keyValueIndexed Database Replication', () => {
       identity: testIdentity1,
       address: databaseId,
       accessController,
-      directory: './.orbitdb/orbitdb1',
+      directory: join(testsPath, '1', 'orbitdb'),
     })
     kv2 = await KeyValueIndexed.create({
       ipfs: ipfs2,
       identity: testIdentity2,
       address: databaseId,
       accessController,
-      directory: './.orbitdb/orbitdb2',
+      directory: join(testsPath, '2', 'orbitdb'),
     })
 
     kv2.sync.events.addEventListener('join', (event: CustomEvent) => {
@@ -230,14 +230,14 @@ describe('keyValueIndexed Database Replication', () => {
       identity: testIdentity1,
       address: databaseId,
       accessController,
-      directory: './.orbitdb/orbitdb1',
+      directory: join(testsPath, '1', 'orbitdb'),
     })
     kv2 = await KeyValueIndexed.create({
       ipfs: ipfs2,
       identity: testIdentity2,
       address: databaseId,
       accessController,
-      directory: './.orbitdb/orbitdb2',
+      directory: join(testsPath, '2', 'orbitdb'),
     })
 
     const value0 = await kv2.get('init')
@@ -295,14 +295,14 @@ describe('keyValueIndexed Database Replication', () => {
       identity: testIdentity1,
       address: databaseId,
       accessController,
-      directory: './.orbitdb/orbitdb1',
+      directory: join(testsPath, '1', 'orbitdb'),
     })
     kv2 = await KeyValueIndexed.create({
       ipfs: ipfs2,
       identity: testIdentity2,
       address: databaseId,
       accessController,
-      directory: './.orbitdb/orbitdb2',
+      directory: join(testsPath, '2', 'orbitdb'),
     })
 
     kv2.events.addEventListener('update', (event: CustomEvent) => {
@@ -337,7 +337,7 @@ describe('keyValueIndexed Database Replication', () => {
       identity: testIdentity1,
       address: databaseId,
       accessController,
-      directory: './.orbitdb/orbitdb1',
+      directory: join(testsPath, '1', 'orbitdb'),
     })
 
     const onUpdate3 = async (event: CustomEvent) => {
@@ -359,7 +359,7 @@ describe('keyValueIndexed Database Replication', () => {
       identity: testIdentity2,
       address: databaseId,
       accessController,
-      directory: './.orbitdb/orbitdb2',
+      directory: join(testsPath, '2', 'orbitdb'),
     })
 
     kv2.events.addEventListener('update', (event: CustomEvent) => {
@@ -417,7 +417,7 @@ describe('keyValueIndexed Database Replication', () => {
       identity: testIdentity1,
       address: databaseId,
       accessController,
-      directory: './.data/orbitdb/kv-replicate-1',
+      directory: join(testsPath, '1', 'orbitdb'),
     })
 
     kv1.events.addEventListener('error', (err) => {
@@ -436,7 +436,7 @@ describe('keyValueIndexed Database Replication', () => {
       identity: testIdentity2,
       address: databaseId,
       accessController,
-      directory: './.data/orbitdb/kv-replicate-2',
+      directory: join(testsPath, '2', 'orbitdb'),
     })
 
     kv2.events.addEventListener('update', (_entry) => {
@@ -447,7 +447,10 @@ describe('keyValueIndexed Database Replication', () => {
       deepStrictEqual(err, null)
     })
 
-    await waitFor(() => replicated, () => true)
+    await waitFor(
+      async () => replicated,
+      async () => true,
+    )
 
     const all1: { key: string, value: any }[] = []
     for await (const keyValue of kv1.iterator()) {
@@ -475,6 +478,6 @@ describe('keyValueIndexed Database Replication', () => {
       ],
     )
 
-    await rimraf('./.orbitdb')
+    await rimraf(testsPath)
   })
 })

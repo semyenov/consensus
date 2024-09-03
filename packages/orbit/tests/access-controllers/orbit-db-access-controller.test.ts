@@ -1,4 +1,5 @@
 import { deepStrictEqual, notStrictEqual, strictEqual } from 'node:assert'
+import { basename, dirname, join } from 'node:path'
 
 import { rimraf } from 'rimraf'
 import { afterAll, beforeAll, describe, it } from 'vitest'
@@ -9,27 +10,29 @@ import { KeyStore, type KeyStoreInstance } from '../../src/key-store'
 import connectPeers from '../utils/connect-nodes'
 import createHelia from '../utils/create-helia'
 
-import type { AccessControllerInstance, OrbitDBAccessControllerInstance } from '../../src/access-controllers'
+import type { OrbitDBAccessControllerInstance } from '../../src/access-controllers'
 import type { EntryInstance } from '../../src/oplog'
 import type { HeliaInstance } from '../../src/vendor'
 
-const dbPath1 = './orbitdb/tests/orbitdb-access-controller/1'
-const dbPath2 = './orbitdb/tests/orbitdb-access-controller/2'
+const testsPath = join(
+  dirname(__filename),
+  '.orbitdb/tests',
+  basename(__filename, 'test.ts'),
+)
 
 describe('orbitDBAccessController', () => {
-  let ipfs1: HeliaInstance, ipfs2: HeliaInstance
-  let orbitdb1: OrbitDBInstance, orbitdb2: OrbitDBInstance
-  let identities1: IdentitiesInstance,
-    identities2: IdentitiesInstance,
-    testIdentity1: IdentityInstance,
-    testIdentity2: IdentityInstance
+  let
+    ipfs1: HeliaInstance, ipfs2: HeliaInstance,
+    orbitdb1: OrbitDBInstance, orbitdb2: OrbitDBInstance,
+    identities1: IdentitiesInstance, identities2: IdentitiesInstance,
+    testIdentity1: IdentityInstance, testIdentity2: IdentityInstance
 
   beforeAll(async () => {
     [ipfs1, ipfs2] = await Promise.all([createHelia(), createHelia()])
     await connectPeers(ipfs1, ipfs2)
 
-    const keystore1 = await KeyStore.create({ path: `${dbPath1}/keys` })
-    const keystore2 = await KeyStore.create({ path: `${dbPath2}/keys` })
+    const keystore1 = await KeyStore.create({ path: `${testsPath}/1/keys` })
+    const keystore2 = await KeyStore.create({ path: `${testsPath}/2/keys` })
 
     identities1 = await Identities.create({ ipfs: ipfs1, keystore: keystore1 })
     identities2 = await Identities.create({ ipfs: ipfs2, keystore: keystore2 })
@@ -41,13 +44,13 @@ describe('orbitDBAccessController', () => {
       ipfs: ipfs1,
       identities: identities1,
       id: 'userA',
-      directory: dbPath1,
+      directory: `${testsPath}/1/orbitdb`,
     })
     orbitdb2 = await OrbitDB.create({
       ipfs: ipfs2,
       identities: identities2,
       id: 'userB',
-      directory: dbPath2,
+      directory: `${testsPath}/2/orbitdb`,
     })
   })
 
@@ -68,9 +71,7 @@ describe('orbitDBAccessController', () => {
       await ipfs2.stop()
     }
 
-    await rimraf('./orbitdb')
-    await rimraf('./ipfs1')
-    await rimraf('./ipfs2')
+    await rimraf(testsPath)
   })
 
   describe('default write access', () => {
@@ -149,7 +150,7 @@ describe('orbitDBAccessController', () => {
       expected.write = new Set([testIdentity1.id])
       expected.read = new Set(['ABCD'])
       expected.delete = new Set(['ABCD'])
-      console.log('capabilities', await accessController.capabilities())
+
       deepStrictEqual(await accessController.capabilities(), expected)
     })
 

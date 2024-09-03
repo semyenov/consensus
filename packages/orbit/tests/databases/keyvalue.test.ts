@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import { deepStrictEqual, notStrictEqual, strictEqual } from 'node:assert'
+import { basename, dirname, join } from 'node:path'
 
 import { copy } from 'fs-extra'
 import { rimraf } from 'rimraf'
@@ -19,7 +20,11 @@ import type { IdentitiesInstance, IdentityInstance } from '../../src/identities'
 import type { KeyStoreInstance } from '../../src/key-store'
 import type { HeliaInstance } from '../../src/vendor'
 
-const keysPath = './.orbitdb/keystore'
+const testsPath = join(
+  dirname(__filename),
+  '.orbitdb/tests',
+  basename(__filename, 'test.ts'),
+)
 
 describe('keyValue Database', () => {
   let ipfs: HeliaInstance
@@ -32,15 +37,15 @@ describe('keyValue Database', () => {
   const databaseId = 'keyvalue-AAA'
 
   beforeAll(async () => {
-    ipfs = await createHelia()
+    ipfs = await createHelia({ directory: join(testsPath, 'ipfs') })
     accessController = {
       type: 'basic',
       write: ['*'],
       canAppend: () => Promise.resolve(true),
     }
 
-    await copy(testKeysPath, keysPath)
-    keystore = await KeyStore.create({ path: keysPath })
+    await copy(testKeysPath, join(testsPath, 'keystore'))
+    keystore = await KeyStore.create({ path: join(testsPath, 'keystore') })
     identities = await Identities.create({ keystore, ipfs })
     testIdentity1 = await identities.createIdentity({ id: 'userA' })
   })
@@ -54,9 +59,7 @@ describe('keyValue Database', () => {
       await keystore.close()
     }
 
-    await rimraf(keysPath)
-    await rimraf('./.orbitdb')
-    await rimraf('./.ipfs1')
+    await rimraf(testsPath)
   })
 
   describe('creating a KeyValue.createatabase', () => {
@@ -66,6 +69,7 @@ describe('keyValue Database', () => {
         identity: testIdentity1,
         address: databaseId,
         accessController,
+        directory: join(testsPath, 'orbitdb'),
       })
     })
 
@@ -98,6 +102,7 @@ describe('keyValue Database', () => {
         identity: testIdentity1,
         address: databaseId,
         accessController,
+        directory: join(testsPath, 'orbitdb'),
       })
     })
 

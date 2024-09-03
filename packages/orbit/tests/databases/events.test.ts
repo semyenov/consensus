@@ -1,4 +1,5 @@
 import { deepStrictEqual, strictEqual } from 'node:assert'
+import { basename, dirname, join } from 'node:path'
 
 import { copy } from 'fs-extra'
 import { rimraf } from 'rimraf'
@@ -19,7 +20,11 @@ import type { KeyStoreInstance } from '../../src/key-store'
 import type { EntryInstance } from '../../src/oplog'
 import type { HeliaInstance } from '../../src/vendor'
 
-const keysPath = './.orbitdb/keystore'
+const testsPath = join(
+  dirname(__filename),
+  '.orbitdb/tests',
+  basename(__filename, 'test.ts'),
+)
 
 describe('events Database', () => {
   let ipfs: HeliaInstance
@@ -33,7 +38,7 @@ describe('events Database', () => {
   const databaseId = 'events-AAA'
 
   beforeAll(async () => {
-    ipfs = await createHelia()
+    ipfs = await createHelia({ directory: join(testsPath, 'ipfs') })
 
     accessController = {
       type: 'basic',
@@ -48,9 +53,9 @@ describe('events Database', () => {
       },
     }
 
-    await copy(testKeysPath, keysPath)
+    await copy(testKeysPath, join(testsPath, 'keystore'))
 
-    keystore = await KeyStore.create({ path: keysPath })
+    keystore = await KeyStore.create({ path: join(testsPath, 'keystore') })
     identities = await Identities.create({ keystore, ipfs })
     testIdentity1 = await identities.createIdentity({ id: 'userA' })
   })
@@ -79,8 +84,7 @@ describe('events Database', () => {
       await keystore.close()
     }
 
-    await rimraf(keysPath)
-    await rimraf('./.orbitdb')
+    await rimraf(testsPath)
   })
 
   it('creates an event store', async () => {

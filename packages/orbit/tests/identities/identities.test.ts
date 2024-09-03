@@ -1,4 +1,5 @@
 import assert from 'node:assert'
+import { basename, dirname, join } from 'node:path'
 
 import { copy } from 'fs-extra'
 import { rimraf } from 'rimraf'
@@ -22,17 +23,22 @@ import testKeysPath from '../fixtures/test-keys-path'
 import createHelia from '../utils/create-helia'
 
 const type = 'publickey'
-const keysPath = './.orbit/keystore'
+
+const testsPath = join(
+  dirname(__filename),
+  '.orbitdb/tests',
+  basename(__filename, 'test.ts'),
+)
 
 describe('identities', () => {
   let ipfs: any
   beforeAll(async () => {
     ipfs = await createHelia()
-    await copy(testKeysPath, keysPath)
+    await copy(testKeysPath, join(testsPath, 'keystore'))
   })
 
   afterAll(async () => {
-    await rimraf(keysPath)
+    await rimraf(join(testsPath, 'keystore'))
   })
 
   describe('creating Identities', () => {
@@ -48,7 +54,7 @@ describe('identities', () => {
     })
 
     it('has the correct id', async () => {
-      identities = await Identities.create({ path: keysPath, ipfs })
+      identities = await Identities.create({ path: join(testsPath, 'identities'), ipfs })
       identity = await identities.createIdentity({ id })
       const key = await identities.keystore.getKey(id)
       const externalId = uint8ArrayToString(key!.public.marshal(), 'base16')
@@ -69,7 +75,7 @@ describe('identities', () => {
     })
 
     it('gets the identity from storage', async () => {
-      identities = await Identities.create({ path: keysPath, ipfs })
+      identities = await Identities.create({ path: join(testsPath, 'identities'), ipfs })
       identity = await identities.createIdentity({ id })
       const result = await identities.getIdentity(identity.hash as string)
       assert.strictEqual(result?.id, identity.id)
@@ -82,7 +88,7 @@ describe('identities', () => {
     })
 
     it('passes in an identity provider', async () => {
-      const keystore = await KeyStore.create({ path: keysPath })
+      const keystore = await KeyStore.create({ path: join(testsPath, 'keystore') })
       identities = await Identities.create({ keystore, ipfs })
       const provider = new PublicKeyIdentityProvider({ keystore })
       identity = await identities.createIdentity({ id, provider })
@@ -105,7 +111,7 @@ describe('identities', () => {
     let keystore: KeyStoreInstance
 
     beforeAll(async () => {
-      keystore = await KeyStore.create({ path: keysPath })
+      keystore = await KeyStore.create({ path: join(testsPath, 'keystore') })
       identities = await Identities.create({ keystore, ipfs })
     })
 
@@ -182,7 +188,7 @@ describe('identities', () => {
     let savedKeysKeyStore: KeyStoreInstance
 
     beforeAll(async () => {
-      savedKeysKeyStore = await KeyStore.create({ path: keysPath })
+      savedKeysKeyStore = await KeyStore.create({ path: join(testsPath, 'keystore') })
 
       identities = await Identities.create({ keystore: savedKeysKeyStore, ipfs })
       identity = await identities.createIdentity({ id })
@@ -242,7 +248,7 @@ describe('identities', () => {
     let keystore: KeyStoreInstance
 
     beforeAll(async () => {
-      keystore = await KeyStore.create({ path: keysPath })
+      keystore = await KeyStore.create({ path: join(testsPath, 'keystore') })
     })
 
     afterAll(async () => {
@@ -292,7 +298,7 @@ describe('identities', () => {
     let keystore: KeyStoreInstance
 
     beforeAll(async () => {
-      keystore = await KeyStore.create({ path: keysPath })
+      keystore = await KeyStore.create({ path: join(testsPath, 'keystore') })
       identities = await Identities.create({ keystore, ipfs })
     })
 
@@ -318,7 +324,7 @@ describe('identities', () => {
     let keystore: KeyStoreInstance
 
     beforeAll(async () => {
-      keystore = await KeyStore.create({ path: keysPath })
+      keystore = await KeyStore.create({ path: join(testsPath, 'keystore') })
       identities = await Identities.create({ keystore, ipfs })
       identity = await identities.createIdentity({ id })
     })
@@ -373,7 +379,7 @@ describe('identities', () => {
     let signature: string
 
     beforeAll(async () => {
-      keystore = await KeyStore.create({ path: keysPath })
+      keystore = await KeyStore.create({ path: join(testsPath, 'keystore') })
     })
 
     beforeEach(async () => {

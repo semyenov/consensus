@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import { deepStrictEqual, strictEqual } from 'node:assert'
+import { basename, dirname, join } from 'node:path'
 
 import { copy } from 'fs-extra'
 import { rimraf } from 'rimraf'
@@ -22,13 +23,16 @@ import type { IdentityInstance } from '../../../src/identities/identity'
 import type { KeyStoreInstance } from '../../../src/key-store'
 import type { HeliaInstance } from '../../../src/vendor'
 
-const keysPath = './.orbitdb/keystore'
+const testsPath = join(
+  dirname(__filename),
+  '.orbitdb/tests',
+  basename(__filename, 'test.ts'),
+)
 
 describe('documents Database Replication', () => {
   let ipfs1: HeliaInstance, ipfs2: HeliaInstance
   let keystore: KeyStoreInstance
-  let identities: IdentitiesInstance
-  let identities2: IdentitiesInstance
+  let identities: IdentitiesInstance, identities2: IdentitiesInstance
   let testIdentity1: IdentityInstance, testIdentity2: IdentityInstance
   let db1: DocumentsInstance, db2: DocumentsInstance
 
@@ -51,11 +55,14 @@ describe('documents Database Replication', () => {
   }
 
   beforeAll(async () => {
-    [ipfs1, ipfs2] = await Promise.all([createHelia(), createHelia()])
+    [ipfs1, ipfs2] = await Promise.all([
+      createHelia({ directory: join(testsPath, '1', 'ipfs') }),
+      createHelia({ directory: join(testsPath, '2', 'ipfs') }),
+    ])
     await connectPeers(ipfs1, ipfs2)
 
-    await copy(testKeysPath, keysPath)
-    keystore = await KeyStore.create({ path: keysPath })
+    await copy(testKeysPath, join(testsPath, 'keystore'))
+    keystore = await KeyStore.create({ path: join(testsPath, 'keystore') })
     identities = await Identities.create({ keystore, ipfs: ipfs1 })
     identities2 = await Identities.create({ keystore, ipfs: ipfs2 })
     testIdentity1 = await identities.createIdentity({ id: 'userA' })
@@ -69,7 +76,7 @@ describe('documents Database Replication', () => {
       address: databaseId,
       accessController,
       name: 'testdb1',
-      directory: './.orbitdb/documents-1',
+      directory: join(testsPath, '1', 'orbitdb'),
     })
     db2 = await Documents.create({
       ipfs: ipfs2,
@@ -77,7 +84,7 @@ describe('documents Database Replication', () => {
       address: databaseId,
       name: 'testdb2',
       accessController,
-      directory: './.orbitdb/documents-2',
+      directory: join(testsPath, '2', 'orbitdb'),
     })
   })
   afterEach(async () => {
@@ -104,11 +111,7 @@ describe('documents Database Replication', () => {
       await keystore.close()
     }
 
-    await rimraf(keysPath)
-    await rimraf('./.orbitdb/documents-1')
-    await rimraf('./.orbitdb/documents-2')
-    await rimraf('./.ipfs-1')
-    await rimraf('./.ipfs-2')
+    await rimraf(testsPath)
   })
 
   it('basic Verification', async () => {

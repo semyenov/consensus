@@ -1,6 +1,6 @@
-'use strict'
+import type { HeliaInstance, PeerId } from '../../src/vendor'
 
-function waitForPeers(ipfs, peersToWait, topic) {
+function waitForPeers(ipfs: HeliaInstance, peersToWait: PeerId[], topic: string) {
   return new Promise((resolve, reject) => {
     const interval = setInterval(async () => {
       try {
