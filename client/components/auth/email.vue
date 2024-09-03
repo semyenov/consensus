@@ -20,7 +20,7 @@ const { t } = useI18n();
             <Input class="mb-2" type="email" :value="email" placeholder="your@email.com" @change="(e) => updateEmail(e.target.value)" />
             <Input type="password" :value="password" placeholder="password" @change="(e) => updatePassword(e.target.value)" />
 
-          <Button type="button" @click="(e) => !loading && submit()" class="mt-4">
+          <Button type="button" @click="(e) => !loading && submit()" class="mt-6">
             {{ loading ? "Loading" : "Login" }}
           </Button>
         </div>

@@ -23,6 +23,8 @@ logs
 .env.*
 !.env.example
 
+.orbitdb
+.orbit
 # EdgeDb
 **/*.edgeql.ts
 dbschema/queries.*
