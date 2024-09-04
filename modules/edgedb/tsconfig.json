@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "baseUrl": ".",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "paths": {
+      "#edgedb/queries": ["./src/runtime/server/composables/useEdgeDbQueries.ts"],
+      "#edgedb/interfaces": ["./src/runtime/server/composables/useEdgeDbQueries.ts"],
+      "#edgedb/builder": ["./src/runtime/server/composables/useEdgeDbQueryBuilder.ts"]
+    },
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  }
+}

@@ -3,9 +3,9 @@ import { join, relative, resolve } from 'pathe'
 
 // src dir
 const rootDir = resolve(__dirname)
-
-const clientDir = join(rootDir, 'client')
-const serverDir = join(rootDir, 'server')
+const srcDir = resolve(rootDir, 'src')
+const clientDir = join(srcDir, 'client')
+const serverDir = join(srcDir, 'server')
 
 export default defineNuxtConfig({
   compatibilityDate: '2024-08-15',
@@ -28,7 +28,7 @@ export default defineNuxtConfig({
     modules: join(clientDir, 'modules'),
     pages: join(clientDir, 'pages'),
     middleware: join(clientDir, 'middleware'),
-    plugins: join(clientDir, 'plugins'),
+    plugins: join(srcDir, 'plugins'),
   },
 
   typescript: {
@@ -38,7 +38,10 @@ export default defineNuxtConfig({
   },
 
   nitro: {
-    rootDir,
+    // rootDir,
+    // srcDir,
+
+
 
     // database: {
     //   default: {
@@ -105,6 +108,7 @@ export default defineNuxtConfig({
     debug: true,
   },
 
+
   modules: [
     '@nuxtjs/partytown',
     '@nuxtjs/tailwindcss',
@@ -115,7 +119,8 @@ export default defineNuxtConfig({
     'shadcn-nuxt',
     '@nuxt/fonts',
     '@nuxt/content',
-    'nuxt-edgedb-module',
+    // 'nuxt-edgedb-module',
+    './modules/edgedb/src/module',
     '@nuxt/image',
     'nuxt-echarts',
   ],
@@ -126,7 +131,7 @@ export default defineNuxtConfig({
       content: {
         driver: 'fs',
         prefix: '/content',
-        base: join(rootDir, 'content'),
+        base: join(srcDir, 'content'),
       },
     },
     navigation: {
@@ -178,7 +183,7 @@ export default defineNuxtConfig({
     providers: {
       avatars: {
         name: 'avatars',
-        provider: 'image/provider',
+        provider: 'src/image/provider',
         options: {
           baseURL: 'https://avatars.githubusercontent.com/u/',
           presets: {
@@ -216,7 +221,7 @@ export default defineNuxtConfig({
       cookieCrossOrigin: true,
     },
 
-    langDir: relative(clientDir, 'languages'),
+    langDir: '../languages',
 
     bundle: {
       fullInstall: true,

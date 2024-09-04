@@ -1,0 +1,65 @@
+{
+  "name": "nuxt-edgedb-module",
+  "type": "module",
+  "version": "0.0.52",
+  "description": "Nuxt 3 integration for EdgeDB. sozdev",
+  "license": "MIT",
+  "repository": "tahul/nuxt-edgedb",
+  "bin": "./dist/cli.mjs",
+  "exports": {
+    ".": {
+      "types": "./dist/module.d.ts",
+      "import": "./dist/module.mjs",
+      "require": "./dist/module.cjs"
+    },
+    "./utils": {
+      "types": "./dist/utils.d.ts",
+      "import": "./dist/utils.mjs",
+      "require": "./dist/utils.mjs"
+    },
+    "./runtime/*": "./dist/runtime/*"
+  },
+  "main": "./dist/module.cjs",
+  "types": "./dist/module.d.ts",
+  "files": [
+    "dist",
+    "templates"
+  ],
+  "scripts": {
+    "build": "nuxt-module-build build",
+    "dev": "nuxi dev playground",
+    "dev:cli": "jiti ./src/cli.ts",
+    "dev:build": "nuxi build playground",
+    "stub": "nuxt-module-build build --stub",
+    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
+    "release": "yarn lint && yarn build && changelogen --release && npm publish && git push --follow-tags",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest watch"
+  },
+  "dependencies": {
+    "@clack/core": "^0.3.4",
+    "@clack/prompts": "^0.7.0",
+    "@edgedb/generate": "^0.5.3",
+    "@nuxt/kit": "^3.12.2",
+    "edgedb": "^1.5.11",
+    "execa": "^9.2.0",
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^2.21.1",
+    "@nuxt/devtools": "latest",
+    "@nuxt/module-builder": "^0.7.1",
+    "@nuxt/schema": "^3.12.2",
+    "@nuxt/test-utils": "^3.13.1",
+    "@types/node": "^20.14.3",
+    "@types/prompts": "^2.4.9",
+    "changelogen": "^0.5.5",
+    "eslint": "^9.5.0",
+    "nuxt": "^3.13.0",
+    "vitest": "^1.6.0"
+  },
+  "resolutions": {
+    "nuxt-edgedb-module": "link:."
+  }
+}
