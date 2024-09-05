@@ -25,7 +25,7 @@ import type { HeliaInstance } from '../../../src/vendor'
 const testsPath = join(
   dirname(__filename),
   '.orbitdb/tests',
-  basename(__filename, 'test.ts'),
+  basename(__filename, '.test.ts'),
 )
 
 describe('keyValueIndexed Database Replication', () => {
@@ -220,7 +220,10 @@ describe('keyValueIndexed Database Replication', () => {
     await kv1.del('empty')
     expectedEntryHash = await kv1.put('hello', 'friend3')
 
-    await waitFor(() => replicated, () => true)
+    await waitFor(
+      async () => replicated,
+      async () => true,
+    )
 
     await kv1.close()
     await kv2.close()
@@ -322,7 +325,10 @@ describe('keyValueIndexed Database Replication', () => {
     await kv1.del('empty')
     expectedEntryHash1 = await kv1.put('hello', 'friend3')
 
-    await waitFor(() => replicated1, () => true)
+    await waitFor(
+      async () => replicated1,
+      async () => true,
+    )
 
     await kv1.close()
 
@@ -368,7 +374,10 @@ describe('keyValueIndexed Database Replication', () => {
     })
     kv2.events.addEventListener('error', onError)
 
-    await waitFor(() => replicated2 && replicated3, () => true)
+    await waitFor(
+      async () => replicated2 && replicated3,
+      async () => true,
+    )
 
     const all1: { key: string, value: any }[] = []
     for await (const keyValue of kv1.iterator()) {
@@ -439,7 +448,7 @@ describe('keyValueIndexed Database Replication', () => {
       directory: join(testsPath, '2', 'orbitdb'),
     })
 
-    kv2.events.addEventListener('update', (_entry) => {
+    kv2.events.addEventListener('update', () => {
       replicated = true
     })
     kv2.events.addEventListener('error', (err) => {

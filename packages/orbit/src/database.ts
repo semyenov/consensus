@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { TypedEventEmitter } from '@libp2p/interface'
 import PQueue from 'p-queue'
 
@@ -189,7 +190,7 @@ export class Database<
     const queue = new PQueue({ concurrency: 1 })
     const writeQueue = new PQueue({ concurrency: 1 })
 
-    const sync = await Sync.create({
+    const sync = new Sync({
       ipfs,
       log,
       events,
@@ -250,7 +251,7 @@ export class Database<
       )
 
       await Promise.all(
-        entries.map(entry => this.sync.add<DatabaseOperation<T>>(entry)),
+        entries.map(entry => this.sync.add(entry)),
       )
       if (this.onUpdate) {
         await Promise.all(

@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { cn, valueUpdater } from '@/lib/utils'
+import { valueUpdater } from '@/lib/utils'
 
 import ScrollArea from '~/components/ui/scroll-area/ScrollArea.vue'
 

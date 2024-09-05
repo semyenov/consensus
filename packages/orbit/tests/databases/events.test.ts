@@ -23,7 +23,7 @@ import type { HeliaInstance } from '../../src/vendor'
 const testsPath = join(
   dirname(__filename),
   '.orbitdb/tests',
-  basename(__filename, 'test.ts'),
+  basename(__filename, '.test.ts'),
 )
 
 describe('events Database', () => {
@@ -33,7 +33,7 @@ describe('events Database', () => {
   let identities: IdentitiesInstance
   let testIdentity1: IdentityInstance
   let db: EventsInstance
-  const hashes: string[] = []
+  let hashes: string[] = []
 
   const databaseId = 'events-AAA'
 
@@ -133,8 +133,10 @@ describe('events Database', () => {
   it('amount: returns one item', async () => {
     const expected: any[] = ['hello4']
 
+    hashes = []
     for (const i of [0, 1, 2, 3, 4]) {
-      await db.add(`hello${i}`)
+      const hash = await db.add(`hello${i}`)
+      hashes.push(hash)
     }
 
     const all: EventsDoc[] = []
@@ -148,8 +150,10 @@ describe('events Database', () => {
 
   it('amount: returns two items', async () => {
     const expected: any[] = ['hello3', 'hello4']
+    hashes = []
     for (const i of [0, 1, 2, 3, 4]) {
-      await db.add(`hello${i}`)
+      const hash = await db.add(`hello${i}`)
+      hashes.push(hash)
     }
 
     const all: EventsDoc[] = []
@@ -163,8 +167,10 @@ describe('events Database', () => {
 
   it('amount: returns three items', async () => {
     const expected: any[] = ['hello2', 'hello3', 'hello4']
+    hashes = []
     for (const i of [0, 1, 2, 3, 4]) {
-      await db.add(`hello${i}`)
+      const hash = await db.add(`hello${i}`)
+      hashes.push(hash)
     }
 
     const all: EventsDoc[] = []
@@ -178,8 +184,10 @@ describe('events Database', () => {
 
   it('amount: sets \'amount\' greater than items available', async () => {
     const expected: any[] = ['hello0', 'hello1', 'hello2', 'hello3', 'hello4']
+    hashes = []
     for (const i of [0, 1, 2, 3, 4]) {
-      await db.add(`hello${i}`)
+      const hash = await db.add(`hello${i}`)
+      hashes.push(hash)
     }
 
     const all: EventsDoc[] = []
@@ -193,8 +201,10 @@ describe('events Database', () => {
 
   it('amount: sets \'amount\' to 0', async () => {
     const expected: any[] = []
+    hashes = []
     for (const i of [0, 1, 2, 3, 4]) {
-      await db.add(`hello${i}`)
+      const hash = await db.add(`hello${i}`)
+      hashes.push(hash)
     }
 
     const all: EventsDoc[] = []
@@ -208,8 +218,10 @@ describe('events Database', () => {
 
   it('lt: returns all items less than head', async () => {
     const expected: any[] = ['hello0', 'hello1', 'hello2', 'hello3']
+    hashes = []
     for (const i of [0, 1, 2, 3, 4]) {
-      await db.add(`hello${i}`)
+      const hash = await db.add(`hello${i}`)
+      hashes.push(hash)
     }
 
     const all: EventsDoc[] = []
@@ -217,14 +229,18 @@ describe('events Database', () => {
       all.unshift(record)
     }
 
+    console.log(all.map(e => e.value))
+
     strictEqual(all.length, 4)
     deepStrictEqual(all.map(e => e.value), expected)
   })
 
   it('lt: returns one item less than head', async () => {
     const expected: any[] = ['hello3']
+    hashes = []
     for (const i of [0, 1, 2, 3, 4]) {
-      await db.add(`hello${i}`)
+      const hash = await db.add(`hello${i}`)
+      hashes.push(hash)
     }
 
     const all: EventsDoc[] = []
@@ -240,8 +256,10 @@ describe('events Database', () => {
 
   it('lt: returns two items less than head', async () => {
     const expected: any[] = ['hello2', 'hello3']
+    hashes = []
     for (const i of [0, 1, 2, 3, 4]) {
-      await db.add(`hello${i}`)
+      const hash = await db.add(`hello${i}`)
+      hashes.push(hash)
     }
 
     const all: EventsDoc[] = []
@@ -257,8 +275,10 @@ describe('events Database', () => {
 
   it('lte: returns all items less or equal to head', async () => {
     const expected: any[] = ['hello0', 'hello1', 'hello2', 'hello3', 'hello4']
+    hashes = []
     for (const i of [0, 1, 2, 3, 4]) {
-      await db.add(`hello${i}`)
+      const hash = await db.add(`hello${i}`)
+      hashes.push(hash)
     }
 
     const all: EventsDoc[] = []
@@ -272,8 +292,10 @@ describe('events Database', () => {
 
   it('lte: returns one item less than or equal to head', async () => {
     const expected: any[] = ['hello4']
+    hashes = []
     for (const i of [0, 1, 2, 3, 4]) {
-      await db.add(`hello${i}`)
+      const hash = await db.add(`hello${i}`)
+      hashes.push(hash)
     }
 
     const all: EventsDoc[] = []
@@ -289,8 +311,10 @@ describe('events Database', () => {
 
   it('lte: returns two items less than or equal to head', async () => {
     const expected: any[] = ['hello3', 'hello4']
+    hashes = []
     for (const i of [0, 1, 2, 3, 4]) {
-      await db.add(`hello${i}`)
+      const hash = await db.add(`hello${i}`)
+      hashes.push(hash)
     }
 
     const all: EventsDoc[] = []
@@ -306,8 +330,10 @@ describe('events Database', () => {
 
   it('gt: returns all items greater than root', async () => {
     const expected: any[] = ['hello1', 'hello2', 'hello3', 'hello4']
+    hashes = []
     for (const i of [0, 1, 2, 3, 4]) {
-      await db.add(`hello${i}`)
+      const hash = await db.add(`hello${i}`)
+      hashes.push(hash)
     }
 
     const all: EventsDoc[] = []
@@ -321,8 +347,10 @@ describe('events Database', () => {
 
   it('gt: returns one item greater than root', async () => {
     const expected: any[] = ['hello1']
+    hashes = []
     for (const i of [0, 1, 2, 3, 4]) {
-      await db.add(`hello${i}`)
+      const hash = await db.add(`hello${i}`)
+      hashes.push(hash)
     }
 
     const all: EventsDoc[] = []
@@ -338,8 +366,10 @@ describe('events Database', () => {
 
   it('gt: returns two items greater than root', async () => {
     const expected: any[] = ['hello1', 'hello2']
+    hashes = []
     for (const i of [0, 1, 2, 3, 4]) {
-      await db.add(`hello${i}`)
+      const hash = await db.add(`hello${i}`)
+      hashes.push(hash)
     }
 
     const all: EventsDoc[] = []
@@ -355,8 +385,10 @@ describe('events Database', () => {
 
   it('gte: returns all items greater than or equal to root', async () => {
     const expected: any[] = ['hello0', 'hello1', 'hello2', 'hello3', 'hello4']
+    hashes = []
     for (const i of [0, 1, 2, 3, 4]) {
-      await db.add(`hello${i}`)
+      const hash = await db.add(`hello${i}`)
+      hashes.push(hash)
     }
 
     const all: EventsDoc[] = []
@@ -370,8 +402,10 @@ describe('events Database', () => {
 
   it('gte: returns one item greater than or equal to root', async () => {
     const expected: any[] = ['hello0']
+    hashes = []
     for (const i of [0, 1, 2, 3, 4]) {
-      await db.add(`hello${i}`)
+      const hash = await db.add(`hello${i}`)
+      hashes.push(hash)
     }
 
     const all: EventsDoc[] = []
@@ -387,8 +421,10 @@ describe('events Database', () => {
 
   it('gte: returns two items greater than or equal to root', async () => {
     const expected: any[] = ['hello0', 'hello1']
+    hashes = []
     for (const i of [0, 1, 2, 3, 4]) {
-      await db.add(`hello${i}`)
+      const hash = await db.add(`hello${i}`)
+      hashes.push(hash)
     }
 
     const all: EventsDoc[] = []
@@ -404,8 +440,10 @@ describe('events Database', () => {
 
   it('range: returns all items greater than root and less than head', async () => {
     const expected: any[] = ['hello1', 'hello2', 'hello3']
+    hashes = []
     for (const i of [0, 1, 2, 3, 4]) {
-      await db.add(`hello${i}`)
+      const hash = await db.add(`hello${i}`)
+      hashes.push(hash)
     }
 
     const all: EventsDoc[] = []
