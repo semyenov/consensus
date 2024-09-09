@@ -4,11 +4,13 @@ definePageMeta({
 })
 
 const { t } = useI18n()
-const { isLoggedIn, identity: user } = useEdgeDbIdentity()
+const { isLoggedIn, identity: user  } = useEdgeDbIdentity()
 const router = useRouter()
 </script>
 
 <template>
+  {{isLoggedIn}}
+    {{ user || {} }}
   <div
     v-if="isLoggedIn"
     class="flex flex-col items-center justify-center w-full h-full px-4 py-8"

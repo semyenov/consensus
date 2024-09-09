@@ -1759,7 +1759,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/js@npm:9.9.1, @eslint/js@npm:^9.9.1":
+"@eslint/js@npm:9.9.1":
   version: 9.9.1
   resolution: "@eslint/js@npm:9.9.1"
   checksum: 10c0/a3a91de2ce78469f7c4eee78c1eba77360706e1d0fa0ace2e19102079bcf237b851217c85ea501dc92c4c3719d60d9df966977abc8554d4c38e3638c1f53dcb2
@@ -3151,44 +3151,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nuxt/eslint-config@npm:^0.5.2":
-  version: 0.5.5
-  resolution: "@nuxt/eslint-config@npm:0.5.5"
-  dependencies:
-    "@eslint/js": "npm:^9.9.1"
-    "@nuxt/eslint-plugin": "npm:0.5.5"
-    "@stylistic/eslint-plugin": "npm:^2.7.2"
-    "@typescript-eslint/eslint-plugin": "npm:^8.3.0"
-    "@typescript-eslint/parser": "npm:^8.3.0"
-    eslint-config-flat-gitignore: "npm:^0.2.0"
-    eslint-flat-config-utils: "npm:^0.3.1"
-    eslint-plugin-import-x: "npm:^4.1.1"
-    eslint-plugin-jsdoc: "npm:^50.2.2"
-    eslint-plugin-regexp: "npm:^2.6.0"
-    eslint-plugin-unicorn: "npm:^55.0.0"
-    eslint-plugin-vue: "npm:^9.27.0"
-    globals: "npm:^15.9.0"
-    local-pkg: "npm:^0.5.0"
-    pathe: "npm:^1.1.2"
-    vue-eslint-parser: "npm:^9.4.3"
-  peerDependencies:
-    eslint: ^8.57.0 || ^9.0.0
-  checksum: 10c0/f6449cfcc2cb56f8ce840c856c0e781fdd70474b7f6b1f5ab9516f0db83b15718f4a47447ff2903b124338422ba84726c3648ee7cf2f3480c23d50e79acde3e6
-  languageName: node
-  linkType: hard
-
-"@nuxt/eslint-plugin@npm:0.5.5":
-  version: 0.5.5
-  resolution: "@nuxt/eslint-plugin@npm:0.5.5"
-  dependencies:
-    "@typescript-eslint/types": "npm:^8.3.0"
-    "@typescript-eslint/utils": "npm:^8.3.0"
-  peerDependencies:
-    eslint: ^8.57.0 || ^9.0.0
-  checksum: 10c0/e62bca8d7e0284dddf3604e1f7c3c4cf89e95d94b9b8c36cb17c5c255ee8a40662fe511260cf48babf6874d641773f25bc365542c3b43dcf45889c7a1bc1c993
-  languageName: node
-  linkType: hard
-
 "@nuxt/fonts@npm:^0.7.2":
   version: 0.7.2
   resolution: "@nuxt/fonts@npm:0.7.2"
@@ -3290,29 +3252,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nuxt/module-builder@npm:^0.8.3":
-  version: 0.8.3
-  resolution: "@nuxt/module-builder@npm:0.8.3"
-  dependencies:
-    citty: "npm:^0.1.6"
-    consola: "npm:^3.2.3"
-    defu: "npm:^6.1.4"
-    magic-regexp: "npm:^0.8.0"
-    mlly: "npm:^1.7.1"
-    pathe: "npm:^1.1.2"
-    pkg-types: "npm:^1.1.3"
-    tsconfck: "npm:^3.1.1"
-    unbuild: "npm:^2.0.0"
-  peerDependencies:
-    "@nuxt/kit": ^3.12.4
-    nuxi: ^3.12.0
-  bin:
-    nuxt-build-module: dist/cli.mjs
-    nuxt-module-build: dist/cli.mjs
-  checksum: 10c0/f70d2c7205f1a104810f5f184385fc86cbb044c8f30231538d3d2f2cf3083ef5bbe6d060e094160dbdad4c7cd281b529b7dac9f783926f96f08a30532fe0cf34
-  languageName: node
-  linkType: hard
-
 "@nuxt/schema@npm:3.13.0, @nuxt/schema@npm:^3.12.2, @nuxt/schema@npm:^3.12.4, @nuxt/schema@npm:^3.13.0":
   version: 3.13.0
   resolution: "@nuxt/schema@npm:3.13.0"
@@ -3360,7 +3299,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nuxt/test-utils@npm:>=3.13.1, @nuxt/test-utils@npm:^3.13.1, @nuxt/test-utils@npm:^3.14.1":
+"@nuxt/test-utils@npm:>=3.13.1, @nuxt/test-utils@npm:^3.13.1":
   version: 3.14.1
   resolution: "@nuxt/test-utils@npm:3.14.1"
   dependencies:
@@ -4592,7 +4531,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stylistic/eslint-plugin@npm:^2.6.4, @stylistic/eslint-plugin@npm:^2.6.5, @stylistic/eslint-plugin@npm:^2.7.2":
+"@stylistic/eslint-plugin@npm:^2.6.4, @stylistic/eslint-plugin@npm:^2.6.5":
   version: 2.7.2
   resolution: "@stylistic/eslint-plugin@npm:2.7.2"
   dependencies:
@@ -4896,15 +4835,6 @@ __metadata:
   dependencies:
     undici-types: "npm:~6.19.2"
   checksum: 10c0/1dfd24b8a1552adf1f37c189bcebb6e287184852188d8aa28f8e955f15079f8ee62d88f142b6a52c0fd59132fc40644bf6197c139e4e1d645c1db040b231caaa
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^22.5.0":
-  version: 22.5.3
-  resolution: "@types/node@npm:22.5.3"
-  dependencies:
-    undici-types: "npm:~6.19.2"
-  checksum: 10c0/a068e31dd424a0eadfba7d9a5c5b415b76cfd729f3caa299674ad257f59df85c5fe77f1d0a343e811864c790baefb9003d7627618ee3cf85400af338481ba29f
   languageName: node
   linkType: hard
 
@@ -8868,16 +8798,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-flat-gitignore@npm:^0.2.0":
-  version: 0.2.0
-  resolution: "eslint-config-flat-gitignore@npm:0.2.0"
-  dependencies:
-    "@eslint/compat": "npm:^1.1.1"
-    find-up-simple: "npm:^1.0.0"
-  checksum: 10c0/956937bc2ba5884fb5eabaa9738731004a38e117f9a71d7aabbeaac7e013e5de0f81d2f0c3b28804d0a66ff193c7919d64a096415205baef2b10fba00e919cdf
-  languageName: node
-  linkType: hard
-
 "eslint-config-flat-gitignore@npm:^0.3.0":
   version: 0.3.0
   resolution: "eslint-config-flat-gitignore@npm:0.3.0"
@@ -8955,7 +8875,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-import-x@npm:^4.0.0, eslint-plugin-import-x@npm:^4.1.0, eslint-plugin-import-x@npm:^4.1.1":
+"eslint-plugin-import-x@npm:^4.0.0, eslint-plugin-import-x@npm:^4.1.0":
   version: 4.1.1
   resolution: "eslint-plugin-import-x@npm:4.1.1"
   dependencies:
@@ -13288,26 +13208,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"my-module@workspace:modules/my-module":
-  version: 0.0.0-use.local
-  resolution: "my-module@workspace:modules/my-module"
-  dependencies:
-    "@nuxt/devtools": "npm:^1.3.14"
-    "@nuxt/eslint-config": "npm:^0.5.2"
-    "@nuxt/kit": "npm:^3.13.0"
-    "@nuxt/module-builder": "npm:^0.8.3"
-    "@nuxt/schema": "npm:^3.13.0"
-    "@nuxt/test-utils": "npm:^3.14.1"
-    "@types/node": "npm:^22.5.0"
-    changelogen: "npm:^0.5.5"
-    eslint: "npm:^9.9.1"
-    nuxt: "npm:^3.13.0"
-    typescript: "npm:latest"
-    vitest: "npm:^2.0.5"
-    vue-tsc: "npm:^2.0.29"
-  languageName: unknown
-  linkType: soft
-
 "mz@npm:^2.7.0":
   version: 2.7.0
   resolution: "mz@npm:2.7.0"
@@ -17147,7 +17047,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsconfck@npm:^3.1.0, tsconfck@npm:^3.1.1":
+"tsconfck@npm:^3.1.0":
   version: 3.1.3
   resolution: "tsconfck@npm:3.1.3"
   peerDependencies:
@@ -17293,7 +17193,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^5.4.5, typescript@npm:^5.5.4, typescript@npm:latest":
+"typescript@npm:^5.4.5, typescript@npm:^5.5.4":
   version: 5.5.4
   resolution: "typescript@npm:5.5.4"
   bin:
@@ -17303,7 +17203,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A^5.4.5#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.5.4#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3Alatest#optional!builtin<compat/typescript>":
+"typescript@patch:typescript@npm%3A^5.4.5#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A^5.5.4#optional!builtin<compat/typescript>":
   version: 5.5.4
   resolution: "typescript@patch:typescript@npm%3A5.5.4#optional!builtin<compat/typescript>::version=5.5.4&hash=379a07"
   bin:
@@ -18358,7 +18258,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vue-tsc@npm:^2.0.29, vue-tsc@npm:^2.1.2":
+"vue-tsc@npm:^2.1.2":
   version: 2.1.4
   resolution: "vue-tsc@npm:2.1.4"
   dependencies:

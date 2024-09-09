@@ -17,6 +17,12 @@ const password = ref()
 function updatePassword(value: string) {
   password.value = value
 }
+
+const name = ref()
+function updateName(value: string) {
+  name.value = value
+}
+
 const error = ref()
 const success = ref()
 const loading = ref(false)
@@ -31,9 +37,13 @@ async function submit(provider: string = 'builtin::local_emailpassword') {
       body: {
         email: email.value,
         password: password.value,
+        name: name.value,
         provider,
       },
     })
+
+
+
 
     success.value = true
 
@@ -55,6 +65,8 @@ defineExpose({
   updateEmail,
   password,
   updatePassword,
+  name,
+  updateName,
   submit,
   success,
   loading,
@@ -62,5 +74,5 @@ defineExpose({
 </script>
 
 <template>
-  <slot v-bind="{ email, updateEmail, password, updatePassword, submit, loading }" />
+  <slot v-bind="{ email, updateEmail, password, updatePassword, name, updateName, submit, loading }" />
 </template>

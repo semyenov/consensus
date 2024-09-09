@@ -11,13 +11,28 @@ type EdgeDbAuthCallbackContext = {
   }
 }
 
+type EdgeDbAuthSignupContext = {
+  identity_id: string
+}
+
 export default defineNitroPlugin((app) => {
   const client = useEdgeDb()
   const e = useEdgeDbQueryBuilder()
 
+  async function getUser(identity_id: string) {
+    return e
+      .select(e.User, () => ({
+        ...e.User['*'],
+      filter_single: e.op(e.ext.auth.Identity.id, '=', e.uuid(identity_id)),
+    }))
+    .run(client)
+  }
+
   app.hooks.hook(
     'edgedb:auth:callback' as any,
     async ({ codeExchangeResponseData: data }: EdgeDbAuthCallbackContext) => {
+
+      console.log('callback hook data', data)
       if (!data) {
         throw createError({
           statusCode: 400,
@@ -33,20 +48,14 @@ export default defineNitroPlugin((app) => {
         })
       }
 
-      const user = await e
-        .select(e.User, () => ({
-          ...e.User['*'],
-          filter_single: e.op(e.ext.auth.Identity.id, '=', e.uuid(identity_id)),
-        }))
-        .run(client)
+      const user = await getUser(identity_id)
 
       const octokit = new Octokit({
         auth: provider_token,
       })
-
       const { data: userData } = await octokit.request('GET /user')
       if (!user) {
-        await e
+        const newUser = await e
           .insert(e.User, {
             name: userData.name ?? '',
             description: userData.bio ?? '',

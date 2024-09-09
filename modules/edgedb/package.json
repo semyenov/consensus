@@ -31,6 +31,7 @@
     "dev:cli": "jiti ./src/cli.ts",
     "dev:build": "nuxi build playground",
     "stub": "nuxt-module-build build --stub",
+    "prepare": "nuxt-module-build prepare",
     "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
     "release": "yarn lint && yarn build && changelogen --release && npm publish && git push --follow-tags",
     "lint": "eslint .",

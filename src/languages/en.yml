@@ -1,4 +1,32 @@
 pages:
+  auth/login:
+    links:
+      home: Home
+    title: User Login
+    description: >-
+      Page for users to sign in using various OAuth providers, offering a range
+      of secure authentication options. This page provides a simple and
+      intuitive way for users to access the application.
+
+  auth/logout:
+    links:
+      home: Home
+      logout: Log out
+    description: >-
+      Page for users to confirm their logout from their account, ensuring all
+      sessions are closed. This page provides an additional layer of security by
+      confirming the user's intention to log out.
+    title: User Logout
+
+  auth/signup:
+    links:
+      home: Home
+    title: User Signup
+    description: >-
+      Page for users to sign up using their email address, offering a range
+      of secure authentication options. This page provides a simple and
+      intuitive way for users to access the application.
+
   auth/callback:
     links:
       home: Home
@@ -9,23 +37,27 @@ pages:
       authentication response from the OAuth provider and redirects the user to
       the main application page.
     code: 'Code: {code}.'
-  auth/login:
-    links:
-      home: Home
-    title: User Login
-    description: >-
-      Page for users to sign in using various OAuth providers, offering a range
-      of secure authentication options. This page provides a simple and
-      intuitive way for users to access the application.
-  auth/logout:
-    links:
-      home: Home
-      logout: Log out
-    description: >-
-      Page for users to confirm their logout from their account, ensuring all
-      sessions are closed. This page provides an additional layer of security by
-      confirming the user's intention to log out.
-    title: User Logout
+
+  confirmEmail:
+    title: Confirm Your Email
+    descriptionWithEmail: "We've sent a confirmation email to {email}. Please check your inbox and click the link to verify your account."
+    descriptionWithoutEmail: Please check your inbox for the confirmation email and click the link to verify your account.
+    checkSpam: "Didn't receive the email? Check your spam folder or request a new one."
+    sending: Sending...
+    resend: Resend Confirmation Email
+    successTitle: Success
+    successMessageWithEmail: Confirmation email has been resent to {email}. Please check your inbox.
+    successMessageWithoutEmail: Confirmation email has been resent. Please check your inbox.
+    errorTitle: Error
+    errorMessage: Failed to resend confirmation email. Please try again later.
+  verify:
+    retryButton: Retry
+    errorTitle: "Email Verification Failed"
+    errorMessage: "Failed to verify your email address. Please check the link or try again."
+    title: "Email Confirmed"
+    description: "Your email address has been successfully verified"
+    message: "Thank you for confirming your email address. You can now access all features of your account."
+    homeButton: "Go to Homepage"
   index:
     links:
       login: Login

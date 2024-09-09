@@ -1,4 +1,5 @@
-import { H3Error, defineEventHandler, getCookie, getRequestURL, sendError, setHeaders } from 'h3'
+import { H3Error, defineEventHandler, getCookie, getRequestURL, sendError, setHeaders, setCookie } from 'h3'
+import { useNitroApp } from '#imports'
 import { useEdgeDbEnv } from '../../server/composables/useEdgeDbEnv'
 
 /**
@@ -61,8 +62,22 @@ export default defineEventHandler(async (req) => {
 
   const tokenResponseData = await tokenResponse.json()
 
-  setHeaders(req, {
-    'Set-Cookie': `edgedb-auth-token=${tokenResponseData.auth_token}; HttpOnly; Path=/; Secure; SameSite=Strict`,
+  // setHeaders(req, {
+  //   'Set-Cookie': `edgedb-auth-token=${tokenResponseData.auth_token}; HttpOnly; Path=/; Secure; SameSite=Strict`,
+  // })
+
+  setCookie(req, 'edgedb-auth-token', tokenResponseData.auth_token, {
+    httpOnly: true,
+    path: '/',
+    secure: true,
+    sameSite: true,
+  })
+
+  useNitroApp().hooks.callHook('edgedb:auth:callback', {
+    verification_token,
+    verifier,
+    code,
+    tokenResponseData,
   })
 
   return tokenResponseData

@@ -86,7 +86,7 @@ export default defineNuxtConfig({
       },
     },
     scheduledTasks: {
-      '*/2 * * * *': 'edgedb:generate',
+      '* 1 * * *': 'edgedb:generate',
     },
     experimental: {
       wasm: true,

@@ -52,6 +52,8 @@ export default defineEventHandler(async (req) => {
 
   const tokenResponseData = await tokenResponse.json()
 
+  console.log('tokenResponseData', tokenResponseData)
+
   setCookie(req, 'edgedb-auth-token', tokenResponseData.auth_token, {
     httpOnly: true,
     path: '/',
