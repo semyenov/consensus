@@ -4,7 +4,6 @@ import { IPFSBlockStorage, type IPFSBlockStorageOptions } from './ipfs-block'
 import { LevelStorage, type LevelStorageOptions } from './level'
 import { LRUStorage, type LRUStorageOptions } from './lru'
 import { MemoryStorage } from './memory'
-import { RocksDBStorage, type RocksDBStorageOptions } from './rocksdb'
 
 import type { StorageInstance } from './types'
 
@@ -15,7 +14,6 @@ export {
   LevelStorage,
   LRUStorage,
   MemoryStorage,
-  RocksDBStorage,
 }
 
 export type {
@@ -24,6 +22,5 @@ export type {
   IPFSBlockStorageOptions,
   LevelStorageOptions,
   LRUStorageOptions,
-  RocksDBStorageOptions,
   StorageInstance,
 }

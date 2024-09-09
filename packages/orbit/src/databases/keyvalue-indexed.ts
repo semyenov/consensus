@@ -270,8 +270,6 @@ implements KeyValueIndexedInstance<T> {
   del(key: string): Promise<string> {
     return this.keyValueStore.del(key)
   }
-
-  // Add any other methods from KeyValueInstance that need to be implemented
 }
 
 export const KeyValueIndexed: DatabaseType<any, 'keyvalue-indexed'> = {

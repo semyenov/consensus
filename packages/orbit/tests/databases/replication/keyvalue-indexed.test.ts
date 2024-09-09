@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { deepStrictEqual } from 'node:assert'
 import { basename, dirname, join } from 'node:path'
 
@@ -11,14 +10,16 @@ import {
   KeyStore,
   KeyValueIndexed,
 } from '../../../src'
-import testKeysPath from '../../fixtures/test-keys-path'
-import connectPeers from '../../utils/connect-nodes'
-import createHelia from '../../utils/create-helia'
-import waitFor from '../../utils/wait-for'
+import testKeysPath from '../../fixtures/test-keys-path.js'
+import connectPeers from '../../utils/connect-nodes.js'
+import createHelia from '../../utils/create-helia.js'
+import waitFor from '../../utils/wait-for.js'
 
 import type { AccessControllerInstance } from '../../../src/access-controllers'
 import type { KeyValueIndexedDatabase } from '../../../src/databases/keyvalue-indexed'
+import type { IdentitiesInstance } from '../../../src/identities'
 import type { IdentityInstance } from '../../../src/identities/identity'
+import type { KeyStoreInstance } from '../../../src/key-store'
 import type { EntryInstance } from '../../../src/oplog'
 import type { HeliaInstance } from '../../../src/vendor'
 
@@ -30,11 +31,10 @@ const testsPath = join(
 
 describe('keyValueIndexed Database Replication', () => {
   let ipfs1: HeliaInstance, ipfs2: HeliaInstance
-  let keystore: KeyStore
-  let identities: Identities
-  let identities2: Identities
+  let identities: IdentitiesInstance, identities2: IdentitiesInstance
   let testIdentity1: IdentityInstance, testIdentity2: IdentityInstance
   let kv1: KeyValueIndexedDatabase, kv2: KeyValueIndexedDatabase
+  let keystore: KeyStoreInstance
 
   const databaseId = 'kv-AAA'
 
@@ -43,23 +43,17 @@ describe('keyValueIndexed Database Replication', () => {
     write: ['*'],
     canAppend: async (entry) => {
       const identity = await identities.getIdentity(entry.identity!)
-      if (!identity) {
-        throw new Error('Identity not found')
-      }
 
-      return identity.id === testIdentity1.id
-        || identity.id === testIdentity2.id
+      return identity?.id === testIdentity1.id
+        || identity?.id === testIdentity2.id
     },
   }
 
   beforeAll(async () => {
-    [ipfs1, ipfs2] = await Promise.all([
-      createHelia({ directory: join(testsPath, '1', 'ipfs') }),
-      createHelia({ directory: join(testsPath, '2', 'ipfs') }),
-    ])
+    [ipfs1, ipfs2] = await Promise.all([createHelia(), createHelia()])
     await connectPeers(ipfs1, ipfs2)
 
-    await rimraf(testsPath)
+    rimraf(testsPath)
 
     await copy(testKeysPath, join(testsPath, 'keystore'))
     keystore = await KeyStore.create({ path: join(testsPath, 'keystore') })
@@ -92,7 +86,7 @@ describe('keyValueIndexed Database Replication', () => {
       await keystore.close()
     }
 
-    await rimraf(testsPath)
+    rimraf(testsPath)
   })
 
   it('replicates a database', async () => {
@@ -126,6 +120,9 @@ describe('keyValueIndexed Database Replication', () => {
       && entry.hash === expectedEntryHash
     })
 
+    kv2.events.addEventListener('error', onError)
+    kv1.events.addEventListener('error', onError)
+
     await kv1.put('init', true)
     await kv1.put('hello', 'friend')
     await kv1.del('hello')
@@ -135,7 +132,10 @@ describe('keyValueIndexed Database Replication', () => {
     await kv1.del('empty')
     expectedEntryHash = await kv1.put('hello', 'friend3')
 
-    await waitFor(() => replicated, () => true)
+    await waitFor(
+      async () => replicated,
+      async () => true,
+    )
 
     const value0 = await kv2.get('init')
     deepStrictEqual(value0, true)
@@ -149,7 +149,7 @@ describe('keyValueIndexed Database Replication', () => {
     const value9 = await kv1.get('empty')
     deepStrictEqual(value9, null)
 
-    const all2: { key: string, value: any }[] = []
+    const all2: { key: string, value: unknown }[] = []
     for await (const keyValue of kv2.iterator()) {
       all2.push(keyValue)
     }
@@ -160,7 +160,8 @@ describe('keyValueIndexed Database Replication', () => {
         { key: 'hello', value: 'friend3' },
       ],
     )
-    const all1: { key: string, value: any }[] = []
+
+    const all1: { key: string, value: unknown }[] = []
     for await (const keyValue of kv1.iterator()) {
       all1.push(keyValue)
     }
@@ -204,12 +205,8 @@ describe('keyValueIndexed Database Replication', () => {
       && entry.hash === expectedEntryHash
     })
 
-    kv2.events.addEventListener('error', (err) => {
-      console.error(err)
-    })
-    kv1.events.addEventListener('error', (err) => {
-      console.error(err)
-    })
+    kv2.events.addEventListener('error', onError)
+    kv1.events.addEventListener('error', onError)
 
     await kv1.put('init', true)
     await kv1.put('hello', 'friend')
@@ -255,7 +252,7 @@ describe('keyValueIndexed Database Replication', () => {
     const value9 = await kv1.get('empty')
     deepStrictEqual(value9, null)
 
-    const all2: { key: string, value: any }[] = []
+    const all2: { key: string, value: unknown }[] = []
     for await (const keyValue of kv2.iterator()) {
       all2.push(keyValue)
     }
@@ -267,7 +264,7 @@ describe('keyValueIndexed Database Replication', () => {
       ],
     )
 
-    const all1: { key: string, value: any }[] = []
+    const all1: { key: string, value: unknown }[] = []
     for await (const keyValue of kv1.iterator()) {
       all1.push(keyValue)
     }
@@ -289,7 +286,6 @@ describe('keyValueIndexed Database Replication', () => {
     let expectedEntryHash3: string | null = null
 
     const onError = (err: any) => {
-      console.error(err)
       deepStrictEqual(err, null)
     }
 
@@ -379,12 +375,12 @@ describe('keyValueIndexed Database Replication', () => {
       async () => true,
     )
 
-    const all1: { key: string, value: any }[] = []
+    const all1: { key: string, value: unknown }[] = []
     for await (const keyValue of kv1.iterator()) {
       all1.push(keyValue)
     }
 
-    const all2: { key: string, value: any }[] = []
+    const all2: { key: string, value: unknown }[] = []
     for await (const keyValue of kv2.iterator()) {
       all2.push(keyValue)
     }
@@ -430,7 +426,6 @@ describe('keyValueIndexed Database Replication', () => {
     })
 
     kv1.events.addEventListener('error', (err) => {
-      console.error(err)
       deepStrictEqual(err, null)
     })
 
@@ -452,7 +447,6 @@ describe('keyValueIndexed Database Replication', () => {
       replicated = true
     })
     kv2.events.addEventListener('error', (err) => {
-      console.error(err)
       deepStrictEqual(err, null)
     })
 
@@ -461,12 +455,12 @@ describe('keyValueIndexed Database Replication', () => {
       async () => true,
     )
 
-    const all1: { key: string, value: any }[] = []
+    const all1: { key: string, value: unknown }[] = []
     for await (const keyValue of kv1.iterator()) {
       all1.push(keyValue)
     }
 
-    const all2: { key: string, value: any }[] = []
+    const all2: { key: string, value: unknown }[] = []
     for await (const keyValue of kv2.iterator()) {
       all2.push(keyValue)
     }
@@ -490,3 +484,8 @@ describe('keyValueIndexed Database Replication', () => {
     await rimraf(testsPath)
   })
 })
+
+function onError(err: CustomEvent<Error>) {
+  // eslint-disable-next-line no-console
+  console.error(err.detail)
+}

@@ -3501,7 +3501,6 @@ __metadata:
     "@types/elliptic": "npm:^6.4.18"
     "@types/events": "npm:^3.0.3"
     "@types/fs-extra": "npm:^11.0.4"
-    "@types/rocksdb": "npm:^3.0.5"
     "@typeschema/typebox": "npm:^0.14.0"
     "@vitest/coverage-v8": "npm:^2.0.5"
     blockcodec-to-ipld-format: "npm:^2.0.0"
@@ -3547,7 +3546,6 @@ __metadata:
     protons-runtime: "npm:5.5.0"
     remeda: "npm:^2.11.0"
     rimraf: "npm:^6.0.1"
-    rocksdb: "npm:^5.2.1"
     timeout-abort-controller: "npm:^3.0.0"
     ts-pattern: "npm:^5.3.1"
     tsx: "npm:^4.19.0"
@@ -4074,13 +4072,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/abstract-leveldown@npm:*":
-  version: 7.2.5
-  resolution: "@types/abstract-leveldown@npm:7.2.5"
-  checksum: 10c0/ec6c054a0a09c5a2ba8de6e640169978d34b6ef9b629183c440330208ad67e1322d7dd0aeb834963a9138b47b78730dcddd929c10138ccfddb7b06869264e173
-  languageName: node
-  linkType: hard
-
 "@types/add@npm:^2.0.3":
   version: 2.0.3
   resolution: "@types/add@npm:2.0.3"
@@ -4278,16 +4269,6 @@ __metadata:
   version: 1.20.2
   resolution: "@types/resolve@npm:1.20.2"
   checksum: 10c0/c5b7e1770feb5ccfb6802f6ad82a7b0d50874c99331e0c9b259e415e55a38d7a86ad0901c57665d93f75938be2a6a0bc9aa06c9749192cadb2e4512800bbc6e6
-  languageName: node
-  linkType: hard
-
-"@types/rocksdb@npm:^3.0.5":
-  version: 3.0.5
-  resolution: "@types/rocksdb@npm:3.0.5"
-  dependencies:
-    "@types/abstract-leveldown": "npm:*"
-    "@types/node": "npm:*"
-  checksum: 10c0/c919eb52a086ae601357334a953ee5f6252a3279ea4ae3ce9198f008e203fc936fa633f2af7f5dc5a30433ad59282aa53e118efac6f89921b9960c6cc8920c2f
   languageName: node
   linkType: hard
 
@@ -5143,20 +5124,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"abstract-leveldown@npm:^7.2.0":
-  version: 7.2.0
-  resolution: "abstract-leveldown@npm:7.2.0"
-  dependencies:
-    buffer: "npm:^6.0.3"
-    catering: "npm:^2.0.0"
-    is-buffer: "npm:^2.0.5"
-    level-concat-iterator: "npm:^3.0.0"
-    level-supports: "npm:^2.0.1"
-    queue-microtask: "npm:^1.2.3"
-  checksum: 10c0/c81765642fc2100499fadc3254470a338ba7c0ba2e597b15cd13d91f333a54619b4d5c4137765e0835817142cd23e8eb7bf01b6a217e13c492f4872c164184dc
-  languageName: node
-  linkType: hard
-
 "accepts@npm:^1.3.5":
   version: 1.3.8
   resolution: "accepts@npm:1.3.8"
@@ -5911,7 +5878,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"catering@npm:^2.0.0, catering@npm:^2.1.0, catering@npm:^2.1.1":
+"catering@npm:^2.1.0, catering@npm:^2.1.1":
   version: 2.1.1
   resolution: "catering@npm:2.1.1"
   checksum: 10c0/a69f946f82cba85509abcb399759ed4c39d2cc9e33ba35674f242130c1b3c56673da3c3e85804db6898dfd966c395aa128ba484b31c7b906cc2faca6a581e133
@@ -10580,22 +10547,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"level-concat-iterator@npm:^3.0.0":
-  version: 3.1.0
-  resolution: "level-concat-iterator@npm:3.1.0"
-  dependencies:
-    catering: "npm:^2.1.0"
-  checksum: 10c0/7bb1b8e991a179de2fecfd38d2c34544a139e1228cb730f3024ef11dcbd514cc89be30b02a2a81ef4e16b0c1553f604378f67302ea23868d98f055f9fa241ae4
-  languageName: node
-  linkType: hard
-
-"level-supports@npm:^2.0.1":
-  version: 2.1.0
-  resolution: "level-supports@npm:2.1.0"
-  checksum: 10c0/60481dd403234c64e2c01ed2aafdc75250ddd49d770f75ebef3f92a2a5b2271bf774858bfd8c47cfae3955855f9ff9dd536683d6cffb7c085cd0e57245c4c039
-  languageName: node
-  linkType: hard
-
 "level-supports@npm:^4.0.0":
   version: 4.0.1
   resolution: "level-supports@npm:4.0.1"
@@ -11993,7 +11944,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"napi-macros@npm:^2.0.0, napi-macros@npm:^2.2.2":
+"napi-macros@npm:^2.2.2":
   version: 2.2.2
   resolution: "napi-macros@npm:2.2.2"
   checksum: 10c0/cc85daaf82a4f585d30561047cef0f3e702be769b5cf2ffadc6242bc5a1033f6b8269012e54178baf66f022bd18aa9ebb619f1b530cc19c1f9b96f9689affd50
@@ -14217,18 +14168,6 @@ __metadata:
   bin:
     rimraf: dist/esm/bin.mjs
   checksum: 10c0/b30b6b072771f0d1e73b4ca5f37bb2944ee09375be9db5f558fcd3310000d29dfcfa93cf7734d75295ad5a7486dc8e40f63089ced1722a664539ffc0c3ece8c6
-  languageName: node
-  linkType: hard
-
-"rocksdb@npm:^5.2.1":
-  version: 5.2.1
-  resolution: "rocksdb@npm:5.2.1"
-  dependencies:
-    abstract-leveldown: "npm:^7.2.0"
-    napi-macros: "npm:^2.0.0"
-    node-gyp: "npm:latest"
-    node-gyp-build: "npm:^4.3.0"
-  checksum: 10c0/d10925ce14846aee32f76c80adcaac07de9d4771a61bdaa716553c4306480452883e49518013e804a247be03056f53edb5dc60ae704bfba5c093ef625f55be37
   languageName: node
   linkType: hard
 

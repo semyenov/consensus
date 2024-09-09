@@ -1,6 +1,6 @@
 import { deepStrictEqual, notStrictEqual, strictEqual } from 'node:assert'
 import fs from 'node:fs'
-import path, { basename, dirname, join } from 'node:path'
+import { basename, dirname, join } from 'node:path'
 
 import { copy } from 'fs-extra'
 import { rimraf } from 'rimraf'

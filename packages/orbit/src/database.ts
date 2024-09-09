@@ -56,7 +56,7 @@ export interface DatabaseEvents<T = unknown> {
   leave: CustomEvent<{ peerId: PeerId }>
   close: CustomEvent
   drop: CustomEvent
-  error: ErrorEvent
+  error: CustomEvent<Error>
   update: CustomEvent<{ entry: EntryInstance<DatabaseOperation<T>> }>
 }
 

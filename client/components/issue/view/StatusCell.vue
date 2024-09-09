@@ -5,8 +5,8 @@ defineProps<{
 </script>
 
 <template>
-  <div class="px-4">
-    <Badge variant="primary">
+  <div class="px-4 py-2">
+    <Badge variant="default">
       {{ status }}
     </Badge>
   </div>

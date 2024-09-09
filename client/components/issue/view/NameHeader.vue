@@ -13,7 +13,7 @@ const { t } = useI18n()
 <template>
   <Button
     variant="secondary"
-    class="flex justify-start w-full h-full p-2 capitalize rounded-none text-nowrap"
+    class="flex justify-start w-full h-full p-2 capitalize rounded-none text-nowrap backdrop-blur-sm bg-secondary/80"
     @click="$emit('toggleSort')"
   >
     {{ t('modules.issue.name') }}
