@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 // @ts-expect-error: Missing types
 import LRU from 'lru'
 import PQueue from 'p-queue'
@@ -427,7 +428,6 @@ export class Log<T> implements LogInstance<T> {
     let count = 0
     const shouldStopTraversal = async (entry: EntryInstance<D>) => {
       count++
-
       if (!entry) {
         return false
       }
@@ -443,7 +443,7 @@ export class Log<T> implements LogInstance<T> {
 
     let index = 0
     const useBuffer = (end || false) && amount !== -1 && !lt && !lte
-    const buffer = useBuffer ? new LRU(amount! + 2) : null
+    const buffer = useBuffer ? new LRU(amount + 2) : null
 
     const it = this.traverse<D>(start, shouldStopTraversal)
 
@@ -462,7 +462,7 @@ export class Log<T> implements LogInstance<T> {
     }
 
     if (useBuffer) {
-      const endIndex = buffer.keys.length
+      const endIndex = buffer!.keys.length
       const startIndex = endIndex > amount ? endIndex - amount : 0
       const keys = buffer!.keys.slice(startIndex, endIndex)
       for (const key of keys) {
@@ -510,7 +510,7 @@ export class Log<T> implements LogInstance<T> {
       }
     }
 
-    return this.heads() as Promise<EntryInstance<D>[]>
+    return this.heads()
   }
 
   private async verifyEntry<D = T>(entry: EntryInstance<D>): Promise<void> {

@@ -11,7 +11,7 @@ defineEmits<{
 <template>
   <Button
     variant="secondary"
-    class="flex justify-end w-full h-full px-4 py-2 capitalize rounded-none text-nowrap"
+    class="flex justify-end w-full h-full px-4 py-2 capitalize rounded-none text-nowrap backdrop-blur-sm bg-secondary/80"
     @click="$emit('toggle-sort')"
   >
     {{ $t('modules.issue.updated_at') }}

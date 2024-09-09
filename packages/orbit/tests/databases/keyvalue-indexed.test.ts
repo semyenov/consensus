@@ -1,6 +1,6 @@
 import { deepStrictEqual, notStrictEqual, strictEqual } from 'node:assert'
 import fs from 'node:fs'
-import path, { basename, dirname, join } from 'node:path'
+import { basename, dirname, join } from 'node:path'
 
 import { copy } from 'fs-extra'
 import { rimraf } from 'rimraf'
@@ -24,7 +24,7 @@ import type { HeliaInstance } from '../../src/vendor'
 const testsPath = join(
   dirname(__filename),
   '.orbitdb/tests',
-  basename(__filename, 'test.ts'),
+  basename(__filename, '.test.ts'),
 )
 
 describe('keyValueIndexed Database', () => {

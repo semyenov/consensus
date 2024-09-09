@@ -11,7 +11,7 @@ defineEmits<{
 </script>
 
 <template>
-  <div class="flex items-center justify-center w-full h-full px-4 capitalize text-nowrap bg-accent dark:bg-secondary">
+  <div class="flex items-center justify-center w-full h-full px-4 capitalize text-nowrap backdrop-blur-sm bg-secondary/80">
     <Checkbox
       :checked="checked"
       @update:checked="$emit('update:checked', $event)"

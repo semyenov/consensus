@@ -21,7 +21,7 @@ import { createHelia } from 'helia'
 import { createLibp2p } from 'libp2p'
 import { omit } from 'remeda'
 
-import { ComposedStorage, LRUStorage, RocksDBStorage } from './storage'
+import { ComposedStorage, LRUStorage, LevelStorage } from './storage'
 import { join } from './utils'
 
 import { OrbitDB } from './index'
@@ -92,7 +92,7 @@ async function main() {
       storage1: LRUStorage.create<Uint8Array>({
         size: 1000,
       }),
-      storage2: await RocksDBStorage.create<Uint8Array>({
+      storage2: await LevelStorage.create<Uint8Array>({
         path: join(dbPath, 'entries'),
       }),
     }),
@@ -100,7 +100,7 @@ async function main() {
       storage1: LRUStorage.create<Uint8Array>({
         size: 1000,
       }),
-      storage2: await RocksDBStorage.create<Uint8Array>({
+      storage2: await LevelStorage.create<Uint8Array>({
         path: join(dbPath, 'heads'),
       }),
     }),
@@ -108,7 +108,7 @@ async function main() {
       storage1: LRUStorage.create<boolean>({
         size: 1000,
       }),
-      storage2: await RocksDBStorage.create<boolean>({
+      storage2: await LevelStorage.create<boolean>({
         path: join(dbPath, 'indexes'),
       }),
     }),

@@ -20,9 +20,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { cn, valueUpdater } from '@/lib/utils'
+import { valueUpdater } from '@/lib/utils'
 
-import ScrollArea from '~/components/ui/scroll-area/ScrollArea.vue'
+import type ScrollArea from '~/components/ui/scroll-area/ScrollArea.vue'
 
 import ActionsCell from './ActionsCell.vue'
 import ActionsHeader from './ActionsHeader.vue'
@@ -77,18 +77,25 @@ const pagination = ref<PaginationState>({
   pageSize: data.value.length,
 })
 
-const tableContainerRef = ref<typeof ScrollArea | null>(null)
+const tableContainerRef = ref<HTMLElement | null>(null)
 const rowVirtualizer = useVirtualizer({
   count: data.value.length,
-  getScrollElement: () => tableContainerRef.value?.$el.children[0],
+  getScrollElement: () => tableContainerRef.value,
+  measureElement:
+      typeof window !== 'undefined'
+      && !navigator.userAgent.includes('Firefox')
+        ? (element) => {
+            console.log('element', element)
+
+            return element?.getBoundingClientRect().height
+          }
+        : undefined,
   estimateSize: () => 36,
   overscan: 10,
 })
 
 const table = useVueTable({
   defaultColumn: {
-    minSize: 1,
-    maxSize: 1,
     size: 1,
     enableHiding: true,
     enablePinning: true,
@@ -242,78 +249,83 @@ const rows = computed(() => table.getRowModel().rows)
 </script>
 
 <template>
-  <ScrollArea ref="tableContainerRef" class="h-full v-virtual-scroll" type="scroll">
-    <div :style="{ height: `${rowVirtualizer.getTotalSize()}px` }" class="flex flex-col overflow-hidden">
-      <Table>
-        <!-- <TableCaption>{{ t("pages.index.table.caption") }}</TableCaption> -->
-        <TableHeader>
-          <TableRow
-            v-for="headerGroup in table.getHeaderGroups()"
-            :key="headerGroup.id"
+  <div ref="tableContainerRef" class="flex w-full h-full overflow-auto">
+    <Table class="flex-1">
+      <!-- <TableCaption>{{ t("pages.index.table.caption") }}</TableCaption> -->
+      <TableHeader class="sticky top-0 z-10 flex flex-col w-full">
+        <TableRow
+          v-for="headerGroup in table.getHeaderGroups()"
+          :key="headerGroup.id"
+          class="sticky top-0 flex flex-row"
+        >
+          <TableHead
+            v-for="header in headerGroup.headers"
+            :key="header.id"
+            class="flex flex-col justify-center"
+            :pinned="header.column.getIsPinned()"
+            :data-index="header.index"
+            :style="{
+              width: `${header.column.getSize()}%`,
+            }"
           >
-            <TableHead
-              v-for="header in headerGroup.headers"
-              :key="header.id"
-              :pinned="header.column.getIsPinned()"
-              :data-index="header.index"
+            <FlexRender
+              v-if="!header.isPlaceholder"
+              class="flex-1"
+              :render="header.column.columnDef.header"
+              :props="header.getContext()"
+            />
+          </TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody class="flex-1" :style="{ height: `${rowVirtualizer.getTotalSize()}px` }">
+        <template v-for="(virtualRow, index) in rowVirtualizer.getVirtualItems()" :key="virtualRow.key">
+          <TableRow
+            class="flex flex-row"
+            :data-state="rows[virtualRow.index].getIsSelected() && 'selected'"
+            :pinned="rows[virtualRow.index].getIsPinned()"
+            :data-index="virtualRow.index"
+            :style="{
+              // height: `${virtualRow.size}px !important`,
+              transform: `translateY(${
+                virtualRow.start - index * virtualRow.size
+              }px)`,
+            }"
+          >
+            <TableCell
+              v-for="cell in rows[virtualRow.index].getVisibleCells()"
+              :key="cell.id"
+              class="flex flex-col justify-center"
+              :pinned="cell.column.getIsPinned()"
+              :data-index="virtualRow.index"
               :style="{
-                width: `${header.column.getSize()}px`,
+                height: `${virtualRow.size}px`,
+                width: `${cell.column.getSize()}%`,
               }"
             >
               <FlexRender
-                v-if="!header.isPlaceholder"
-                :render="header.column.columnDef.header"
-                :props="header.getContext()"
+                class="flex-1"
+                :render="cell.column.columnDef.cell"
+                :props="cell.getContext()"
               />
-            </TableHead>
+            </TableCell>
           </TableRow>
-        </TableHeader>
-        <TableBody class="h-auto">
-          <template v-for="(virtualRow, index) in rowVirtualizer.getVirtualItems()" :key="virtualRow.key">
-            <TableRow
-              :data-state="rows[virtualRow.index].getIsSelected() && 'selected'"
-              :pinned="rows[virtualRow.index].getIsPinned()"
-              :data-index="virtualRow.index"
-              :style="{
-                height: `${virtualRow.size}px !important`,
-                transform: `translateY(${
-                  virtualRow.start - index * virtualRow.size
-                }px)`,
-              }"
-            >
-              <TableCell
-                v-for="cell in rows[virtualRow.index].getVisibleCells()"
-                :key="cell.id"
-                :pinned="cell.column.getIsPinned()"
-                :data-index="virtualRow.index"
-                :style="{
-                  height: `${virtualRow.size}px !important`,
-                  width: `${cell.column.getSize()}px`,
-                }"
-              >
-                <FlexRender
-                  :render="cell.column.columnDef.cell"
-                  :props="cell.getContext()"
-                />
-              </TableCell>
-            </TableRow>
-            <TableRow
-              v-if="rows[virtualRow.index].getIsExpanded()" :style="{
-                height: `${virtualRow.size}px`,
-                transform: `translateY(${
-                  virtualRow.start - index * virtualRow.size
-                }px)`,
-              }"
-            >
-              <TableCell :colspan="rows[virtualRow.index].getAllCells().length">
-                <ExpandedRowContent :issue="rows[virtualRow.index].original" />
-              </TableCell>
-            </TableRow>
-          </template>
-        </TableBody>
-      </Table>
-    </div>
-  </ScrollArea>
+          <TableRow
+            v-if="rows[virtualRow.index].getIsExpanded()" :style="{
+              height: `${virtualRow.size}px`,
+              transform: `translateY(${
+                virtualRow.start - index * virtualRow.size
+              }px)`,
+            }"
+          >
+            <TableCell :colspan="rows[virtualRow.index].getAllCells().length">
+              <ExpandedRowContent :issue="rows[virtualRow.index].original" />
+            </TableCell>
+          </TableRow>
+        </template>
+        <TableRow :style="{ height: `${rowVirtualizer.getTotalSize() - rowVirtualizer.getVirtualItems().map(item => item.size).reduce((acc, curr) => acc + curr, 0)}px` }" />
+      </TableBody>
+    </Table>
+  </div>
 </template>
 
 <style scoped>

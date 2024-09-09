@@ -34,7 +34,7 @@ import type { HeliaInstance } from '../src/vendor'
 const testsPath = join(
   dirname(__filename),
   '.orbitdb/tests',
-  basename(__filename, 'test.ts'),
+  basename(__filename, '.test.ts'),
 )
 
 describe('database', () => {
@@ -150,7 +150,7 @@ describe('database', () => {
       const hash = await db.addOperation(op)
 
       const headsPath = join(
-        testsPath, 
+        testsPath,
         'orbitdb',
         databaseId,
         'log/_heads',
