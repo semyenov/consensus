@@ -34,7 +34,12 @@ export default defineNuxtConfig({
   typescript: {
     strict: true,
     shim: true,
-    // typeCheck: true,
+    tsConfig: {
+      compilerOptions: {
+        skipLibCheck: true,
+      },
+      // typeCheck: true,
+    },
   },
 
   nitro: {

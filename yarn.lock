@@ -2761,6 +2761,39 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@libp2p/webrtc@npm:^4.1.10":
+  version: 4.1.10
+  resolution: "@libp2p/webrtc@npm:4.1.10"
+  dependencies:
+    "@chainsafe/libp2p-noise": "npm:^15.0.0"
+    "@libp2p/interface": "npm:^1.7.0"
+    "@libp2p/interface-internal": "npm:^1.3.4"
+    "@libp2p/peer-id": "npm:^4.2.4"
+    "@libp2p/utils": "npm:^5.4.9"
+    "@multiformats/mafmt": "npm:^12.1.6"
+    "@multiformats/multiaddr": "npm:^12.2.3"
+    "@multiformats/multiaddr-matcher": "npm:^1.2.1"
+    detect-browser: "npm:^5.3.0"
+    it-length-prefixed: "npm:^9.0.4"
+    it-protobuf-stream: "npm:^1.1.3"
+    it-pushable: "npm:^3.2.3"
+    it-stream-types: "npm:^2.0.1"
+    multiformats: "npm:^13.1.0"
+    node-datachannel: "npm:^0.11.0"
+    p-defer: "npm:^4.0.1"
+    p-event: "npm:^6.0.1"
+    p-timeout: "npm:^6.1.2"
+    progress-events: "npm:^1.0.0"
+    protons-runtime: "npm:^5.4.0"
+    race-signal: "npm:^1.0.2"
+    react-native-webrtc: "npm:^118.0.7"
+    uint8-varint: "npm:^2.0.4"
+    uint8arraylist: "npm:^2.4.8"
+    uint8arrays: "npm:^5.1.0"
+  checksum: 10c0/eb1348eef80658a2a0b0f9c0ba377e304112000990a0d48e3e8bca3d273c0d55faa6701b40ee9ab6878e0af57ffd645a74ab965607801b59f609120ca5c41888
+  languageName: node
+  linkType: hard
+
 "@libp2p/websockets@npm:^8.0.16, @libp2p/websockets@npm:^8.2.0":
   version: 8.2.0
   resolution: "@libp2p/websockets@npm:8.2.0"
@@ -2798,6 +2831,26 @@ __metadata:
     uint8arraylist: "npm:^2.4.8"
     uint8arrays: "npm:^5.1.0"
   checksum: 10c0/abe3f29e9e4cedaf95881ee9a95303f1c6f06ecc56c7b8d0d59e096b41c146df066b02ac803f0f0ee7029dbc7980ded6ca6c6590c1065ed0fbd72004ffc501bb
+  languageName: node
+  linkType: hard
+
+"@libp2p/webtransport@npm:^4.1.9":
+  version: 4.1.9
+  resolution: "@libp2p/webtransport@npm:4.1.9"
+  dependencies:
+    "@chainsafe/libp2p-noise": "npm:^15.0.0"
+    "@libp2p/interface": "npm:^1.7.0"
+    "@libp2p/peer-id": "npm:^4.2.4"
+    "@libp2p/utils": "npm:^5.4.9"
+    "@multiformats/multiaddr": "npm:^12.2.3"
+    "@multiformats/multiaddr-matcher": "npm:^1.2.1"
+    it-stream-types: "npm:^2.0.1"
+    multiformats: "npm:^13.1.0"
+    progress-events: "npm:^1.0.0"
+    race-signal: "npm:^1.0.2"
+    uint8arraylist: "npm:^2.4.8"
+    uint8arrays: "npm:^5.1.0"
+  checksum: 10c0/9b2bf68c298edf567a1ddbe81a12fab0ff48f8e7c4d205ff318f0373597e686fdb75081f32a108661d815ff710c91ccceb50f6e9d2ccb49ce0bd0e3f6f04d0ac
   languageName: node
   linkType: hard
 
@@ -3990,7 +4043,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@regioni/orbit@workspace:packages/orbit":
+"@regioni/orbit@workspace:^, @regioni/orbit@workspace:packages/orbit":
   version: 0.0.0-use.local
   resolution: "@regioni/orbit@workspace:packages/orbit"
   dependencies:
@@ -7194,10 +7247,18 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "consensus@workspace:."
   dependencies:
+    "@chainsafe/libp2p-gossipsub": "npm:^13.2.0"
+    "@chainsafe/libp2p-noise": "npm:^15.1.2"
+    "@chainsafe/libp2p-yamux": "npm:^6.0.2"
     "@consensus/eslint-config": "workspace:*"
     "@edgedb/generate": "npm:^0.5.5"
     "@formkit/auto-animate": "npm:^0.8.2"
+    "@helia/block-brokers": "npm:^3.0.3"
     "@ksassnowski/vueclid": "npm:^1.2.0"
+    "@libp2p/circuit-relay-v2": "npm:^1.1.5"
+    "@libp2p/identify": "npm:^2.1.5"
+    "@libp2p/webrtc": "npm:^4.1.10"
+    "@libp2p/webtransport": "npm:^4.1.9"
     "@nuxt/content": "npm:^2.13.2"
     "@nuxt/fonts": "npm:^0.7.2"
     "@nuxt/image": "npm:^1.8.0"
@@ -7206,6 +7267,7 @@ __metadata:
     "@nuxtjs/partytown": "npm:^1.5.0"
     "@nuxtjs/tailwindcss": "npm:^6.12.1"
     "@radix-icons/vue": "npm:^1.0.0"
+    "@regioni/orbit": "workspace:^"
     "@tanstack/vue-table": "npm:^8.20.5"
     "@tanstack/vue-virtual": "npm:^3.10.6"
     "@types/add": "npm:^2.0.3"
@@ -7223,6 +7285,8 @@ __metadata:
     esbuild: "npm:^0.23.1"
     eslint: "npm:^9.9.1"
     execa: "npm:^9.3.1"
+    helia: "npm:^4.2.5"
+    libp2p: "npm:^1.9.4"
     lucide-vue-next: "npm:^0.436.0"
     nuxt: "npm:^3.13.0"
     nuxt-content-assets: "npm:^1.4.4"
@@ -11752,6 +11816,40 @@ __metadata:
     race-signal: "npm:^1.0.2"
     uint8arrays: "npm:^5.1.0"
   checksum: 10c0/7afc2c6b4f7dc9c05d1a7b9aca0e7f6f79a6dcfd36fc06eeca0b8460ebb23f0774ce8fd17acdcaaae1e941141de49dcac9cbf8e683735e6070fe8eee73402b25
+  languageName: node
+  linkType: hard
+
+"libp2p@npm:^1.9.4":
+  version: 1.9.4
+  resolution: "libp2p@npm:1.9.4"
+  dependencies:
+    "@libp2p/crypto": "npm:^4.1.9"
+    "@libp2p/interface": "npm:^1.7.0"
+    "@libp2p/interface-internal": "npm:^1.3.4"
+    "@libp2p/logger": "npm:^4.0.20"
+    "@libp2p/multistream-select": "npm:^5.1.17"
+    "@libp2p/peer-collections": "npm:^5.2.9"
+    "@libp2p/peer-id": "npm:^4.2.4"
+    "@libp2p/peer-id-factory": "npm:^4.2.4"
+    "@libp2p/peer-store": "npm:^10.1.5"
+    "@libp2p/utils": "npm:^5.4.9"
+    "@multiformats/dns": "npm:^1.0.6"
+    "@multiformats/multiaddr": "npm:^12.2.3"
+    "@multiformats/multiaddr-matcher": "npm:^1.2.1"
+    any-signal: "npm:^4.1.1"
+    datastore-core: "npm:^9.2.9"
+    interface-datastore: "npm:^8.2.11"
+    it-byte-stream: "npm:^1.0.12"
+    it-merge: "npm:^3.0.5"
+    it-parallel: "npm:^3.0.7"
+    merge-options: "npm:^3.0.4"
+    multiformats: "npm:^13.1.0"
+    p-defer: "npm:^4.0.1"
+    progress-events: "npm:^1.0.0"
+    race-event: "npm:^1.3.0"
+    race-signal: "npm:^1.0.2"
+    uint8arrays: "npm:^5.1.0"
+  checksum: 10c0/2dce4d0a72e2bd94c9bad039b7cc28d02ed99634f7e6cbc5df8b4d0206dfeeb1cc98adcdebf246424789c830436155487fec5552b842f60e361d908cf1b06a93
   languageName: node
   linkType: hard
 

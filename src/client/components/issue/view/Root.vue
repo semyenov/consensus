@@ -81,15 +81,10 @@ const tableContainerRef = ref<HTMLElement | null>(null)
 const rowVirtualizer = useVirtualizer({
   count: data.value.length,
   getScrollElement: () => tableContainerRef.value,
-  measureElement:
-      typeof window !== 'undefined'
-      && !navigator.userAgent.includes('Firefox')
-        ? (element) => {
-            console.log('element', element)
+  measureElement: element =>
+  // console.log('element', element)
 
-            return element?.getBoundingClientRect().height
-          }
-        : undefined,
+    element?.getBoundingClientRect().height,
   estimateSize: () => 36,
   overscan: 10,
 })
@@ -261,7 +256,7 @@ const rows = computed(() => table.getRowModel().rows)
           <TableHead
             v-for="header in headerGroup.headers"
             :key="header.id"
-            class="flex flex-col justify-center"
+            class="flex flex-col justify-center p-0"
             :pinned="header.column.getIsPinned()"
             :data-index="header.index"
             :style="{
@@ -279,13 +274,14 @@ const rows = computed(() => table.getRowModel().rows)
       </TableHeader>
       <TableBody class="flex-1" :style="{ height: `${rowVirtualizer.getTotalSize()}px` }">
         <template v-for="(virtualRow, index) in rowVirtualizer.getVirtualItems()" :key="virtualRow.key">
-          <TableRow
+          <div
+            :ref="el => rowVirtualizer.measureElement(el as Element)"
             class="flex flex-row"
             :data-state="rows[virtualRow.index].getIsSelected() && 'selected'"
             :pinned="rows[virtualRow.index].getIsPinned()"
             :data-index="virtualRow.index"
             :style="{
-              // height: `${virtualRow.size}px !important`,
+              height: `${virtualRow.size}px`,
               transform: `translateY(${
                 virtualRow.start - index * virtualRow.size
               }px)`,
@@ -308,7 +304,7 @@ const rows = computed(() => table.getRowModel().rows)
                 :props="cell.getContext()"
               />
             </TableCell>
-          </TableRow>
+          </div>
           <TableRow
             v-if="rows[virtualRow.index].getIsExpanded()" :style="{
               height: `${virtualRow.size}px`,
