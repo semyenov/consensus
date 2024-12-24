@@ -1,0 +1,18 @@
+{
+  "files": {
+    "renameExtensions": "ts"
+  },
+  "fixes": {
+    "incompleteTypes": true,
+    "missingProperties": true,
+    "noImplicitAny": true
+  },
+  "cleanups": {
+    "suppressTypeErrors": true
+  },
+  "include": ["src/**/*.{js,jsx}"],
+  "types": {
+    "strictNullChecks": true
+  },
+  "project": "tsconfig.build.json"
+}

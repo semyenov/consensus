@@ -1,5 +1,6 @@
 # Nuxt dev/build outputs
 .output
+.orbitdb
 .data
 .nuxt
 .nitro
@@ -23,6 +24,8 @@ logs
 .env.*
 !.env.example
 
+.orbitdb
+.orbit
 # EdgeDb
 **/*.edgeql.ts
 dbschema/queries.*

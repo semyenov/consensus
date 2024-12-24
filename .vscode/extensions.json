@@ -1,6 +1,5 @@
 {
   "recommendations": [
-    "ietxaniz.fold-ninja",
     "aaron-bond.better-comments",
     "alefragnani.bookmarks",
     "aliariff.auto-add-brackets",
@@ -18,7 +17,6 @@
     "Cardinal90.multi-cursor-case-preserve",
     "christian-kohler.npm-intellisense",
     "christian-kohler.path-intellisense",
-    "Codeium.codeium",
     "cpylua.language-postcss",
     "cweijan.vscode-redis-client",
     "dbaeumer.vscode-eslint",
@@ -32,6 +30,7 @@
     "howardzuo.vscode-npm-dependency",
     "IBM.output-colorizer",
     "idered.npm",
+    "ietxaniz.fold-ninja",
     "kisstkondoros.vscode-codemetrics",
     "lacroixdavid1.vscode-format-context-menu",
     "lokalise.i18n-ally",
@@ -48,7 +47,7 @@
     "ms-vscode.vscode-js-profile-flame",
     "Nuxt.mdc",
     "oderwat.indent-rainbow",
-    "phind.phind",
+    "onebitcode.rockstar-theme",
     "piotrpalarz.vscode-gitignore-generator",
     "quicktype.quicktype",
     "Selemondev.shadcn-vue",
@@ -59,6 +58,7 @@
     "Tyriar.sort-lines",
     "usernamehw.errorlens",
     "VisualStudioExptTeam.vscodeintellicode",
+    "vitest.explorer",
     "vivaxy.vscode-conventional-commits",
     "vue.volar",
     "wejectchan.vue3-snippets-for-vscode",
@@ -66,6 +66,7 @@
     "yatki.vscode-surround",
     "yoavbls.pretty-ts-errors",
     "Yseop.vscode-yseopml",
-    "zardoy.ts-essential-plugins"
+    "zardoy.ts-essential-plugins",
+    "firefox-devtools.vscode-firefox-debug"
   ]
 }

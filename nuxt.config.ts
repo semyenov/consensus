@@ -3,9 +3,9 @@ import { join, relative, resolve } from 'pathe'
 
 // src dir
 const rootDir = resolve(__dirname)
-
-const clientDir = join(rootDir, 'client')
-const serverDir = join(rootDir, 'server')
+const srcDir = resolve(rootDir, 'src')
+const clientDir = join(srcDir, 'client')
+const serverDir = join(srcDir, 'server')
 
 export default defineNuxtConfig({
   compatibilityDate: '2024-08-15',
@@ -13,6 +13,11 @@ export default defineNuxtConfig({
   rootDir,
   serverDir,
   srcDir: clientDir,
+
+  app: {
+    pageTransition: { name: 'page', mode: 'out-in' },
+    layoutTransition: { name: 'page', mode: 'out-in' },
+  },
 
   dir: {
     public: join(rootDir, 'public'),
@@ -23,25 +28,130 @@ export default defineNuxtConfig({
     modules: join(clientDir, 'modules'),
     pages: join(clientDir, 'pages'),
     middleware: join(clientDir, 'middleware'),
-    plugins: join(clientDir, 'plugins'),
+    plugins: join(srcDir, 'plugins'),
   },
 
   typescript: {
     strict: true,
     shim: true,
-    typeCheck: true,
+    tsConfig: {
+      compilerOptions: {
+        skipLibCheck: true,
+      },
+      // typeCheck: true,
+    },
   },
 
+  nitro: {
+    // rootDir,
+    // srcDir,
+
+
+
+    // database: {
+    //   default: {
+    //     connector: 'sqlite',
+    //     options: {
+    //       filename: join(rootDir, '.data', 'nuxt', 'db.sqlite'),
+    //     },
+    //   },
+    // },
+    // storage: {
+    //   fs: {
+    //     driver: 'fs',
+    //     base: join(rootDir, '.data', 'nuxt'),
+    //   },
+    //   redis: {
+    //     driver: 'redis',
+    //     options: {
+    //       host: 'localhost',
+    //       port: 6379,
+    //       db: 0,
+    //     },
+    //   },
+    // },
+    // compressPublicAssets: {
+    //   brotli: true,
+    // },
+    // prerender: {
+    //   routes: [
+    //     '/',
+    //     '/404',
+    //     '/auth/login',
+    //     '/auth/logout',
+    //     '/auth/register',
+    //     '/auth/reset-password',
+    //   ],
+    // },
+    rollupConfig: undefined,
+    runtimeConfig: {
+      ipx: {
+        fs: { dir: join(rootDir, '.data', 'nuxt', 'ipx') },
+        alias: { '/avatars': 'avatars.githubusercontent.com' },
+      },
+    },
+    scheduledTasks: {
+      '* 1 * * *': 'edgedb:generate',
+    },
+    experimental: {
+      wasm: true,
+      tasks: true,
+      database: true,
+      websocket: true,
+      asyncContext: true,
+      typescriptBundlerResolution: true,
+    },
+    wasm: {
+      esmImport: true,
+      lazy: true,
+    },
+    logging: {
+      buildSuccess: true,
+      compressedSizes: true,
+    },
+    timing: true,
+    debug: true,
+  },
+
+
   modules: [
+    '@nuxtjs/partytown',
     '@nuxtjs/tailwindcss',
+    'nuxt-content-assets',
+    '@nuxtjs/mdc',
     '@nuxtjs/i18n',
     '@vueuse/nuxt',
     'shadcn-nuxt',
     '@nuxt/fonts',
     '@nuxt/content',
-    'nuxt-edgedb-module',
+    // 'nuxt-edgedb-module',
+    './modules/edgedb/src/module',
     '@nuxt/image',
+    'nuxt-echarts',
   ],
+
+  content: {
+    locales: ['ru', 'en'],
+    sources: {
+      content: {
+        driver: 'fs',
+        prefix: '/content',
+        base: join(srcDir, 'content'),
+      },
+    },
+    navigation: {
+      fields: [
+        'title',
+        'description',
+        'image',
+        'tags',
+        'slug',
+      ],
+    },
+    experimental: {
+      clientDB: true,
+    },
+  },
 
   shadcn: {
     prefix: '',
@@ -78,7 +188,7 @@ export default defineNuxtConfig({
     providers: {
       avatars: {
         name: 'avatars',
-        provider: 'image/provider',
+        provider: 'src/image/provider',
         options: {
           baseURL: 'https://avatars.githubusercontent.com/u/',
           presets: {
@@ -116,7 +226,7 @@ export default defineNuxtConfig({
       cookieCrossOrigin: true,
     },
 
-    langDir: relative(clientDir, 'languages'),
+    langDir: '../languages',
 
     bundle: {
       fullInstall: true,

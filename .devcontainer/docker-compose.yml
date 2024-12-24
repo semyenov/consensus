@@ -15,18 +15,18 @@ services:
       - NITRO_PORT=3000
     user: node
 
-  # edgedb:
-  #   image: edgedb/edgedb:5.6
-  #   container_name: edgedb
-  #   restart: unless-stopped
-  #   volumes:
-  #     - "../dbschema:/dbschema"
-  #   networks:
-  #     - consensus_network
-  #   ports:
-  #     - "10701:10701"
-  #   environment:
-  #     EDGEDB_SERVER_SECURITY: insecure_dev_mode
+  edgedb:
+    image: edgedb/edgedb:5.6
+    container_name: edgedb
+    restart: unless-stopped
+    volumes:
+      - '../dbschema:/dbschema'
+    networks:
+      - consensus_network
+    ports:
+      - '10701:10701'
+    environment:
+      EDGEDB_SERVER_SECURITY: insecure_dev_mode
 
   mailpit:
     image: axllent/mailpit
